@@ -5,7 +5,6 @@ date: "December 15, 2021"
 output:
   pdf_document: default
   html_document: default
-  word_document: default
 header-includes:
 - \DeclareUnicodeCharacter{2212}{-}
 - \DeclareUnicodeCharacter{21A9}{-}
@@ -52,466 +51,788 @@ The following files (3 types) are included in the upload:
 
 # Introduction to Census pay predictions
 
-MovieLens dataset was created by the GroupLens project. The GroupLens Research Project is a research group in the Department of Computer Science and Engineering at the University of Minnesota. According to the summary of the dataset, it contains 10000054 ratings and 95580 tags applied to 10681 movies by 71567 users of the online movie recommendation service MovieLens. More information can be found at https://files.grouplens.org/datasets/movielens/ml-10m-README.html. 
+The Current Population Survey (CPS), sponsored jointly by the U.S. Census Bureau and the U.S. Bureau of Labor Statistics (BLS), is the primary source of labor force statistics for the population of the United States. The adult census income data was extracted from the 1994 Census bureau database by Ronny Kohavi and Barry Becker (Data Mining and Visualization, Silicon Graphics).
 
-In this project for the Capstone course of the HarvardX Professional Certificate in Data Science (PH125.9x), we will explore the MovieLens data set. The objective will be to develop a machine-learning model by creating training and test sets to predict movie ratings on a validation set that achieves a Root Mean Square Error (RMSE) of less than 0.8649
+This machine learning project uses the adult census income data to predict annual money incomes for adults, given a set of 13 employment and demographic attributes. Census money income is defined as income received on a regular basis before payments for personal income taxes, social security, union dues, Medicare deductions, etc. The income levels were categorized into two classes – more than $50,000 and less than or equal to $50,000. 
 
-Here is a glimpse of edx dataset. The columns that are of interest are userId, movieId, and rating
+More information can be found at https://www.kaggle.com/uciml/adult-census-income.
+
+In this project for the Capstone course of the HarvardX Professional Certificate in Data Science (PH125.9x), we will explore the adult census income data set. The objective will be to analyze and model based on the classification of incomes and develop a machine-learning model by creating training and test sets to predict income levels on a validation set with accuracy of more than 80%
+
+Here is a glimpse of adultpay dataset. The columns that are of interest are income, age, sex, education.num, education, race, marital.status, relationship, workclass, hours.per.week and occupation. There are 32,561 rows and 13 columns
 
 ```{r}
-# glimpse(edx)
+# glimpse(adultpay)
 
-# Rows: 9,000,055
+# Rows: 32,561
 
-# Columns: 6
+# Columns: 13
 
-# $ userId    <int> 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2~
-# $ movieId   <dbl> 122, 185, 292, 316, 329, 355, 356, 362, 364, 370, 377, 420, 4~
-# $ rating    <dbl> 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5~
-# $ timestamp <int> 838985046, 838983525, 838983421, 838983392, 838983392, 838984~
-# $ title     <chr> "Boomerang (1992)", "Net, The (1995)", "Outbreak (1995)", "St~
-# $ genres    <chr> "Comedy|Romance", "Action|Crime|Thriller", "Action|Drama|Sci-~
+# $ age            <int> 90, 82, 66, 54, 41, 34, 38, 74, 68, 41, 45, 38, 52, 32, 51, 46,~
+
+# $ workclass      <chr> "?", "Private", "?", "Private", "Private", "Private", "Private"~
+
+# $ fnlwgt         <int> 77053, 132870, 186061, 140359, 264663, 216864, 150601, 88638, 4~
+
+# $ education      <chr> "HS-grad", "HS-grad", "Some-college", "7th-8th", "Some-college"~
+
+# $ education.num  <int> 9, 9, 10, 4, 10, 9, 6, 16, 9, 10, 16, 15, 13, 14, 16, 15, 7, 14~
+
+# $ marital.status <chr> "Widowed", "Widowed", "Widowed", "Divorced", "Separated", "Divo~
+
+# $ occupation     <chr> "?", "Exec-managerial", "?", "Machine-op-inspct", "Prof-special~
+
+# $ relationship   <chr> "Not-in-family", "Not-in-family", "Unmarried", "Unmarried", "Ow~
+
+# $ race           <chr> "White", "White", "Black", "White", "White", "White", "White", ~
+
+# $ sex            <chr> "Female", "Female", "Female", "Female", "Female", "Female", "Ma~
+
+# $ hours.per.week <int> 40, 18, 40, 40, 40, 45, 40, 20, 40, 60, 35, 45, 20, 55, 40, 40,~
+
+# $ native.country <chr> "United-States", "United-States", "United-States", "United-Stat~
+
+# $ income         <chr> "<=50K", "<=50K", "<=50K", "<=50K", "<=50K", "<=50K", "<=50K", ~
 
 ```
 
+We will start with data exploration and cleaning unwanted data and processing. Then we will mimic the ultimate evaluation process by splitting the data into two parts - training and validation and act as if we don’t know the outcome for one of these. We will split the dataset once we cleaned and processed the dataset. We want the test set to be large enough so that we obtain a stable prediction without fitting an impractical number of models. We will then progressively apply various algorithms on the training set and test the predictions on the test set and improve on the overall accuracy.
 
-The **goal** of this capstone exercise is to compute the predicted ratings and RMSE associated with the ratings to build a recommendation system. We will build this recommendation by applying different models with different predictors and progressively reduce the RMSE (error) in the recommendation. The goal is to keep errors less than 0.86490 RMSE.
+We will choose 13 attributes, income being be the outcome and the rest 12 attributes being the predictors. Looking at the dimensions we will randomly choose 10% of the dataset to be the test set and remaining 90% will be the training set. 90% is sizable enough to run various algorithms like lm, glm, knn, random forest with some tuning.
 
-The **outcome** is rating and the **predictors** are movie and user identified by the movieId and userId respectively. RMSE and predictions are calculated for the following scenarios
+```{r}
 
-- predicted rating and RMSE with just the movie as the predictor
-- predicted rating and RMSE with movie and user
-- regularized rating prediction and RMSE for user and movie
+# > dim(adultpayclean)
+# [1] 29170    13
+# > dim(adultpayclean_train)
+# [1] 26252    13
+# > dim(adultpayclean_validation)
+# [1] 2918   13
 
-RMSE is used to evaluate how close the predictions are to the true values in the validation set. All RMSEs are tabulated in the results section of this report. The details on how the results were arrived at are also in a subsection.
 
-Due to the size of the dataset, most of the caret package functions for train and validation do not work due to the inability to load large vectors into memory. I have used manual least squared estimates to compute bias instead of using caret package. All analysis for computing the predictions and RMSE has been done with the edx dataset. 90% of the edx dataset is used for training set and the 10% of the dataset is used for test set.  
+```
 
-The validation data set is not used for training, and developing. It is only used for evaluating the RMSE of the final algorithm.
+This is a classification problem and the outcome is binary (income above 50K or at or below 50k).On reviewing the summary of the dataset we have a choice of predictors. We will keep only USA specific data. Almost all of the predictors have data spread out.
+
+```{r}
+#summary(adultpayclean)
+
+#      age            fnlwgt              education       eduyears                 maritalstatus  
+# Min.   :17.00   Min.   :  12285   HSgrad     :9702   Min.   : 1.00   Divorced           : 4162  
+# 1st Qu.:28.00   1st Qu.: 115895   Somecollege:6740   1st Qu.: 9.00   MarriedAFspouse    :   23  
+# Median :37.00   Median : 176730   Bachelors  :4766   Median :10.00   Marriedcivspouse   :13368  
+# Mean   :38.66   Mean   : 187069   Masters    :1527   Mean   :10.17   Marriedspouseabsent:  253  
+# 3rd Qu.:48.00   3rd Qu.: 234139   Assocvoc   :1289   3rd Qu.:12.00   Nevermarried       : 9579  
+# Max.   :90.00   Max.   :1484705   11th       :1067   Max.   :16.00   Separated          :  883  
+#                                   (Other)    :4079                   Widowed            :  902  
+#          occupation          relationship                   race           sex         hoursperweek  
+# Execmanagerial:3735   Husband      :11861   Amer-Indian-Eskimo:  296   Female: 9682   Min.   : 1.00  
+# Profspecialty :3693   Notinfamily  : 7528   Asian-Pac-Islander:  292   Male  :19488   1st Qu.:40.00  
+# Craftrepair   :3685   Otherrelative:  696   Black             : 2832                  Median :40.00  
+# Admclerical   :3449   Ownchild     : 4691   Other             :  129                  Mean   :40.45  
+# Sales         :3364   Unmarried    : 3033   White             :25621                  3rd Qu.:45.00  
+# Otherservice  :2777   Wife         : 1361                                             Max.   :99.00  
+# (Other)       :8467                                                                                  
+#    native                 income                class      
+# Length:29170       Above50K  : 7171   Private      :20135  
+# Class :character   AtBelow50K:21999   Selfempnotinc: 2313  
+# Mode  :character                      Localgov     : 1956  
+#                                       Unknown      : 1659  
+#                                       Stategov     : 1210  
+#                                       Selfempinc   :  991  
+#                                       (Other)      :  906  
+
+```
+
+So we begin...
 
 # Analysis
 
-### Data Exploration
+### Data Exploration, cleaning, processing and feature engineering
 
-The movielens dataset from grouplens is a massive movie ratings database. As you can see below, there are 69878 users and 10677 movies. There are around 750 million possibilities.
+The adult pay dataset from census bureau is a ML ready database. For convenience, I have downloaded it from kaggle and stored in the same github repository as this code and markdown. The dataset is in zip format and is downloaded from https://github.com/rajeshharidas/havardxwork2/blob/main/adult.csv.zip. Then it is read into a data frame. The data is ML ready for the most part. However, there are some additional cleaning tasks needed before using the dataset. This processing is done in DatasetProcessingCode.R file. Code fragment is shown below. We perform the following cleaning tasks
+
+1) Filter to keep only USA data
+2) Remove all ? marks data from all the columns
+3) Remove intermediate and columns that are not used in the project
+4) Rename columns to exclude non-aphanumeric characters
+5) convert character labels to factors
+
 
 ```{r}
 
-#train_set %>% summarize(
-
-#   n_users=n_distinct(userId),# unique users from train set
-
-#   n_movies=n_distinct(movieId),# unique movies from train set
-
-#   n_genres=n_distinct(genres), # unique genres from train set
-
-#   min_rating=min(rating),  # the lowest rating 
-
-#   max_rating=max(rating) # the highest rating
-
-#)
-
-#     n_users n_movies n_genres min_rating max_rating
-
-#   1   69878    10663   797       0.5          5
+# adultpayclean <-
+#   adultpay %>% filter (native.country == 'United-States') %>%
+#   mutate (class = ifelse(workclass == '?', 'Unknown', str_replace_all(workclass, "-", ""))) %>%
+#   select(-workclass, -capital.gain, -capital.loss) %>%
+#   rename(
+#     c(
+#       eduyears = education.num,
+#       maritalstatus = marital.status,
+#       hoursperweek = hours.per.week,
+#       native = native.country
+#     )
+#   ) %>%
+#   mutate (maritalstatus = ifelse(
+#     maritalstatus == '?',
+#     'Unknown',
+#     str_replace_all(maritalstatus, "-", "")
+#   )) %>%
+#   mutate (occupation = ifelse(
+#     occupation == '?',
+#     'Unknown',
+#     str_replace_all(occupation, "-", "")
+#   )) %>%
+#   mutate (education = ifelse(education == '?', 'Unknown', str_replace_all(education, "-", ""))) %>%
+#   mutate (relationship = ifelse(
+#     relationship == '?',
+#     'Unknown',
+#     str_replace_all(relationship, "-", "")
+#   )) %>%
+#   mutate (native = ifelse(native == '?', 'Unknown', str_replace_all(native, "-", ""))) %>%
+#   mutate (income = ifelse(
+#     income == '?',
+#     'Unknown',
+#     str_replace_all(income, "<=50K", "AtBelow50K")
+#   )) %>%
+#   mutate (income = ifelse(
+#     income == '?',
+#     'Unknown',
+#     str_replace_all(income, ">50K", "Above50K")
+#   ))
 
 ```
 
-However, we see only 8 million or so ratings.
+After performing this cleaning we see 29170 rows and 13 columns. We further analyze the makeup of the categorical columns
+
+
 
 ```{r}
 
-#> train_set %>% as_tibble()
+# table(adultpayclean$education)
+#
+#       10th        11th        12th      1st4th      5th6th      7th8th         9th    Assocacdm
 
-# A tibble: 8,100,048 x 6
+#        848        1067         365          46          97         499         395        982  
+#         
+#    Assocvoc   Bachelors   Doctorate      HSgrad     Masters   Preschool  Profschool  Somecollege 
 
-#   userId movieId rating timestamp title                  genres    
+#       1289        4766         328        9702        1527          17         502        6740 
 
-#    <int>   <dbl>  <dbl>     <int> <chr>                  <chr>               
 
-# 1      1     122      5 838985046 Boomerang (1992)       Comedy|Romance         
+# table(adultpayclean$maritalstatus)
+#
+#    Divorced     MarriedAFspouse    Marriedcivspouse Marriedspouseabsent    Nevermarried   Separated 
 
-# 2      1     185      5 838983525 Net, The (1995)        Action|Crime|Thriller  
+#      4162            23               13368                 253                9579         883 
+#
+#    Widowed 
 
-# 3      1     316      5 838983392 Stargate (1994)        Action|Adventure|Sci-Fi
+#      902
+      
+# table (adultpayclean$occupation)
+#
+#     Admclerical      ArmedForces      Craftrepair   Execmanagerial   Farmingfishing Handlerscleaners  Machineopinspct 
 
-# 4      1     329      5 838983392 Star Trek: Generation~ Action|Adventure|Drama~
+#            3449                9             3685             3735              879             1189             1687 
 
-# 5      1     355      5 838984474 Flintstones, The (199~ Children|Comedy|Fantasy
+#    Otherservice    Privhouseserv    Profspecialty   Protectiveserv            Sales      Techsupport  Transportmoving 
 
-# 6      1     356      5 838983653 Forrest Gump (1994)    Comedy|Drama|Romance|W~
+#            2777               90             3693              606             3364              850             1491 
 
-# 7      1     362      5 838984885 Jungle Book, The (199~ Adventure|Children|Rom~
+#         Unknown 
 
-# 8      1     364      5 838983707 Lion King, The (1994)  Adventure|Animation|Ch~
+#            1666
 
-# 9      1     370      5 838984596 Naked Gun 33 1/3: The~ Action|Comedy          
+# table(adultpayclean$relationship)
+#
+#      Husband   Notinfamily Otherrelative      Ownchild     Unmarried          Wife 
 
-#10      1     377      5 838983834 Speed (1994)           Action|Romance|Thriller
+#        11861          7528           696          4691          3033          1361 
 
-# ... with 8,100,038 more rows
+# table(adultpayclean$race)
+#
+# Amer-Indian-Eskimo Asian-Pac-Islander              Black              Other              White 
 
+#               296                292               2832                129              25621 
+#
+# table(adultpayclean$sex)
+#
+# Female   Male 
+
+#  9682  19488 
+#
+# table(adultpayclean$class)
+#
+#   Federalgov      Localgov   Neverworked       Private    Selfempinc Selfempnotinc      Stategov       Unknown    Withoutpay 
+
+#          886          1956             7         20135           991          2313          1210          1659            13 
+            
 ```
 
-This indicates that the users-movie rating matrix is very sparse as shown below. Here is a random sample of 200 movies and 200 users with colored cell indicating a user/movie combination for which we have a rating.
+As shown above the occupation and class columns have more than 1600 Unknown data. Adding this to the predictor column could skew the predictions and introduce errors. We will exclude this from our list of predictors. The final list of predictors/features used to predict the outcome income level are age, education, years of education (a.ka. eduyears), maritalstatus, relationship,race, sex, and hoursperweek.
 
 
-```{r,echo=FALSE,fig.width=60, fig.cap ="Movie rating distribution"}
+```{r,echo=FALSE,fig.retina = 2, fig.cap =""}
 library(ggplot2)  # For plotting
 library(png) 
-img_path <- "images/sparsematrix.png"
+img_path <- ""
 knitr::include_graphics(img_path)
 ```
 
-This machine learning challenge is complicated because each outcome Y has a different set of predictors. Users rate movies. Each movie is rated by multiple users. Not every movie is rated by every user. Some movies are rated more frequently. Some movies were rated only once. Some users rate more movies than others. Some users have different temperaments than others. Some users are more active than others at rating movies. Some genres are rated more frequently than others. The lowest rating is 0.5. 4 is the most common rating, followed 3 and 5. Half rating are less common than whole star ratings. All movies were rated. There are no NAs. Here is the movie and users distribution where n is the number of ratings.
 
-```{r,echo=FALSE, fig.retina = 2, fig.cap ="Ratings distribution"}
-library(ggplot2)  # For plotting
-library(png) 
-img_path <- "images/ratingdist.jpg"
-knitr::include_graphics(img_path)
-```
-
-```{r,echo=FALSE,fig.width=60, fig.cap ="Movies distribution"}
-library(ggplot2)  # For plotting
-library(png) 
-img_path <- "images/MovieRatingCounts.png"
-knitr::include_graphics(img_path)
-```
-
-```{r,echo=FALSE,fig.width=60, fig.cap ="Users distribution"}
-library(ggplot2)  # For plotting
-library(png) 
-img_path <- "images/UserRatingCount.png"
-knitr::include_graphics(img_path)
-```
-
-The ratings vary by the movie and by the user. There is great degree variability in ratings in each genre, movie and for each user.  Furthermore, each user rate movie differently based on the current temperament. Here are some charts showing the variability by genres, movie and user.
-
-```{r,echo=FALSE,fig.width=60, fig.cap ="Variability by genres"}
-library(ggplot2)  # For plotting
-library(png) 
-img_path <- "images/b_g_var.png"
-knitr::include_graphics(img_path)
-```
-
-```{r,echo=FALSE,fig.width=60, fig.cap ="Variability by movie"}
-library(ggplot2)  # For plotting
-library(png) 
-img_path <- "images/b_i_var.png"
-knitr::include_graphics(img_path)
-```
-
-```{r,echo=FALSE,fig.width=60, fig.cap ="Variability by user"}
-library(ggplot2)  # For plotting
-library(png) 
-img_path <- "images/b_u_var.png"
-knitr::include_graphics(img_path)
-```
-
-This indicates that we will need to take into account the bias and penalty due to variability and work towards a solution with lower RMSE. Lets see how we can achieve this.
 
 \newpage
 
 ### Process
 
-The code (ProjGivenCode.R) that is provided in the project downloads the latest ratings and movie dataset (The data are contained in files, movies.dat, and ratings.dat) from grouplens and keeps only those titles which have at least 1 rating. It then splits the original dataset into development and validation datasets. All analysis is done on this development dataset
-
-In order to compute predictions and RMSE, this development dataset is further split 90/10 into training and test sets respectively. Cleaning of the dataset removes NAs and ensure that the data is in tidy form. To make sure we don’t include users and movies in the test set that do not appear in the training set, we remove these entries using the semi_join function. After we create train and test sets, we remove the removed, and temp intermediate data to save space.
+The code DatasetProcessingCode.R downloads the dataset from a convenient location in github (originally downloaded from kaggle) and then unzips it and converts the dataset into a R data frame. It then does extensive cleaning, processing and munging of the data to make it tidy and meaningful for analysis. It then splits the original dataset into training and validation datasets. All analysis is done on this training dataset. Once the training is done the validation is done on the test dataset.
 
 ### Model Creation
 
-The plain model that uses same rating for all movies regardless of the user would be best described with this formula
-
-\[
-\mathit{{Y}_{u,i}} = 
-  \mu + \epsilon_{u,i}
-\]
-
-```{r}
-
-# mu = mean(train_set$rating)
-
-# mu
-
-# [1] 3.512421
-
-```
-
-where \(\mu\) is the observed mean rating. The RMSE for this plain model would be 1.059358
-
-
-```{r}
-
-# naive_rmse = RMSE(test_set$rating,mu)
-
-# naive_rmse
-
-# [1] 1.059358
-
-```
-
-Our goal is to reduce this RMSE to less than 0.86490. Hence we further analyze the impact of other predictors on the rating.
-
-#### Using movie as a predictor  \
+#### Simplest model using random sampling  \
 \
-We now add the predictor movie to the formula as there is great deal of variability in ratings for each movie. We will investigate how the movie itself impacts the rating. Some movies are better that others. Some are box-office hits while others are not.
+We are now going to evaluate various algorithms progressively
 
-We can again use least squares to estimate the bi in the following way,
-
-```{r}
-
-#fit <- lm(rating ~ as.factor(movieId), data = train_set)
-
-#Error: cannot allocate vector of size 643.5 Gb
-```
-
-but because of memory requirements for the caret package, the lm() function will not be able to load the data or will be very slow here if not impossible to run.
-
-We know the least square estimate \(\mathit{\hat{b}_{i}}\) is just the average of \(\mathit{{y}_{u,i} - \hat\mu}\) for each \({i}\)
-
-The prediction rating for movie can be defined as:
-
-\[
-\mathit{{Y}_{u,i}} = 
-  \mu + {b}_{i} + \epsilon_{u,i}
-\]
+We first start with a simple model. We sample randomly for the desired outcome. We then compare it with the actual outcomes and take a mean of the results. The result is 50% which is expected for a binary outcome akin to tossing a coin and getting head or tail
 
 ```{r}
-# b_i_hat <- train_set %>% 
 
-#  group_by(movieId) %>% 
+# > seat_of_the_pants <- sample(c("Above50K", "AtBelow50K"), length(test_index), replace = TRUE) 
 
-#  summarize(b_i = mean(rating - mu_hat))
+#   %>% factor(levels = levels(adultpayclean_validation$income))
+
+# > mean(seat_of_the_pants == adultpayclean_validation$income)
+
+# [1] 0.5010281
+
+# build a confusion matrix for this simple model
+
+# cm <- confusionMatrix(data =seat_of_the_pants , reference = adultpayclean_validation$income)
+
+#             Reference
+# Prediction   Above50K AtBelow50K
+#   Above50K        332       1102
+#   AtBelow50K      386       1098
+                                          
+#                Accuracy : 0.4901          
+#                  95% CI : (0.4718, 0.5084)
+#     No Information Rate : 0.7539          
+#     P-Value [Acc > NIR] : 1               
+                                          
+#                   Kappa : -0.0288         
+                                          
+#  Mcnemar's Test P-Value : <2e-16          
+                                          
+#             Sensitivity : 0.4624          
+#             Specificity : 0.4991          
+#          Pos Pred Value : 0.2315          
+#          Neg Pred Value : 0.7399          
+#              Prevalence : 0.2461          
+#          Detection Rate : 0.1138          
+#    Detection Prevalence : 0.4914          
+#       Balanced Accuracy : 0.4807          
+                                          
+#        'Positive' Class : Above50K  
+
+
+# p <- 0.1
+# n <- length(test_index)
+# y_hat <- sample(c("Above50K", "AtBelow50K"), n, replace = TRUE, prob=c(p, 1-p)) %>% 
+#   factor(levels = levels(adultpayclean_validation$income))
+# mean(y_hat == adultpayclean_validation$income)
+# [1] 0.7076765
+ 
+# p <- 0.9
+# n <- length(test_index)
+# y_hat <- sample(c("Above50K", "AtBelow50K"), n, replace = TRUE, prob=c(p, 1-p)) %>% 
+#   factor(levels = levels(adultpayclean_validation$income))
+# mean(y_hat == adultpayclean_validation$income)
+# [1] 0.2964359
 
 ```
 
-where \(\mu\) is the least square estimate and the term \({b}_{i}\) represents average ranking for movie \({i}\). 
+We then construct the confusion matrix, which basically tabulates each combination of prediction and actual value. We see that the above 50k and at or below 50k are almost evenly distributed with a slightly higher prevalence in the at or below 50k income level.
 
-We can see this improves our prediction rating to 0.943281
+We can verify this by adjusting the probability of our sampling to skew towards above 50k vs at or below 50k and vice-versa.
 
-```{r}
-# predicted_ratings <- mu_hat + test_set %>% 
+Prevalence can result in skewed results. We will keep an eye on the other metrics like sensitivity and specificity in addition to accuracy.In this case low prevalence matches with the expected accuracy.
 
-#  left_join(b_i_hat, by='movieId') %>%
 
-#  pull(b_i)
+Our goal is to improve the accuracy > 80% while keeping sensitivity and specificity under check. Hence we further analyze the impact of other features on the income levels.
 
-#rmse_movie <- RMSE(predicted_ratings, test_set$rating)
-
-#> rmse_movie
-
-#[1] 0.943281
-```
-
-We can now improve on this rating by adding additional predictor user.
-
-#### Using movie and user as predictors  \
+#### Logistic regression using linear models  \
 \
-We could again use lm like this:
+
+We will start with a simple logistic model - linear model. We use the features age, eduyears, sex, race, maritalstatus, relationship and hoursperweek.
 
 ```{r}
-#lm(rating ~ as.factor(movieId) + as.factor(userId))
+
+# lm_fit <- adultpayclean_train %>% 
+
+#     mutate(y = as.numeric(income == "Above50K")) %>%
+
+#     lm(y ~ age + eduyears + sex + race + hoursperweek + maritalstatus + relationship, data=.)
+# 
+# p_hat_logit <- predict(lm_fit, newdata = adultpayclean_validation)
+# 
+# y_hat_logit <- ifelse(p_hat_logit > 0.5, "Above50K", "AtBelow50K") %>% factor
+# 
+# accuracy_lm <- confusionMatrix(y_hat_logit,adultpayclean_validation$income)$overall[["Accuracy"]]
+
+# accuracy_lm 
+
+# [1] 0.8166552
+
+# Confusion Matrix and Statistics
+
+#             Reference
+# Prediction   Above50K AtBelow50K
+#   Above50K        344        161
+#   AtBelow50K      374       2039
+                                          
+#                Accuracy : 0.8167          
+#                  95% CI : (0.8021, 0.8305)
+#     No Information Rate : 0.7539          
+#     P-Value [Acc > NIR] : 2.788e-16       
+                                          
+#                   Kappa : 0.451           
+                                          
+#  Mcnemar's Test P-Value : < 2.2e-16       
+                                          
+#             Sensitivity : 0.4791          
+#             Specificity : 0.9268          
+#          Pos Pred Value : 0.6812          
+#          Neg Pred Value : 0.8450          
+#              Prevalence : 0.2461          
+#          Detection Rate : 0.1179          
+#    Detection Prevalence : 0.1731          
+#       Balanced Accuracy : 0.7030          
+                                          
+#        'Positive' Class : Above50K  
+
 ```
 
-but, for the reasons described earlier, we won’t.
+The accuracy for this model is 0.8167 however, sensitivity is 0.4791 and specificity is 0.9268. This indicates this model has higher ratio of negative outcomes than positive outcomes. Prevalence remains the same. Lets see if we can do better
 
-The prediction rating for movie and user can be defined as:
-
-\[
-\mathit{{Y}_{u,i}} = 
-  \mu + {b}_{i} + {b}_{u} + \epsilon_{u,i}
-\]
-
-where the term \({b}_{i}\) represents average ranking for movie \({i}\) and \({b}_{u}\) represents the average ranking by users. The bias \(\hat{b}_{..}\) is also calculated using the least squared estimates.
-
-The bias \(\hat{b}_{i}\) is calculated using the average of \({y}_{u,i} - \hat\mu\) for each \({i}\), where \({i}\) is the movie.
-
-The bias \(\hat{b}_{u}\) is calculated using the average of \({y}_{u,i} - \hat\mu\ - \hat{b}_{i}\) for each \({i}\), where \({i}\) is the movie and \({u}\) is the user.
-
-\(\epsilon_{u,i}\) is the independent errors sampled from the same distribution centered at 0 and \(\mu\) the observed rating for movies.
-
-The RMSE (Residual Mean Square Error) is the error made in prediction and is defined as:
-
-\[
-\mathit{RMSE} = 
-\sqrt{  \frac{1}{N} \sum_{u,i} (\hat{y}_{u,i}−{y}_{u,i})^2}
-\]
-
-where N is the number of user/movie combinations and the sum occurring over all these combinations and, $y_{u,i}$ is the rating for movie i by user u and the prediction is \(\mathit{\hat{y}_{u,i}}\).
-
-The effect of each error on RMSE is proportional to the size of the squared error;thus larger errors have disproportionately large effect on RMSE. Consequently, RMSE is sensitive to outliers.
-
-We now run the predictions for movie and user.
+We will now experiment with the general linear model (glm). We will be consistent with the features used across all algorithms.
 
 ```{r}
-# b_u_hat <- train_set %>% 
 
-#  left_join(b_i_hat, by='movieId') %>%
+# glm_fit <- adultpayclean_train %>% 
 
-#  group_by(userId) %>%
+# mutate(y = as.numeric(income == "Above50K")) %>%
 
-#  summarize(b_u = mean(rating - mu_hat - b_i))
+# glm(y ~ age + eduyears + sex + race + hoursperweek + maritalstatus + relationship, data=., family = "binomial")
 
-# Calculate the predicted ratings and RMSE for the movieid and user id together
+# p_hat_logit <- predict(glm_fit, newdata = adultpayclean_validation)
 
-#predicted_ratings_w_user <- test_set %>% 
+# y_hat_logit <- ifelse(p_hat_logit > 0.5, "Above50K", "AtBelow50K") %>% factor
 
-#  left_join(b_i_hat, by='movieId') %>%
+# accuracy_glm <- confusionMatrix(y_hat_logit, adultpayclean_validation$income)$overall[["Accuracy"]]
 
-#  left_join(b_u_hat, by='userId') %>%
+# > accuracy_glm
+# [1] 0.8098012
 
-#  mutate(pred = mu_hat + b_i + b_u) %>%
+# Confusion Matrix and Statistics
 
-#  pull(pred)
+#            Reference
 
-#rmse_movie_user <- RMSE(predicted_ratings_w_user, test_set$rating)
+# Prediction   Above50K AtBelow50K
 
-# rmse_movie_user
+#  Above50K        279        116
 
-# [1] 0.8647667
+#  AtBelow50K      439       2084
+                                          
+#               Accuracy : 0.8098          
+
+#                 95% CI : (0.7951, 0.8239)
+
+#    No Information Rate : 0.7539          
+
+#    P-Value [Acc > NIR] : 3.442e-13       
+                                          
+#                  Kappa : 0.3958          
+                                          
+# Mcnemar's Test P-Value : < 2.2e-16       
+                                          
+#            Sensitivity : 0.38858     
+
+#            Specificity : 0.94727    
+
+#         Pos Pred Value : 0.70633     
+
+#         Neg Pred Value : 0.82600    
+
+#             Prevalence : 0.24606     
+
+#         Detection Rate : 0.09561     
+
+#   Detection Prevalence : 0.13537     
+
+#      Balanced Accuracy : 0.66793         
+                                          
+#       'Positive' Class : Above50K  
+       
 ```
 
-We can see that the rating 0.8647667 is already meeting our 0.86490 RMSE goal. However, we do see there is considerable noise when we look at the rating of best and worst movies. In many cases only 1 user rated some movies. Uncertainty in ratings increase with fewer users rating the movie.
+glm produces accuracy of 0.8098, however, specificity is still higher than sensitivity and prevalence about the same. We can do better!
 
 
-```{r,echo=FALSE, fig.retina = 2, fig.cap ="Obscure ratings"}
+```{r}
+
+```
+
+Lets explore k-nearest model now with same feature set. We will use cross-validation to tune the k parameter. By default, the cross validation is performed by taking 25 bootstrap samples comprised of 25% of the observations. For the kNN method, the default is to try k=5,7,9. We change this using the tuneGrid parameter. We will try the k values in the following sequence k = seq(3, 71, 2). Running this code will take several seconds. This is because when we run the algorithm, we will have to compute a distance between each observation in the test set and each observation in the training set. There are a lot of computations. Therefore, we use the trainControl function to make the code above go a bit faster by using, 10-fold cross validation. This means we have 10 samples using 10% of the observations each. We set the seed because cross validation is a random procedure and we want to make sure the result here is reproducible
+
+#### k-nearest neighbors  \
+\
+
+
+```{r}
+
+#temp <- adultpayclean_train %>% 
+
+#  mutate(y = as.factor(income == "Above50K"))
+
+# set.seed(2008)
+
+# control <- trainControl(method = "cv", number = 10, p = .9)
+
+# train_knn <-  train(y ~ age + eduyears + sex + race + hoursperweek + maritalstatus + relationship, method = "knn", 
+#                    data = temp,
+#                    tuneGrid = data.frame(k = seq(3, 71, 2)),trControl = control)
+
+# train_knn$bestTune
+
+# y_hat_knn <- predict(train_knn,adultpayclean_validation, type = "raw")
+
+# accuracy_knn <- confusionMatrix(y_hat_knn, as.factor(adultpayclean_validation$income == "Above50K"))$overall[["Accuracy"]]
+
+# ggplot(train_knn, highlight = TRUE)
+
+# > accuracy_knn
+# [1] 0.8098012
+
+```
+
+The k parameter that lead to maximum accuracy can be obtained by bestTune. The plot for that is shown in the figure "KNN tuning".
+
+```{r,echo=FALSE, fig.retina = 2, fig.cap ="KNN tuning"}
 library(ggplot2)  # For plotting
 library(png) 
-img_path <- "images/Rplot.png"
+img_path <- "images/knntune.png"
 knitr::include_graphics(img_path)
 ```
 
-#### Regularization  \
-\
-Regularization allows us to reduce the noise by penalizing large estimates that are formed using small sample sizes.
-
-The first step in regularization is to choose a penalty term. We do this by calculating user and movie averages with a lambda constant from a sequence of lambda and then calculating RMSEs for each of the chosen lambda. The lowest lambda is then used as the penalty term.
+Here is the confusion matrix for the knn tuned raw model
 
 ```{r}
-# use cross-validation to pick a lambda:
-  
-# lambda <- seq(0, 10, 0.25)
+# Confusion Matrix and Statistics
 
-
-#rmses <- sapply(lambda, function(l){
-
-#  mu <- mean(train$rating)
-  
-#  b_i <- train %>% 
-
-#    group_by(movieId) %>%
-
-#    summarize(b_i = sum(rating - mu)/(n()+l))
-  
-#  b_u <- train %>% 
-
-#    left_join(b_i, by="movieId") %>%
-
-#    group_by(userId) %>%
-
-#    summarize(b_u = sum(rating - b_i - mu)/(n()+l))
-  
-#  predicted_ratings <- 
-
-#    train %>% 
-
-#    left_join(b_i, by = "movieId") %>%
-
-#    left_join(b_u, by = "userId") %>%
-
-#    mutate(pred = mu + b_i + b_u) %>%
-
-#    .$pred
-
-#  return(RMSE(train$rating, predicted_ratings))
-
-#})
-
-#qplot(lambda, rmses)  
+#          Reference
+# Prediction FALSE TRUE
+#     FALSE  1987  342
+#     TRUE    213  376
+                                          
+#               Accuracy : 0.8098          
+#                 95% CI : (0.7951, 0.8239)
+#    No Information Rate : 0.7539          
+#    P-Value [Acc > NIR] : 3.442e-13       
+                                          
+#                  Kappa : 0.4544          
+                                          
+# Mcnemar's Test P-Value : 5.532e-08       
+                                          
+#            Sensitivity : 0.9032          
+#            Specificity : 0.5237          
+#         Pos Pred Value : 0.8532          
+#         Neg Pred Value : 0.6384          
+#             Prevalence : 0.7539          
+#         Detection Rate : 0.6809          
+#   Detection Prevalence : 0.7981          
+#      Balanced Accuracy : 0.7134          
+                                          
+#       'Positive' Class : FALSE 
+       
 ```
 
-This generates a lambda of 4.75
+knn raw model produces same accuracy of 0.8098, however, specificity is lower than sensitivity and prevalence is now 0.753. We now see the positive prediction is better. Balanced accuracy is better. Can we do better with accuracy? 
 
-```{r,echo=FALSE,fig.width=60, fig.cap ="Penalty term"}
+We will now try to use classification with knn3. We will again use different values of k but using map_df function to repeat the above for each one. Running this classification model is going to be slow as it has to iterate through all the k values and find the one that is the highest.
+
+
+```{r}
+
+# ks <- seq(3, 251, 2)
+# knntune <- map_df(ks, function(k){
+  
+#  temp <- adultpayclean_train %>% 
+#    mutate(y = as.factor(income == "Above50K"))
+#  temp_test <- adultpayclean_validation %>% 
+#    mutate(y = as.factor(income == "Above50K"))
+  
+#  knn_fit <- knn3(y ~ age + eduyears + sex + race + hoursperweek + maritalstatus + relationship, data = temp, k = k)
+  
+#  y_hat <- predict(knn_fit, temp, type = "class")
+#  cm_train <- confusionMatrix(y_hat, temp$y)
+#  train_error <- cm_train$overall["Accuracy"]
+  
+#  y_hat <- predict(knn_fit, temp_test, type = "class")
+#  cm_test <- confusionMatrix(y_hat, temp_test$y)
+#  test_error <- cm_test$overall["Accuracy"]
+  
+#  tibble(train = train_error, test = test_error)
+# })
+
+# accuracy_knntune <- max(knntune$test)
+
+# > ks[which.max(knntune$test)]
+# [1] 17
+# > knn_fit <- knn3(y ~ age + eduyears + sex + race + hoursperweek + maritalstatus + relationship, data = temp, k = 17)
+ 
+# > y_hat <- predict(knn_fit, temp, type = "class")
+# >   cm_train <- confusionMatrix(y_hat, temp$y)
+# > cm_train 
+
+# Confusion Matrix and Statistics
+
+#          Reference
+# Prediction FALSE  TRUE
+#     FALSE 18001  2772
+#     TRUE   1798  3681
+                                          
+#               Accuracy : 0.8259          
+
+#                 95% CI : (0.8213, 0.8305)
+#    No Information Rate : 0.7542          
+#    P-Value [Acc > NIR] : < 2.2e-16       
+                                          
+#                  Kappa : 0.5053          
+                                          
+# Mcnemar's Test P-Value : < 2.2e-16       
+                                          
+#            Sensitivity : 0.9092          
+#            Specificity : 0.5704          
+#         Pos Pred Value : 0.8666          
+#         Neg Pred Value : 0.6718          
+#             Prevalence : 0.7542          
+#         Detection Rate : 0.6857          
+#   Detection Prevalence : 0.7913          
+#      Balanced Accuracy : 0.7398          
+                                          
+#       'Positive' Class : FALSE     
+
+```
+
+The accuracy of the knn3 classification is 0.8259 with a sensitivity of 0.9092 and specificity of 0.5704. This is better than the previous models. Prevalence is just about the same as raw knn. Balanced accuracy has improved.
+
+#### Recursive partitioning with rpart  \
+\
+
+Next we use Classification trees, or decision trees. We use the recursive partitioning library rpart for this.
+
+```{r}
+
+# train_rpart <- train(y ~ age + eduyears + sex + race + hoursperweek + maritalstatus + relationship,
+#                     method = "rpart",
+#                     tuneGrid = data.frame(cp = seq(0.0, 0.1, len = 25)),
+#                     data = temp)
+
+# y_hat <- predict(train_rpart,adultpayclean_validation)
+# accuracy_rpart <- confusionMatrix(y_hat, as.factor(adultpayclean_validation$income  == "Above50K"))$overall["Accuracy"]
+
+# accuracy_rpart 
+# Accuracy 
+# 0.8211103 
+
+# Confusion Matrix and Statistics
+
+#          Reference
+# Prediction FALSE TRUE
+#     FALSE  2002  324
+#     TRUE    198  394
+                                          
+#               Accuracy : 0.8211          
+#                 95% CI : (0.8067, 0.8349)
+#    No Information Rate : 0.7539          
+#    P-Value [Acc > NIR] : < 2.2e-16       
+                                          
+#                  Kappa : 0.4876          
+                                          
+# Mcnemar's Test P-Value : 4.472e-08       
+                                          
+#            Sensitivity : 0.9100          
+#            Specificity : 0.5487          
+#         Pos Pred Value : 0.8607          
+#         Neg Pred Value : 0.6655          
+#             Prevalence : 0.7539          
+#         Detection Rate : 0.6861          
+#   Detection Prevalence : 0.7971          
+#      Balanced Accuracy : 0.7294          
+                                          
+#       'Positive' Class : FALSE 
+
+```
+
+The accuracy of recursive partitioning is 0.8211, sensitivity is higher at 0.91 and specificity is at 0.5487 with slightly lower prevalence. Balanced accuracy is slightly lower. Between rpart and knn3 classification it appears knn3 looks better as the confidence intervals for above 50k is higher when compared to rpart.
+
+```{r,echo=FALSE,fig.retina = 2, fig.cap =""}
 library(ggplot2)  # For plotting
 library(png) 
-img_path <- "images/penaltyterms.png"
+img_path <- "images/"
 knitr::include_graphics(img_path)
 ```
 
-We then use this to compute the regularized ratings and RMSE
+
+
+#### Random forests  \
+\
+
+
+Classification trees have certain advantages that make them very useful. They are highly interpretable, even more so than linear models. They are easy to visualize (if small enough). Finally, they can model human decision processes and don’t require use of dummy predictors for categorical variables. On the other hand, the approach via recursive partitioning can easily over-train and is therefore a bit harder to train than, for example, linear regression or kNN. Furthermore, in terms of accuracy, it is rarely the best performing method since it is not very flexible and is highly unstable to changes in training data. Random forests, explained next, improve on several of these shortcomings.
+
+The first step is bootstrap aggregation or bagging. The general idea is to generate many predictors, each using regression or classification trees, and then forming a final prediction based on the average prediction of all these trees.
 
 ```{r}
-# compute these regularized estimates for movie and user effect
+#train_rf <- randomForest(y ~ age + eduyears + sex + race + hoursperweek + maritalstatus + relationship, data=temp)
 
-#mu_hat <- mean(train_set$rating)
-
-#b_i_hat <- train_set %>% 
-
-#  group_by(movieId) %>% 
-
-#  summarize(b_i = sum(rating - mu_hat)/(n()+lambda), n_i = n()) 
+#accuracy_rf <- confusionMatrix(predict(train_rf, adultpayclean_validation),
+#                as.factor(adultpayclean_validation$income  == "Above50K"))$overall["Accuracy"]
 
 
-#b_u_hat <- train_set %>% 
+# > accuracy_rf
+# Accuracy 
+# 0.8235093 
 
-#  left_join(b_i_hat, by='movieId') %>%
+# Confusion Matrix and Statistics
 
-#  group_by(userId) %>%
+#          Reference
+# Prediction FALSE TRUE
+#     FALSE  2016  331
+#     TRUE    184  387
+                                          
+#               Accuracy : 0.8235          
+#                 95% CI : (0.8092, 0.8372)
+#    No Information Rate : 0.7539          
+#    P-Value [Acc > NIR] : < 2.2e-16       
+                                          
+#                  Kappa : 0.4891          
+                                          
+# Mcnemar's Test P-Value : 1.247e-10       
+                                          
+#            Sensitivity : 0.9164          
+#            Specificity : 0.5390          
+#         Pos Pred Value : 0.8590          
+#         Neg Pred Value : 0.6778          
+#             Prevalence : 0.7539          
+#         Detection Rate : 0.6909          
+#   Detection Prevalence : 0.8043          
+#      Balanced Accuracy : 0.7277          
+                                          
+#       'Positive' Class : FALSE  
 
-#  summarize(b_u = sum(rating - mu_hat - b_i)/(n()+lambda), n_i = n()) 
-
-# Compute the predictions and RMSE using regularized estimates
-
-#predicted_ratings_regularized <- test_set %>% 
-
-#  left_join(b_i_hat, by = "movieId") %>%
-
-#  left_join(b_u_hat, by = "userId") %>%
-
-#  mutate(pred = mu_hat + b_i  + b_u) %>%
-
-#  pull(pred)
-
-#rmse_movie_user_regularized <- RMSE(predicted_ratings_regularized, #test_set$rating)
 ```
 
-This prevents obscure movies and improves the RMSE to 0.86464. The last step is to validate the results with the validation set. This gives us a final rating of 0.86466 that matches with our results. Goal achieved!
+The accuracy of random forest is at 0.8235, sensitivity is at 0.9164 and specificity is at 0.5390. Prevalence is about the same when compared to knn and rpart classification models. The confidence intervals of KNN classification is still better than vanilla random forest model. 
+
+Lets tune this model just like the KNN3 classification and see if we can do better.
+
+```{r}
+
+# nodesize <- seq(1, 51, 10)
+# acc <- sapply(nodesize, function(ns){
+#  train(y ~ age + eduyears + sex + race + hoursperweek + maritalstatus + relationship, method = "rf", data = temp,
+#        tuneGrid = data.frame(mtry = 2),
+#        nodesize = ns)$results$Accuracy
+# })
+
+# qplot(nodesize, acc)
+
+# train_rf_2 <- randomForest(y ~ age + eduyears + sex + race + hoursperweek + maritalstatus + relationship, data=temp,
+#                           nodesize = nodesize[which.max(acc)])
+
+# y_hat_rf2 <- predict(train_rf_2, adultpayclean_validation)
+
+# accuracy_rftune <- confusionMatrix(predict(train_rf_2, adultpayclean_validation),
+#                as.factor(adultpayclean_validation$income  == "Above50K"))$overall["Accuracy"]
+
+
+# > accuracy_rftune
+# Accuracy 
+# 0.8241947
+
+# Confusion Matrix and Statistics
+
+#           Reference
+# Prediction FALSE TRUE
+#     FALSE  2025  338
+#     TRUE    175  380
+                                          
+#               Accuracy : 0.8242          
+#                 95% CI : (0.8099, 0.8378)
+#    No Information Rate : 0.7539          
+#    P-Value [Acc > NIR] : < 2.2e-16       
+                                          
+#                  Kappa : 0.4869          
+                                          
+# Mcnemar's Test P-Value : 8.523e-13       
+                                          
+#            Sensitivity : 0.9205          
+#            Specificity : 0.5292          
+#         Pos Pred Value : 0.8570          
+#         Neg Pred Value : 0.6847          
+#             Prevalence : 0.7539          
+#         Detection Rate : 0.6940          
+#   Detection Prevalence : 0.8098          
+#      Balanced Accuracy : 0.7249          
+                                          
+#       'Positive' Class : FALSE  
+       
+```
+
 
 # Results
 
 ```{r echo=FALSE, warning=FALSE, regfloat=FALSE}
-library(tidyverse)
-library(kableExtra)
-rmse_results <- matrix( c("Just the movie",0.943035,
-                             "Movie and User", 0.8652,
-                             "Movie and User regularized", 0.864649,
-                             "Regularized RMSE final test", 0.86466
-                          ), 
-                           nrow = 4, ncol=2, byrow=TRUE, 
-                           dimnames=list(c("a.","b.","c.","d."),c("method","RMSE")))
-                           
-rmse_results %>% knitr::kable() %>% kable_styling(bootstrap_options = c("striped", "hover"))
+
+# accuracy_results <- matrix( c("Plain old guess", round(accuracy_guess,5), round(sensitivity_guess,5), round(specificity_guess,5),round(prevalence_guess,5),
+
+#                    "linear model", round(accuracy_lm,5),round(sensitivity_lm,5), round(specificity_lm,5), round(prevalence_lm,5),
+
+#                    "General linear model", round(accuracy_glm,5),round(sensitivity_glm,5), round(specificity_glm,5), round(prevalence_glm,5),
+
+#                    "knn", round(accuracy_knn,5),round(sensitivity_knn,5), round(specificity_knn,5), round(prevalence_knn,5),
+
+#                    "knn3", round(accuracy_knn3,5),round(sensitivity_knn3,5), round(specificity_knn3,5), round(prevalence_knn3,5),
+
+#                    "knn tune", round(accuracy_knntune,5),round(sensitivity_knntune,5), round(specificity_knntune,5), round(prevalence_knntune,5),
+
+#                    "rpart", round(accuracy_rpart,5),round(sensitivity_rpart,5), round(specificity_rpart,5), round(prevalence_rpart,5),
+
+#                    "rf", round(accuracy_rf,5),round(sensitivity_rf,5), round(specificity_rf,5), round(prevalence_rf,5),
+
+#                    "rf tune", round(accuracy_rftune,5)round(sensitivity_rf2,5), round(specificity_rf2,5), round(prevalence_rf2,5)
+
+#), nrow = 9, ncol=2, byrow=TRUE, 
+
+#dimnames=list(c("1.","2.","3.","4.","5.","6.","7.","8.","9."),c("Method","Accuracy")))
+
+# accuracy_results %>% knitr::kable() %>%  
+
+#  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+
 ```
 
-To summarize the approach is to work on a smaller training set, compute the least squared estimates ratings for the just the movie and then add the variability of user bias. The resulting RMSE is tuned further by regularizing the model. Regularization improved the RMSE estimates by reducing noisy estimates that cannot be trusted. Regularization permitted us to penalize large estimates that are formed using small sample sizes
 
-Above is the tabulated summary of all the RMSEs for the different methods.
 
 # Conclusion
 
-The MovieLens dataset is very long, so we train models using average approximation of least square and processed within the available RAM in personal machine. To improve precision, we would need to use knn, glm, lm or such training algorithms from caret package.
 
-The ratings in the MovieLens dataset have a varying degree of variability by genre, movie and the user. There is some degree of noise in the dataset.
-
-However, I was able to use least square estimates algorithm to predict the ratings based on movie and user variability within the requested RMSE parameters. The RMSE improved further with regularization. The **final RMSE 0.86466** is below our target RMSE 0.86499
-
-There are additional predictors like movie age that can been explored to further improve the accuracy of the model. Additionally, methods such as matrix factorization using the recosystem package could be utilized to provide significant improvements in the RMSE. More advanced models featuring principal component analysis (PCA) and Singular Value Decomposition (SVD) generate higher levels of accuracy, though they are also far more computationally intensive
 
 ### Appendix A - Complete code
 
-```{r echo=TRUE,tidy=TRUE, tidy.opts=list(comment=TRUE), code=readLines('MovieLens.R')}
+```{r echo=TRUE,tidy=TRUE, tidy.opts=list(comment=TRUE), code=readLines('CensusPay.R')}
 
 ```
 
@@ -529,4 +850,5 @@ https://leanpub.com/datasciencebook↩︎
 
 Irizarry, Rafael A., “Introduction to Data Science: Data Analysis and Prediction Algorithms in R” https://rafalab.github.io/dsbook/
 
-F. Maxwell Harper and Joseph A. Konstan. 2015. The MovieLens Datasets: History and Context. ACM Transactions on Interactive Intelligent Systems (TiiS) 5, 4, Article 19 (December 2015), 19 pages. DOI=http://dx.doi.org/10.1145/2827872
+ML-Friendly kaggle dataset for adult census income
+https://www.kaggle.com/uciml/adult-census-income
