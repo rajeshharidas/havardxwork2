@@ -18,10 +18,6 @@ library(kableExtra)
 library(randomForest)
 library(purrr)
 
-# create a function that computes the RMSE for vectors of ratings and their corresponding predictors:
-RMSE <- function(true_ratings, predicted_ratings){
-  sqrt(mean((true_ratings - predicted_ratings)^2))
-}
 
 set.seed(1996, sample.kind = "Rounding")
 
