@@ -103,10 +103,15 @@ We will choose 13 attributes, income being be the outcome and the rest 12 attrib
 ```{r}
 
 # > dim(adultpayclean)
+
 # [1] 29170    13
+
 # > dim(adultpayclean_train)
+
 # [1] 26252    13
+
 # > dim(adultpayclean_validation)
+
 # [1] 2918   13
 
 
@@ -118,13 +123,21 @@ This is a classification problem and the outcome is binary (income above 50K or 
 #summary(adultpayclean)
 
 #      age            fnlwgt              education       eduyears                 maritalstatus  
+
 # Min.   :17.00   Min.   :  12285   HSgrad     :9702   Min.   : 1.00   Divorced           : 4162  
-# 1st Qu.:28.00   1st Qu.: 115895   Somecollege:6740   1st Qu.: 9.00   MarriedAFspouse    :   23  
-# Median :37.00   Median : 176730   Bachelors  :4766   Median :10.00   Marriedcivspouse   :13368  
-# Mean   :38.66   Mean   : 187069   Masters    :1527   Mean   :10.17   Marriedspouseabsent:  253  
+
+# 1st Qu.:28.00   1st Qu.: 115895   Somecollege:6740   1st Qu.: 9.00   MarriedAFspouse    :   23 
+
+# Median :37.00   Median : 176730   Bachelors  :4766   Median :10.00   Marriedcivspouse   :13368 
+
+# Mean   :38.66   Mean   : 187069   Masters    :1527   Mean   :10.17   Marriedspouseabsent:  253 
+
 # 3rd Qu.:48.00   3rd Qu.: 234139   Assocvoc   :1289   3rd Qu.:12.00   Nevermarried       : 9579  
-# Max.   :90.00   Max.   :1484705   11th       :1067   Max.   :16.00   Separated          :  883  
+
+# Max.   :90.00   Max.   :1484705   11th       :1067   Max.   :16.00   Separated          :  883 
+
 #                                   (Other)    :4079                   Widowed            :  902  
+
 #          occupation          relationship                   race           sex         hoursperweek  
 # Execmanagerial:3735   Husband      :11861   Amer-Indian-Eskimo:  296   Female: 9682   Min.   : 1.00  
 # Profspecialty :3693   Notinfamily  : 7528   Asian-Pac-Islander:  292   Male  :19488   1st Qu.:40.00  
@@ -134,12 +147,19 @@ This is a classification problem and the outcome is binary (income above 50K or 
 # Otherservice  :2777   Wife         : 1361                                             Max.   :99.00  
 # (Other)       :8467                                                                                  
 #    native                 income                class      
+
 # Length:29170       Above50K  : 7171   Private      :20135  
+
 # Class :character   AtBelow50K:21999   Selfempnotinc: 2313  
+
 # Mode  :character                      Localgov     : 1956  
-#                                       Unknown      : 1659  
+
+#                                       Unknown      : 1659 
+
 #                                       Stategov     : 1210  
+
 #                                       Selfempinc   :  991  
+
 #                                       (Other)      :  906  
 
 ```
@@ -205,81 +225,92 @@ The adult pay dataset from census bureau is a ML ready database. For convenience
 
 After performing this cleaning we see 29170 rows and 13 columns. We further analyze the makeup of the categorical columns
 
-
-
-```{r}
-
-# table(adultpayclean$education)
-#
-#       10th        11th        12th      1st4th      5th6th      7th8th         9th    Assocacdm
-
-#        848        1067         365          46          97         499         395        982  
-#         
-#    Assocvoc   Bachelors   Doctorate      HSgrad     Masters   Preschool  Profschool  Somecollege 
-
-#       1289        4766         328        9702        1527          17         502        6740 
-
-
-# table(adultpayclean$maritalstatus)
-#
-#    Divorced     MarriedAFspouse    Marriedcivspouse Marriedspouseabsent    Nevermarried   Separated 
-
-#      4162            23               13368                 253                9579         883 
-#
-#    Widowed 
-
-#      902
-      
-# table (adultpayclean$occupation)
-#
-#     Admclerical      ArmedForces      Craftrepair   Execmanagerial   Farmingfishing Handlerscleaners  Machineopinspct 
-
-#            3449                9             3685             3735              879             1189             1687 
-
-#    Otherservice    Privhouseserv    Profspecialty   Protectiveserv            Sales      Techsupport  Transportmoving 
-
-#            2777               90             3693              606             3364              850             1491 
-
-#         Unknown 
-
-#            1666
-
-# table(adultpayclean$relationship)
-#
-#      Husband   Notinfamily Otherrelative      Ownchild     Unmarried          Wife 
-
-#        11861          7528           696          4691          3033          1361 
-
-# table(adultpayclean$race)
-#
-# Amer-Indian-Eskimo Asian-Pac-Islander              Black              Other              White 
-
-#               296                292               2832                129              25621 
-#
-# table(adultpayclean$sex)
-#
-# Female   Male 
-
-#  9682  19488 
-#
-# table(adultpayclean$class)
-#
-#   Federalgov      Localgov   Neverworked       Private    Selfempinc Selfempnotinc      Stategov       Unknown    Withoutpay 
-
-#          886          1956             7         20135           991          2313          1210          1659            13 
-            
+```{r,echo=FALSE,fig.retina = 2, fig.cap ="Education"}
+library(ggplot2)  # For plotting
+library(png) 
+img_path <- "images/edufreqbar.png"
+knitr::include_graphics(img_path)
+```
+```{r,echo=FALSE,fig.retina = 2, fig.cap ="Education tabular"}
+library(ggplot2)  # For plotting
+library(png) 
+img_path <- "images/edufreqtab.png"
+knitr::include_graphics(img_path)
+```
+```{r,echo=FALSE,fig.retina = 2, fig.cap ="Race"}
+library(ggplot2)  # For plotting
+library(png) 
+img_path <- "images/racebarch.png"
+knitr::include_graphics(img_path)
+```
+```{r,echo=FALSE,fig.retina = 2, fig.cap ="Race tabular"}
+library(ggplot2)  # For plotting
+library(png) 
+img_path <- "images/racetab.png"
+knitr::include_graphics(img_path)
+```
+```{r,echo=FALSE,fig.retina = 2, fig.cap ="Marital Status"}
+library(ggplot2)  # For plotting
+library(png) 
+img_path <- "images/maritalstatusbar.png"
+knitr::include_graphics(img_path)
+```
+```{r,echo=FALSE,fig.retina = 2, fig.cap ="Marital Status tabular"}
+library(ggplot2)  # For plotting
+library(png) 
+img_path <- "images/maritalstatustab.png"
+knitr::include_graphics(img_path)
+```
+```{r,echo=FALSE,fig.retina = 2, fig.cap ="Relationship"}
+library(ggplot2)  # For plotting
+library(png) 
+img_path <- "images/relationshipbar.png"
+knitr::include_graphics(img_path)
+```
+```{r,echo=FALSE,fig.retina = 2, fig.cap ="Relationship tabular"}
+library(ggplot2)  # For plotting
+library(png) 
+img_path <- "images/relationshipbar.png"
+knitr::include_graphics(img_path)
+```
+```{r,echo=FALSE,fig.retina = 2, fig.cap ="Sex"}
+library(ggplot2)  # For plotting
+library(png) 
+img_path <- "images/sexbarch.png"
+knitr::include_graphics(img_path)
+```
+```{r,echo=FALSE,fig.retina = 2, fig.cap ="Sex tabular"}
+library(ggplot2)  # For plotting
+library(png) 
+img_path <- "images/sextabr.png"
+knitr::include_graphics(img_path)
+```
+```{r,echo=FALSE,fig.retina = 2, fig.cap ="Occupation"}
+library(ggplot2)  # For plotting
+library(png) 
+img_path <- "images/occupationbar.png"
+knitr::include_graphics(img_path)
+```
+```{r,echo=FALSE,fig.retina = 2, fig.cap ="Occupation tabular"}
+library(ggplot2)  # For plotting
+library(png) 
+img_path <- "images/occupationtab.png"
+knitr::include_graphics(img_path)
+```
+```{r,echo=FALSE,fig.retina = 2, fig.cap ="Class"}
+library(ggplot2)  # For plotting
+library(png) 
+img_path <- "images/classbar.png"
+knitr::include_graphics(img_path)
+```
+```{r,echo=FALSE,fig.retina = 2, fig.cap ="Class tabular"}
+library(ggplot2)  # For plotting
+library(png) 
+img_path <- "images/classtab.png"
+knitr::include_graphics(img_path)
 ```
 
 As shown above the occupation and class columns have more than 1600 Unknown data. Adding this to the predictor columns could skew the predictions and introduce errors. We will exclude this from our list of predictors. The final list of predictors/features used to predict the outcome income level are age, education, years of education (a.ka. eduyears), maritalstatus, relationship,race, sex, and hoursperweek.
-
-
-```{r,echo=FALSE,fig.retina = 2, fig.cap =""}
-library(ggplot2)  # For plotting
-library(png) 
-img_path <- ""
-#knitr::include_graphics(img_path)
-```
-
 
 
 \newpage

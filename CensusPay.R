@@ -1,15 +1,27 @@
 ## @knitr CensusPayR
 
+#Note: This script will take a while to run. In particular the knn and random forest algorithms with tuning grids will take
+# more time. please be patient if you happen to execute it. The execution report is available in the github location as well
+
 # Execute the given source code for the project
 source("DatasetProcessingCode.R")
 
 if (!require(randomForest))
   install.packages("randomForest", repos = "http://cran.us.r-project.org")
 
+if (!require(purrr))
+  install.packages("purrr", repos = "http://cran.us.r-project.org")
+
 library(caret)
 library(gridExtra)
 library(kableExtra)
 library(randomForest)
+library(purrr)
+
+# create a function that computes the RMSE for vectors of ratings and their corresponding predictors:
+RMSE <- function(true_ratings, predicted_ratings){
+  sqrt(mean((true_ratings - predicted_ratings)^2))
+}
 
 set.seed(1996, sample.kind = "Rounding")
 
@@ -58,6 +70,8 @@ cm_lm <-
 accuracy_lm <-
   confusionMatrix(y_hat_logit, adultpayclean_validation$income)$overall[["Accuracy"]]
 
+cm_lm
+
 #record the sensitivity, specificity, and prevalence
 sensitivity_lm <- cm_lm$byClass[["Sensitivity"]]
 specificity_lm <- cm_lm$byClass[["Specificity"]]
@@ -85,6 +99,8 @@ cm_glm <-
   confusionMatrix(y_hat_logit, adultpayclean_validation$income)
 accuracy_glm <-
   confusionMatrix(y_hat_logit, adultpayclean_validation$income)$overall[["Accuracy"]]
+
+cm_glm
 
 #record the sensitivity, specificity, and prevalence
 sensitivity_glm <- cm_glm$byClass[["Sensitivity"]]
@@ -126,6 +142,8 @@ cm_knn <-
 accuracy_knn <-
   confusionMatrix(y_hat_knn,
                   as.factor(adultpayclean_validation$income == "Above50K"))$overall[["Accuracy"]]
+
+cm_knn
 
 #record the sensitivity, specificity, and prevalence
 sensitivity_knn <- cm_knn$byClass[["Sensitivity"]]
@@ -174,6 +192,8 @@ knn_fit <-
 y_hat <- predict(knn_fit, temp, type = "class")
 cm_knntune <- confusionMatrix(y_hat, temp$y)
 
+cm_knntune
+
 #record the sensitivity, specificity, and prevalence
 sensitivity_knntune <- cm_knntune$byClass[["Sensitivity"]]
 specificity_knntune <- cm_knntune$byClass[["Specificity"]]
@@ -196,6 +216,8 @@ cm_knn3 <-
 accuracy_knn3 <-
   confusionMatrix(y_hat_knn3,
                   as.factor(adultpayclean_validation$income  == "Above50K"))$overall["Accuracy"]
+
+cm_knn3
 
 #record the sensitivity, specificity, and prevalence
 sensitivity_knn3 <- cm_knn3$byClass[["Sensitivity"]]
@@ -224,6 +246,7 @@ accuracy_rpart <-
   confusionMatrix(y_hat,
                   as.factor(adultpayclean_validation$income  == "Above50K"))$overall["Accuracy"]
 
+cm_rpart
 #record the sensitivity, specificity, and prevalence
 sensitivity_rpart <- cm_rpart$byClass[["Sensitivity"]]
 specificity_rpart <- cm_rpart$byClass[["Specificity"]]
@@ -247,6 +270,8 @@ accuracy_rf <-
     predict(train_rf, adultpayclean_validation),
     as.factor(adultpayclean_validation$income  == "Above50K")
   )$overall["Accuracy"]
+
+cm_rf
 
 #record the sensitivity, specificity, and prevalence
 sensitivity_rf <- cm_rf$byClass[["Sensitivity"]]
@@ -288,6 +313,8 @@ accuracy_rftune <-
     predict(train_rf_2, adultpayclean_validation),
     as.factor(adultpayclean_validation$income  == "Above50K")
   )$overall["Accuracy"]
+
+cm_rf2
 
 #record the sensitivity, specificity, and prevalence
 sensitivity_rf2 <- cm_rf2$byClass[["Sensitivity"]]

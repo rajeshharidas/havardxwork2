@@ -6,16 +6,24 @@
 
 if (!require(tidyverse))
   install.packages("tidyverse", repos = "http://cran.us.r-project.org")
+
 if (!require(caret))
   install.packages("caret", repos = "http://cran.us.r-project.org")
+
 if (!require(data.table))
   install.packages("data.table", repos = "http://cran.us.r-project.org")
-if (!require(dply))
-  install.packages("dply", repos = "http://cran.us.r-project.org")
+
+if (!require(dplyr))
+  install.packages("dplyr", repos = "http://cran.us.r-project.org")
+
 if (!require(gridExtra))
   install.packages("gridExtra", repos = "http://cran.us.r-project.org")
+
 if (!require(kableExtra))
   install.packages("kableExtra", repos = "http://cran.us.r-project.org")
+
+if (!require(epiDisplay))
+  install.packages("epiDisplay")
 
 
 library(tidyverse)
@@ -24,7 +32,7 @@ library(data.table)
 library(dplyr)
 library(gridExtra)
 library(kableExtra)
-
+library(epiDisplay)
 
 # Adult Census Income
 # https://www.kaggle.com/uciml/adult-census-income
@@ -66,7 +74,7 @@ adultpay <-
 adultpayclean <-
   adultpay %>% filter (native.country == 'United-States') %>%
   mutate (class = ifelse(workclass == '?', 'Unknown', str_replace_all(workclass, "-", ""))) %>%
-  select(-workclass, -capital.gain, -capital.loss) %>%
+  dplyr::select(-workclass, -capital.gain, -capital.loss) %>%
   rename(
     c(
       eduyears = education.num,
@@ -148,3 +156,10 @@ tribble(
   "train",          nrow(adultpayclean_train),        ncol(adultpayclean_train),
   "validation",   nrow(adultpayclean_validation),     ncol(adultpayclean_validation)
 ) %>% knitr::kable() %>% kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+
+tab1(adultpayclean$education, sort.group = "decreasing", cum.percent = TRUE)
+tab1(adultpayclean$race, sort.group = "decreasing", cum.percent = TRUE)
+tab1(adultpayclean$maritalstatus, sort.group = "decreasing", cum.percent = TRUE)
+tab1(adultpayclean$sex, sort.group = "decreasing", cum.percent = TRUE)
+tab1(adultpayclean$relationship, sort.group = "decreasing", cum.percent = TRUE)
+tab1(adultpayclean$class, sort.group = "decreasing", cum.percent = TRUE)
