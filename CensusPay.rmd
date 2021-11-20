@@ -49,7 +49,7 @@ The following files (3 types) are included in the upload:
 \tableofcontents
 \listoffigures
 
-# Introduction to Census pay predictions
+# Introduction to Census income level predictions
 
 The Current Population Survey (CPS), sponsored jointly by the U.S. Census Bureau and the U.S. Bureau of Labor Statistics (BLS), is the primary source of labor force statistics for the population of the United States. The adult census income data was extracted from the 1994 Census bureau database by Ronny Kohavi and Barry Becker (Data Mining and Visualization, Silicon Graphics).
 
@@ -57,7 +57,7 @@ This machine learning project uses the adult census income data to predict annua
 
 More information can be found at https://www.kaggle.com/uciml/adult-census-income.
 
-In this project for the Capstone course of the HarvardX Professional Certificate in Data Science (PH125.9x), we will explore the adult census income data set. The objective will be to analyze and model based on the classification of incomes and develop a machine-learning model by creating training and test sets to predict income levels on a validation set with accuracy of more than 80%
+In this project for the Capstone course of the HarvardX Professional Certificate in Data Science (PH125.9x), we will explore the adult census income data set. The objective will be to analyze and model based on the classification of incomes and develop a machine-learning model by creating, training and test sets to predict income levels on a validation set with accuracy of more than 80% and a reasonable sensitivity and specificity
 
 Here is a glimpse of adultpay dataset. The columns that are of interest are income, age, sex, education.num, education, race, marital.status, relationship, workclass, hours.per.week and occupation. There are 32,561 rows and 13 columns
 
@@ -98,7 +98,7 @@ Here is a glimpse of adultpay dataset. The columns that are of interest are inco
 
 We will start with data exploration and cleaning unwanted data and processing. Then we will mimic the ultimate evaluation process by splitting the data into two parts - training and validation and act as if we don’t know the outcome for one of these. We will split the dataset once we cleaned and processed the dataset. We want the test set to be large enough so that we obtain a stable prediction without fitting an impractical number of models. We will then progressively apply various algorithms on the training set and test the predictions on the test set and improve on the overall accuracy.
 
-We will choose 13 attributes, income being be the outcome and the rest 12 attributes being the predictors. Looking at the dimensions we will randomly choose 10% of the dataset to be the test set and remaining 90% will be the training set. 90% is sizable enough to run various algorithms like lm, glm, knn, random forest with some tuning.
+We will choose 13 attributes, income being be the outcome and the rest 12 attributes being the predictors or features. Looking at the dimensions we will randomly choose 10% of the dataset to be the test set and remaining 90% will be the training set. 90% is sizable enough to run various algorithms like lm, glm, knn, random forest with some tuning.
 
 ```{r}
 
@@ -112,7 +112,7 @@ We will choose 13 attributes, income being be the outcome and the rest 12 attrib
 
 ```
 
-This is a classification problem and the outcome is binary (income above 50K or at or below 50k).On reviewing the summary of the dataset we have a choice of predictors. We will keep only USA specific data. Almost all of the predictors have data spread out.
+This is a classification problem and the outcome is binary (income above 50K or at or below 50k).On reviewing the summary of the dataset we have a choice of predictors. We will keep only USA specific data. Almost all of the predictors have data spread out.There is sufficient degree of variability.
 
 ```{r}
 #summary(adultpayclean)
@@ -148,14 +148,14 @@ So we begin...
 
 # Analysis
 
-### Data Exploration, cleaning, processing and feature engineering
+### Data Exploration, cleaning, processing and, feature engineering
 
 The adult pay dataset from census bureau is a ML ready database. For convenience, I have downloaded it from kaggle and stored in the same github repository as this code and markdown. The dataset is in zip format and is downloaded from https://github.com/rajeshharidas/havardxwork2/blob/main/adult.csv.zip. Then it is read into a data frame. The data is ML ready for the most part. However, there are some additional cleaning tasks needed before using the dataset. This processing is done in DatasetProcessingCode.R file. Code fragment is shown below. We perform the following cleaning tasks
 
 1) Filter to keep only USA data
 2) Remove all ? marks data from all the columns
-3) Remove intermediate and columns that are not used in the project
-4) Rename columns to exclude non-aphanumeric characters
+3) Remove intermediate columns and columns that are not used in the project
+4) Rename columns to exclude non-alphanumeric characters
 5) convert character labels to factors
 
 
@@ -270,14 +270,14 @@ After performing this cleaning we see 29170 rows and 13 columns. We further anal
             
 ```
 
-As shown above the occupation and class columns have more than 1600 Unknown data. Adding this to the predictor column could skew the predictions and introduce errors. We will exclude this from our list of predictors. The final list of predictors/features used to predict the outcome income level are age, education, years of education (a.ka. eduyears), maritalstatus, relationship,race, sex, and hoursperweek.
+As shown above the occupation and class columns have more than 1600 Unknown data. Adding this to the predictor columns could skew the predictions and introduce errors. We will exclude this from our list of predictors. The final list of predictors/features used to predict the outcome income level are age, education, years of education (a.ka. eduyears), maritalstatus, relationship,race, sex, and hoursperweek.
 
 
 ```{r,echo=FALSE,fig.retina = 2, fig.cap =""}
 library(ggplot2)  # For plotting
 library(png) 
 img_path <- ""
-knitr::include_graphics(img_path)
+#knitr::include_graphics(img_path)
 ```
 
 
@@ -288,13 +288,43 @@ knitr::include_graphics(img_path)
 
 The code DatasetProcessingCode.R downloads the dataset from a convenient location in github (originally downloaded from kaggle) and then unzips it and converts the dataset into a R data frame. It then does extensive cleaning, processing and munging of the data to make it tidy and meaningful for analysis. It then splits the original dataset into training and validation datasets. All analysis is done on this training dataset. Once the training is done the validation is done on the test dataset.
 
+The caret package includes the function createDataPartition that helps us generates indexes for randomly splitting the data into training and test sets. The argument times is used to define how many random samples of indexes to return, the argument p is used to define what proportion of the data is represented by the index, and the argument list is used to decide if we want the indexes returned as a list or not. We can use the test_index from the createDataPartition function call to define the training and test sets.
+
+```{r}
+# set.seed(1, sample.kind = "Rounding") # if using R 3.5 or earlier, use `set.seed(1)`
+# test_index <-
+#  createDataPartition(
+#    y = adultpayclean$income,
+#    times = 1,
+#    p = 0.1,
+#    list = FALSE
+#  )
+# adultpayclean_train <- adultpayclean[-test_index, ]
+# adultpayclean_validation <- adultpayclean[test_index, ]
+
+#dim(adultpayclean)
+#dim(adultpayclean_train)
+#dim(adultpayclean_validation)
+
+# > dim(adultpayclean)
+# [1] 29170    13
+# > dim(adultpayclean_train)
+# [1] 26252    13
+# > dim(adultpayclean_validation)
+# [1] 2918   13
+
+```
+
+We then develop an algorithm using only the training set. Once we are done developing the algorithm, we then freeze it and evaluate it using the test set. The simplest way to evaluate the algorithm for the adultpay dataset is by simply reporting the proportion of cases that were correctly predicted in the test set. This metric is referred to as overall accuracy.
+
+
 ### Model Creation
 
 #### Simplest model using random sampling  \
 \
 We are now going to evaluate various algorithms progressively
 
-We first start with a simple model. We sample randomly for the desired outcome. We then compare it with the actual outcomes and take a mean of the results. The result is 50% which is expected for a binary outcome akin to tossing a coin and getting head or tail
+We first start with a simple model. We sample randomly for the desired outcome. We then compare it with the actual outcomes and take a mean of the results. The result is 50% which is expected for guessing a binary outcome. Its akin to tossing a coin and getting head or tail. The chances are 50/50.
 
 ```{r}
 
@@ -681,7 +711,7 @@ The accuracy of recursive partitioning is 0.8211, sensitivity is higher at 0.91 
 library(ggplot2)  # For plotting
 library(png) 
 img_path <- "images/"
-knitr::include_graphics(img_path)
+#knitr::include_graphics(img_path)
 ```
 
 
@@ -790,6 +820,8 @@ Lets tune this model just like the KNN3 classification and see if we can do bett
 #       'Positive' Class : FALSE  
        
 ```
+
+The accuracy of random forest with tuning is at 0.8242, sensitivity is at 0.9205 and specificity is at 0.5292. Prevalence is about the same when compared to knn and rpart classification models. The confidence intervals of KNN classification is still better than tuned random forest model. 
 
 
 # Results

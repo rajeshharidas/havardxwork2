@@ -10,6 +10,13 @@ if (!require(caret))
   install.packages("caret", repos = "http://cran.us.r-project.org")
 if (!require(data.table))
   install.packages("data.table", repos = "http://cran.us.r-project.org")
+if (!require(dply))
+  install.packages("dply", repos = "http://cran.us.r-project.org")
+if (!require(gridExtra))
+  install.packages("gridExtra", repos = "http://cran.us.r-project.org")
+if (!require(kableExtra))
+  install.packages("kableExtra", repos = "http://cran.us.r-project.org")
+
 
 library(tidyverse)
 library(caret)
