@@ -12,11 +12,16 @@ if (!require(randomForest))
 if (!require(purrr))
   install.packages("purrr", repos = "http://cran.us.r-project.org")
 
+if (!require(e1071))
+  install.packages("e1071")
+
 library(caret)
 library(gridExtra)
 library(kableExtra)
 library(randomForest)
 library(purrr)
+library(e1071)
+library(caTools)
 
 
 set.seed(1996, sample.kind = "Rounding")
@@ -103,6 +108,22 @@ sensitivity_glm <- cm_glm$byClass[["Sensitivity"]]
 specificity_glm <- cm_glm$byClass[["Specificity"]]
 prevalence_glm <- cm_glm$byClass[["Prevalence"]]
 
+#Naive bayes
+
+train_nb <- adultpayclean_train %>%
+   mutate(y = as.factor(income == "Above50K")) %>% 
+   naiveBayes(y ~ age + eduyears + sex + race + hoursperweek + maritalstatus + relationship,data = .)
+
+y_hat_nb <- predict(train_nb, newdata = adultpayclean_validation)
+cm_tab <- table(adultpayclean_validation$income == "Above50K", y_hat_nb)
+cm_nb <- confusionMatrix(cm_tab)
+cm_nb
+
+accuracy_nb <- cm_nb$overall[["Accuracy"]]
+sensitivity_nb <- cm_nb$byClass[["Sensitivity"]]
+specificity_nb <- cm_nb$byClass[["Specificity"]]
+prevalence_nb <- cm_nb$byClass[["Prevalence"]]  
+
 # translate income factor into binary outcome
 temp <- adultpayclean_train %>%
   mutate(y = as.factor(income == "Above50K"))
@@ -182,11 +203,11 @@ knn_fit <-
   knn3(
     y ~ age + eduyears + sex + race + hoursperweek + maritalstatus + relationship,
     data = temp,
-    k = 17
+    k = ks[which.max(knntune$test)]
   )
 
-y_hat <- predict(knn_fit, temp, type = "class")
-cm_knntune <- confusionMatrix(y_hat, temp$y)
+y_hat <- predict(knn_fit, adultpayclean_validation$income, type = "class")
+cm_knntune <- confusionMatrix(y_hat, as.factor(adultpayclean_validation$income == "Above50K"))
 
 cm_knntune
 
@@ -336,6 +357,11 @@ accuracy_results <-
       round(sensitivity_glm, 5),
       round(specificity_glm, 5),
       round(prevalence_glm, 5),
+      "naive bayes",
+      round(accuracy_nb, 5),
+      round(sensitivity_nb, 5),
+      round(specificity_nb, 5),
+      round(prevalence_nb, 5),
       "knn",
       round(accuracy_knn, 5),
       round(sensitivity_knn, 5),
@@ -367,11 +393,11 @@ accuracy_results <-
       round(specificity_rf2, 5),
       round(prevalence_rf2, 5)
     ),
-    nrow = 9,
+    nrow = 10,
     ncol = 5,
     byrow = TRUE,
     dimnames = list(
-      c("1.", "2.", "3.", "4.", "5.", "6.", "7.", "8.", "9."),
+      c("1.", "2.", "3.", "4.", "5.", "6.", "7.", "8.", "9.","10."),
       c(
         "Method",
         "Accuracy",
