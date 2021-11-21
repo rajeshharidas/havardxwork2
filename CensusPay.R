@@ -206,7 +206,7 @@ knn_fit <-
     k = ks[which.max(knntune$test)]
   )
 
-y_hat <- predict(knn_fit, adultpayclean_validation$income, type = "class")
+y_hat <- predict(knn_fit, adultpayclean_validation, type = "class")
 cm_knntune <- confusionMatrix(y_hat, as.factor(adultpayclean_validation$income == "Above50K"))
 
 cm_knntune
@@ -215,31 +215,6 @@ cm_knntune
 sensitivity_knntune <- cm_knntune$byClass[["Sensitivity"]]
 specificity_knntune <- cm_knntune$byClass[["Specificity"]]
 prevalence_knntune <- cm_knntune$byClass[["Prevalence"]]
-
-#k-nearest using knn3
-set.seed(2008)
-knn3_fit <-
-  knn3(
-    y ~ age + eduyears + sex + race + hoursperweek + maritalstatus + relationship,
-    data = temp,
-    k = 17
-  )
-y_hat_knn3 <-
-  predict(knn3_fit, adultpayclean_validation, type = "class")
-
-cm_knn3 <-
-  confusionMatrix(y_hat_knn3,
-                  as.factor(adultpayclean_validation$income  == "Above50K"))
-accuracy_knn3 <-
-  confusionMatrix(y_hat_knn3,
-                  as.factor(adultpayclean_validation$income  == "Above50K"))$overall["Accuracy"]
-
-cm_knn3
-
-#record the sensitivity, specificity, and prevalence
-sensitivity_knn3 <- cm_knn3$byClass[["Sensitivity"]]
-specificity_knn3 <- cm_knn3$byClass[["Specificity"]]
-prevalence_knn3 <- cm_knn3$byClass[["Prevalence"]]
 
 
 #recursive partitioning using rpart
@@ -367,11 +342,6 @@ accuracy_results <-
       round(sensitivity_knn, 5),
       round(specificity_knn, 5),
       round(prevalence_knn, 5),
-      "knn3",
-      round(accuracy_knn3, 5),
-      round(sensitivity_knn3, 5),
-      round(specificity_knn3, 5),
-      round(prevalence_knn3, 5),
       "knn tune",
       round(accuracy_knntune, 5),
       round(sensitivity_knntune, 5),
@@ -393,11 +363,11 @@ accuracy_results <-
       round(specificity_rf2, 5),
       round(prevalence_rf2, 5)
     ),
-    nrow = 10,
+    nrow = 9,
     ncol = 5,
     byrow = TRUE,
     dimnames = list(
-      c("1.", "2.", "3.", "4.", "5.", "6.", "7.", "8.", "9.","10."),
+      c("1.", "2.", "3.", "4.", "5.", "6.", "7.", "8.", "9."),
       c(
         "Method",
         "Accuracy",
