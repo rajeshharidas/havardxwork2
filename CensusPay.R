@@ -50,6 +50,7 @@ cm
 sensitivity_guess <- cm$byClass[["Sensitivity"]]
 specificity_guess <- cm$byClass[["Specificity"]]
 prevalence_guess <- cm$byClass[["Prevalence"]]
+f1_guess <- cm$byClass[["F1"]]
 
 #logistic linear model
 # create the model
@@ -77,6 +78,8 @@ cm_lm
 sensitivity_lm <- cm_lm$byClass[["Sensitivity"]]
 specificity_lm <- cm_lm$byClass[["Specificity"]]
 prevalence_lm <- cm_lm$byClass[["Prevalence"]]
+f1_lm <- cm_lm$byClass[["F1"]]
+
 
 #general linear model
 #create the glm model
@@ -107,6 +110,8 @@ cm_glm
 sensitivity_glm <- cm_glm$byClass[["Sensitivity"]]
 specificity_glm <- cm_glm$byClass[["Specificity"]]
 prevalence_glm <- cm_glm$byClass[["Prevalence"]]
+f1_glm <- cm_glm$byClass[["F1"]]
+
 
 #Naive bayes
 
@@ -123,6 +128,8 @@ accuracy_nb <- cm_nb$overall[["Accuracy"]]
 sensitivity_nb <- cm_nb$byClass[["Sensitivity"]]
 specificity_nb <- cm_nb$byClass[["Specificity"]]
 prevalence_nb <- cm_nb$byClass[["Prevalence"]]  
+f1_nb <- cm_nb$byClass[["F1"]]
+
 
 # translate income factor into binary outcome
 temp <- adultpayclean_train %>%
@@ -166,6 +173,8 @@ cm_knn
 sensitivity_knn <- cm_knn$byClass[["Sensitivity"]]
 specificity_knn <- cm_knn$byClass[["Specificity"]]
 prevalence_knn <- cm_knn$byClass[["Prevalence"]]
+f1_knn <- cm_knn$byClass[["F1"]]
+
 
 #k-nearest classification using tuning function
 set.seed(2008)
@@ -215,6 +224,7 @@ cm_knntune
 sensitivity_knntune <- cm_knntune$byClass[["Sensitivity"]]
 specificity_knntune <- cm_knntune$byClass[["Specificity"]]
 prevalence_knntune <- cm_knntune$byClass[["Prevalence"]]
+f1_knntune <- cm_knntune$byClass[["F1"]]
 
 
 #recursive partitioning using rpart
@@ -243,6 +253,7 @@ cm_rpart
 sensitivity_rpart <- cm_rpart$byClass[["Sensitivity"]]
 specificity_rpart <- cm_rpart$byClass[["Specificity"]]
 prevalence_rpart <- cm_rpart$byClass[["Prevalence"]]
+f1_rpart <- cm_rpart$byClass[["F1"]]
 
 #random forest
 set.seed(2008)
@@ -269,6 +280,7 @@ cm_rf
 sensitivity_rf <- cm_rf$byClass[["Sensitivity"]]
 specificity_rf <- cm_rf$byClass[["Specificity"]]
 prevalence_rf <- cm_rf$byClass[["Prevalence"]]
+f1_rf <- cm_rf$byClass[["F1"]]
 
 
 #random forest with tuning
@@ -312,6 +324,7 @@ cm_rf2
 sensitivity_rf2 <- cm_rf2$byClass[["Sensitivity"]]
 specificity_rf2 <- cm_rf2$byClass[["Specificity"]]
 prevalence_rf2 <- cm_rf2$byClass[["Prevalence"]]
+f1_rf2 <- cm_rf2$byClass[["F1"]]
 
 # tabulate all the accuracy results with sensitivity and specificity
 accuracy_results <-
@@ -322,49 +335,58 @@ accuracy_results <-
       round(sensitivity_guess, 5),
       round(specificity_guess, 5),
       round(prevalence_guess, 5),
+      round(f1_guess, 5),
       "linear model",
       round(accuracy_lm, 5),
       round(sensitivity_lm, 5),
       round(specificity_lm, 5),
       round(prevalence_lm, 5),
+      round(f1_lm, 5),
       "General linear model",
       round(accuracy_glm, 5),
       round(sensitivity_glm, 5),
       round(specificity_glm, 5),
       round(prevalence_glm, 5),
+      round(f1_glm, 5),
       "naive bayes",
       round(accuracy_nb, 5),
       round(sensitivity_nb, 5),
       round(specificity_nb, 5),
       round(prevalence_nb, 5),
+      round(f1_nb, 5),
       "knn",
       round(accuracy_knn, 5),
       round(sensitivity_knn, 5),
       round(specificity_knn, 5),
       round(prevalence_knn, 5),
+      round(f1_knn, 5),
       "knn tune",
       round(accuracy_knntune, 5),
       round(sensitivity_knntune, 5),
       round(specificity_knntune, 5),
       round(prevalence_knntune, 5),
+      round(f1_knntune, 5),
       "rpart",
       round(accuracy_rpart, 5),
       round(sensitivity_rpart, 5),
       round(specificity_rpart, 5),
       round(prevalence_rpart, 5),
+      round(f1_rpart, 5),
       "rf",
       round(accuracy_rf, 5),
       round(sensitivity_rf, 5),
       round(specificity_rf, 5),
       round(prevalence_rf, 5),
+      round(f1_rf, 5),
       "rf tune",
       round(accuracy_rftune, 5),
       round(sensitivity_rf2, 5),
       round(specificity_rf2, 5),
-      round(prevalence_rf2, 5)
+      round(prevalence_rf2, 5),
+      round(f1_rf2, 5)
     ),
     nrow = 9,
-    ncol = 5,
+    ncol = 6,
     byrow = TRUE,
     dimnames = list(
       c("1.", "2.", "3.", "4.", "5.", "6.", "7.", "8.", "9."),
@@ -373,7 +395,8 @@ accuracy_results <-
         "Accuracy",
         "Sensitivity",
         "Specificity",
-        "Prevalence"
+        "Prevalence",
+        "F1"
       )
     )
   )

@@ -365,6 +365,7 @@ cm</code></pre>
 sensitivity_guess &lt;- cm$byClass[[&quot;Sensitivity&quot;]]
 specificity_guess &lt;- cm$byClass[[&quot;Specificity&quot;]]
 prevalence_guess &lt;- cm$byClass[[&quot;Prevalence&quot;]]
+f1_guess &lt;- cm$byClass[[&quot;F1&quot;]]
 
 #logistic linear model
 # create the model
@@ -418,6 +419,8 @@ cm_lm</code></pre>
 sensitivity_lm &lt;- cm_lm$byClass[[&quot;Sensitivity&quot;]]
 specificity_lm &lt;- cm_lm$byClass[[&quot;Specificity&quot;]]
 prevalence_lm &lt;- cm_lm$byClass[[&quot;Prevalence&quot;]]
+f1_lm &lt;- cm_lm$byClass[[&quot;F1&quot;]]
+
 
 #general linear model
 #create the glm model
@@ -474,6 +477,8 @@ cm_glm</code></pre>
 sensitivity_glm &lt;- cm_glm$byClass[[&quot;Sensitivity&quot;]]
 specificity_glm &lt;- cm_glm$byClass[[&quot;Specificity&quot;]]
 prevalence_glm &lt;- cm_glm$byClass[[&quot;Prevalence&quot;]]
+f1_glm &lt;- cm_glm$byClass[[&quot;F1&quot;]]
+
 
 #Naive bayes
 
@@ -516,6 +521,8 @@ cm_nb</code></pre>
 sensitivity_nb &lt;- cm_nb$byClass[[&quot;Sensitivity&quot;]]
 specificity_nb &lt;- cm_nb$byClass[[&quot;Specificity&quot;]]
 prevalence_nb &lt;- cm_nb$byClass[[&quot;Prevalence&quot;]]  
+f1_nb &lt;- cm_nb$byClass[[&quot;F1&quot;]]
+
 
 # translate income factor into binary outcome
 temp &lt;- adultpayclean_train %&gt;%
@@ -593,6 +600,8 @@ cm_knn</code></pre>
 sensitivity_knn &lt;- cm_knn$byClass[[&quot;Sensitivity&quot;]]
 specificity_knn &lt;- cm_knn$byClass[[&quot;Specificity&quot;]]
 prevalence_knn &lt;- cm_knn$byClass[[&quot;Prevalence&quot;]]
+f1_knn &lt;- cm_knn$byClass[[&quot;F1&quot;]]
+
 
 #k-nearest classification using tuning function
 set.seed(2008)
@@ -668,6 +677,7 @@ cm_knntune</code></pre>
 sensitivity_knntune &lt;- cm_knntune$byClass[[&quot;Sensitivity&quot;]]
 specificity_knntune &lt;- cm_knntune$byClass[[&quot;Specificity&quot;]]
 prevalence_knntune &lt;- cm_knntune$byClass[[&quot;Prevalence&quot;]]
+f1_knntune &lt;- cm_knntune$byClass[[&quot;F1&quot;]]
 
 
 #recursive partitioning using rpart
@@ -725,6 +735,7 @@ cm_rpart</code></pre>
 sensitivity_rpart &lt;- cm_rpart$byClass[[&quot;Sensitivity&quot;]]
 specificity_rpart &lt;- cm_rpart$byClass[[&quot;Specificity&quot;]]
 prevalence_rpart &lt;- cm_rpart$byClass[[&quot;Prevalence&quot;]]
+f1_rpart &lt;- cm_rpart$byClass[[&quot;F1&quot;]]
 
 #random forest
 set.seed(2008)
@@ -777,6 +788,7 @@ cm_rf</code></pre>
 sensitivity_rf &lt;- cm_rf$byClass[[&quot;Sensitivity&quot;]]
 specificity_rf &lt;- cm_rf$byClass[[&quot;Specificity&quot;]]
 prevalence_rf &lt;- cm_rf$byClass[[&quot;Prevalence&quot;]]
+f1_rf &lt;- cm_rf$byClass[[&quot;F1&quot;]]
 
 
 #random forest with tuning
@@ -872,6 +884,7 @@ cm_rf2</code></pre>
 sensitivity_rf2 &lt;- cm_rf2$byClass[[&quot;Sensitivity&quot;]]
 specificity_rf2 &lt;- cm_rf2$byClass[[&quot;Specificity&quot;]]
 prevalence_rf2 &lt;- cm_rf2$byClass[[&quot;Prevalence&quot;]]
+f1_rf2 &lt;- cm_rf2$byClass[[&quot;F1&quot;]]
 
 # tabulate all the accuracy results with sensitivity and specificity
 accuracy_results &lt;-
@@ -882,49 +895,58 @@ accuracy_results &lt;-
       round(sensitivity_guess, 5),
       round(specificity_guess, 5),
       round(prevalence_guess, 5),
+      round(f1_guess, 5),
       &quot;linear model&quot;,
       round(accuracy_lm, 5),
       round(sensitivity_lm, 5),
       round(specificity_lm, 5),
       round(prevalence_lm, 5),
+      round(f1_lm, 5),
       &quot;General linear model&quot;,
       round(accuracy_glm, 5),
       round(sensitivity_glm, 5),
       round(specificity_glm, 5),
       round(prevalence_glm, 5),
+      round(f1_glm, 5),
       &quot;naive bayes&quot;,
       round(accuracy_nb, 5),
       round(sensitivity_nb, 5),
       round(specificity_nb, 5),
       round(prevalence_nb, 5),
+      round(f1_nb, 5),
       &quot;knn&quot;,
       round(accuracy_knn, 5),
       round(sensitivity_knn, 5),
       round(specificity_knn, 5),
       round(prevalence_knn, 5),
+      round(f1_knn, 5),
       &quot;knn tune&quot;,
       round(accuracy_knntune, 5),
       round(sensitivity_knntune, 5),
       round(specificity_knntune, 5),
       round(prevalence_knntune, 5),
+      round(f1_knntune, 5),
       &quot;rpart&quot;,
       round(accuracy_rpart, 5),
       round(sensitivity_rpart, 5),
       round(specificity_rpart, 5),
       round(prevalence_rpart, 5),
+      round(f1_rpart, 5),
       &quot;rf&quot;,
       round(accuracy_rf, 5),
       round(sensitivity_rf, 5),
       round(specificity_rf, 5),
       round(prevalence_rf, 5),
+      round(f1_rf, 5),
       &quot;rf tune&quot;,
       round(accuracy_rftune, 5),
       round(sensitivity_rf2, 5),
       round(specificity_rf2, 5),
-      round(prevalence_rf2, 5)
+      round(prevalence_rf2, 5),
+      round(f1_rf2, 5)
     ),
     nrow = 9,
-    ncol = 5,
+    ncol = 6,
     byrow = TRUE,
     dimnames = list(
       c(&quot;1.&quot;, &quot;2.&quot;, &quot;3.&quot;, &quot;4.&quot;, &quot;5.&quot;, &quot;6.&quot;, &quot;7.&quot;, &quot;8.&quot;, &quot;9.&quot;),
@@ -933,7 +955,8 @@ accuracy_results &lt;-
         &quot;Accuracy&quot;,
         &quot;Sensitivity&quot;,
         &quot;Specificity&quot;,
-        &quot;Prevalence&quot;
+        &quot;Prevalence&quot;,
+        &quot;F1&quot;
       )
     )
   )
@@ -960,6 +983,9 @@ Specificity
 <th style="text-align:left;">
 Prevalence
 </th>
+<th style="text-align:left;">
+F1
+</th>
 </tr>
 </thead>
 <tbody>
@@ -982,6 +1008,9 @@ Plain old guess
 <td style="text-align:left;">
 0.24606
 </td>
+<td style="text-align:left;">
+0.32249
+</td>
 </tr>
 <tr>
 <td style="text-align:left;">
@@ -1001,6 +1030,9 @@ linear model
 </td>
 <td style="text-align:left;">
 0.24606
+</td>
+<td style="text-align:left;">
+0.56255
 </td>
 </tr>
 <tr>
@@ -1022,6 +1054,9 @@ General linear model
 <td style="text-align:left;">
 0.24606
 </td>
+<td style="text-align:left;">
+0.50135
+</td>
 </tr>
 <tr>
 <td style="text-align:left;">
@@ -1041,6 +1076,9 @@ naive bayes
 </td>
 <td style="text-align:left;">
 0.63811
+</td>
+<td style="text-align:left;">
+0.83604
 </td>
 </tr>
 <tr>
@@ -1062,6 +1100,9 @@ knn
 <td style="text-align:left;">
 0.75394
 </td>
+<td style="text-align:left;">
+0.87654
+</td>
 </tr>
 <tr>
 <td style="text-align:left;">
@@ -1081,6 +1122,9 @@ knn tune
 </td>
 <td style="text-align:left;">
 0.75394
+</td>
+<td style="text-align:left;">
+0.87746
 </td>
 </tr>
 <tr>
@@ -1102,6 +1146,9 @@ rpart
 <td style="text-align:left;">
 0.75394
 </td>
+<td style="text-align:left;">
+0.88467
+</td>
 </tr>
 <tr>
 <td style="text-align:left;">
@@ -1122,6 +1169,9 @@ rf
 <td style="text-align:left;">
 0.75394
 </td>
+<td style="text-align:left;">
+0.88674
+</td>
 </tr>
 <tr>
 <td style="text-align:left;">
@@ -1141,6 +1191,9 @@ rf tune
 </td>
 <td style="text-align:left;">
 0.75394
+</td>
+<td style="text-align:left;">
+0.88709
 </td>
 </tr>
 </tbody>
