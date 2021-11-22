@@ -158,9 +158,44 @@ tribble(
 ) %>% knitr::kable() %>% kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
 
 tab1(adultpayclean$education, sort.group = "decreasing", cum.percent = TRUE)
+adultpayclean %>% group_by(education) %>%
+  mutate(n=n())  %>% ggplot()  +
+  geom_bar(aes(education,col=income,fill=income)) + scale_y_sqrt()
+
 tab1(adultpayclean$race, sort.group = "decreasing", cum.percent = TRUE)
+adultpayclean %>% group_by(race) %>%
+  mutate(n=n())  %>% ggplot()  +
+  geom_bar(aes(race,col=income,fill=income)) + scale_y_sqrt()
+
 tab1(adultpayclean$maritalstatus, sort.group = "decreasing", cum.percent = TRUE)
+adultpayclean %>% group_by(maritalstatus) %>%
+  mutate(n=n())  %>% ggplot()  +
+  geom_bar(aes(maritalstatus,col=income,fill=income)) + scale_y_sqrt()
+
 tab1(adultpayclean$sex, sort.group = "decreasing", cum.percent = TRUE)
+adultpayclean %>% group_by(sex) %>%
+  mutate(n=n())  %>% ggplot()  +
+  geom_bar(aes(sex,col=income,fill=income)) + scale_y_sqrt()
+
 tab1(adultpayclean$relationship, sort.group = "decreasing", cum.percent = TRUE)
+adultpayclean %>% group_by(relationship) %>%
+  mutate(n=n())  %>% ggplot()  +
+  geom_bar(aes(relationship,col=income,fill=income)) + scale_y_sqrt()
+
 tab1(adultpayclean$class, sort.group = "decreasing", cum.percent = TRUE)
+adultpayclean %>% group_by(class) %>%
+  mutate(n=n())  %>% ggplot()  +
+  geom_bar(aes(class,col=income,fill=income)) + scale_y_sqrt()
+
 tab1(adultpayclean$income, sort.group = "decreasing", cum.percent = TRUE)
+
+tab1(adultpayclean$age, sort.group = "decreasing", cum.percent = TRUE)
+adultpayclean %>% group_by(age) %>%
+  mutate(n=n())  %>% ggplot()  +
+  geom_bar(aes(age,col=income,fill=income)) + scale_y_sqrt()
+
+
+
+
+
+

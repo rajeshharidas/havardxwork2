@@ -126,7 +126,7 @@ We will choose 13 attributes, income being be the outcome and the rest 12 attrib
 
 ```
 
-This is a classification problem and the outcome is binary (income above 50K or at or below 50k).On reviewing the summary of the dataset we have a choice of predictors. We will keep only USA specific data. Almost all of the predictors have data spread out. There are no NAs in the dataset. There is sufficient degree of variability.
+This is a classification problem and the outcome is binary (income above-50K or at-or-below-50K).On reviewing the summary of the dataset we have a choice of predictors. We will keep only USA specific data. Almost all of the predictors have data spread out. There are no NAs in the dataset. There is sufficient degree of variability.
 
 ```{r}
 #summary(adultpayclean)
@@ -181,7 +181,7 @@ This is a classification problem and the outcome is binary (income above 50K or 
 
 ```
 
-We can also see the number or above 50K income is significantly less than (30%) the at or below 50K income. This implies that we will encounter some prevalence towards the at or below 50K group
+We can also see the number or above-50K income is significantly less than (30%) the at-or-below-50K income. This implies that we will encounter some prevalence towards the at-or-below 50K group
 
 ```{r,echo=FALSE,fig.retina = 2, fig.cap ="Income distribution"}
 library(ggplot2)  # For plotting
@@ -270,8 +270,39 @@ img_path <- "images/edufreqbar.png"
 knitr::include_graphics(img_path)
 img_path <- "images/edufreqtab.png"
 knitr::include_graphics(img_path)
+img_path <- "images/incomebyeducation.png"
+knitr::include_graphics(img_path)
+img_path <- "images/incomebyeduyears.png"
+knitr::include_graphics(img_path)
 
 ```
+The number of high-school graduates are most frequent than other groups. There are 2 income distributions for education. One by the level of education and one by the number of years spent in education. Sure enough, most of the Above-50K earners have at least high-school education. Bachelors and some college have more above-50K earners than other categories. Interestingly enough, in comparison to Bachelors and some college masters have lesser Above-50K. Additionally, the group that has at least 12 years of education have more Above-50K than others. There are more at-or-below 50K earners in the high-school grad and less than 10 years of education categories. The rest of the groups have sparse data. This could be because of missing or bad data that was removed during initial cleaning before it was loaded into kaggle.
+
+```{r,echo=FALSE,fig.retina = 2, fig.cap ="Occupation distribution"}
+library(ggplot2)  # For plotting
+library(png) 
+img_path <- "images/occupationbar.png"
+knitr::include_graphics(img_path)
+img_path <- "images/occupationtab.png"
+knitr::include_graphics(img_path)
+img_path <- "images/incomebyoccpstatus.png"
+knitr::include_graphics(img_path)
+
+```
+There are more executive and managerial occupations followed by professionals. The same groups earn more and are in the Above-50K category.There are fairly significant number of at-or-below-50K earners in the other categories. There are 1600 or so missing data. This makes up 5% of the cleaned dataset.
+
+```{r,echo=FALSE,fig.retina = 2, fig.cap ="Sex distribution"}
+library(ggplot2)  # For plotting
+library(png) 
+img_path <- "images/sexbarch.png"
+knitr::include_graphics(img_path)
+img_path <- "images/sextabr.png"
+knitr::include_graphics(img_path)
+img_path <- "images/incomebysex.png"
+knitr::include_graphics(img_path)
+```
+
+There are more males in the workforce than females. The distribution also indicates that the number of males at Above-50K are more than the number of females. Additionally, there are more males at-or-below-50K than females as well.
 
 ```{r,echo=FALSE,fig.retina = 2, fig.cap ="Race distribution"}
 library(ggplot2)  # For plotting
@@ -282,6 +313,8 @@ img_path <- "images/racetab.png"
 knitr::include_graphics(img_path)
 
 ```
+
+
 
 ```{r,echo=FALSE,fig.retina = 2, fig.cap ="Marital Status distribution"}
 library(ggplot2)  # For plotting
@@ -299,26 +332,6 @@ library(png)
 img_path <- "images/relationshipbar.png"
 knitr::include_graphics(img_path)
 img_path <- "images/relationshiptab.png"
-knitr::include_graphics(img_path)
-
-```
-
-```{r,echo=FALSE,fig.retina = 2, fig.cap ="Sex distribution"}
-library(ggplot2)  # For plotting
-library(png) 
-img_path <- "images/sexbarch.png"
-knitr::include_graphics(img_path)
-img_path <- "images/sextabr.png"
-knitr::include_graphics(img_path)
-
-```
-
-```{r,echo=FALSE,fig.retina = 2, fig.cap ="Occupation distribution"}
-library(ggplot2)  # For plotting
-library(png) 
-img_path <- "images/occupationbar.png"
-knitr::include_graphics(img_path)
-img_path <- "images/occupationtab.png"
 knitr::include_graphics(img_path)
 
 ```
@@ -380,7 +393,7 @@ The caret package includes the function createDataPartition that helps us genera
 
 ```
 
-We then develop an algorithm using only the training set. Once we are done developing the algorithm, we then freeze it and evaluate it using the test set. The simplest way to evaluate the algorithm for the adultpay dataset is by simply reporting the proportion of cases that were correctly predicted in the test set. This metric is referred to as overall accuracy. Some times accuracy is skewed due to prevalence or bias of one class or the other, therefore we will weigh in on sensitivity and specificity (check true/false positives and true/false negatives) when choosing the final model.
+We then develop an algorithm using only the training set. Once we are done developing the algorithm, we then freeze it and evaluate it using the test set. The simplest way to evaluate the algorithm for the adultpay dataset is by simply reporting the proportion of cases that were correctly predicted in the test set. This metric is referred to as overall accuracy. Some times accuracy is skewed due to prevalence or bias of one class or the other, therefore we will weigh in on sensitivity and specificity (check true/false positives and true/false negatives) when choosing the final model. We will also use F1 measure to validate the accuracy of the sensitivity and specificity and see if we have a good precision. F1 score is a combination of two important error metrics: Precision and Recall. Thus, it can be considered as the Harmonic mean of Precision and Recall error metrics for an imbalanced dataset with respect to binary classification of data. As income level has only 30% data for Above-50K class this score is useful. The highest possible value of an F-score is 1.0, indicating perfect precision and recall, and the lowest possible value is 0. Higher the precision the better.
 
 
 ### Model Creation
@@ -472,9 +485,9 @@ We first start with a simple model. We sample randomly for the desired outcome. 
 
 ```
 
-We then construct the confusion matrix, which basically tabulates each combination of prediction and actual value. We see that the above 50k and at or below 50k are almost evenly distributed with a slightly higher prevalence in the at or below 50k income level.
+We then construct the confusion matrix, which basically tabulates each combination of prediction and actual value. We see that the above-50K and at-or-below-50K are almost evenly distributed with a slightly higher prevalence in the at-or-below-50K income level.
 
-We can verify this by adjusting the probability of our sampling to skew towards above 50k vs at or below 50k and vice-versa.
+We can verify this by adjusting the probability of our sampling to skew towards above-50K vs at-or-below-50K and vice-versa.
 
 Prevalence can result in skewed results. We will keep an eye on the other metrics like sensitivity and specificity in addition to accuracy.In this case low prevalence matches with the expected accuracy.
 
@@ -1006,9 +1019,53 @@ The first step is bootstrap aggregation or bagging. The general idea is to gener
 ##        'Positive' Class : FALSE           
 ##  
 
+# With "Occupation" as one of the feature
+
+# Confusion Matrix and Statistics
+
+#          Reference
+
+# Prediction FALSE TRUE
+
+#     FALSE  2011  305
+
+#     TRUE    189  413
+                                          
+#               Accuracy : 0.8307          
+
+#                 95% CI : (0.8166, 0.8441)
+
+#    No Information Rate : 0.7539          
+
+#    P-Value [Acc > NIR] : < 2.2e-16       
+                                          
+#                  Kappa : 0.5175          
+                                          
+# Mcnemar's Test P-Value : 2.29e-07        
+                                          
+#            Sensitivity : 0.9141          
+
+#            Specificity : 0.5752          
+
+#         Pos Pred Value : 0.8683          
+
+#         Neg Pred Value : 0.6860          
+
+#             Prevalence : 0.7539          
+
+#         Detection Rate : 0.6892          
+
+#   Detection Prevalence : 0.7937          
+
+#      Balanced Accuracy : 0.7446          
+                                          
+#       'Positive' Class : FALSE  
+
 ```
 
-The accuracy of random forest is at 0.8235, sensitivity is at 0.9164 and specificity is at 0.5390. Prevalence is about the same when compared to knn and rpart classification models. The confidence intervals is about the same as rpart. 
+The accuracy of random forest is at 0.8235, sensitivity is at 0.9164 and specificity is at 0.5390. Prevalence is about the same when compared to knn and rpart classification models. The confidence intervals is about the same as rpart. The F1 score is 0.88674 is the best so far. 
+
+When we add "Occupation" as one the feature (with some missing occupation data (5%)) we see that the accuracy is 0.8307 and sensitivity and specificity are 0.9141 and 0.5752 respectively with a F1 score of 0.89061. 
 
 Lets tune this model just like the KNN3 classification and see if we can do better.
 
@@ -1089,7 +1146,7 @@ The accuracy of random forest with tuning is at 0.8228, sensitivity is at 0.9232
 This project created a machine learning model that predicts income level of adults based on 
 7 shortlisted attributes. This model was run on a test dataset that included an income level indicator, allowing us to compare the predicted and actual value.
 
-The model returned an accuracy of 82% while predicting annual income more than $50,000 annually. A summary table of results is given below:
+The final model that was chosen after comparison was random forest model. The model returned an accuracy of 82 to 83% while predicting annual income more than $50,000 annually. A summary table of results is given below:
 
 ```{r,echo=FALSE,fig.retina = 2, fig.cap ="Final Results"}
 library(ggplot2)  # For plotting
@@ -1098,6 +1155,8 @@ img_path <- "images/finalresults.png"
 knitr::include_graphics(img_path)
 
 ```
+
+The accuracy of the predictions is backed by sensitivity of 0.9163 and specificity of 0.539. The F1 score 0.8867 vouches for the sensitivity and specificity. 
 
 This model can be used to determine income levels for adults in any year with similar attribute 
 sets and achieve comparable accuracies. The following attributes were determined to 
@@ -1110,7 +1169,7 @@ influence annual adult incomes in the US:
 - hoursperweek
 - maritalstatus
 - relationship
-
+- occupation (experimental with 5% unknown data)
 
 # Conclusion
 
