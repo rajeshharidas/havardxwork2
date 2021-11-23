@@ -15,6 +15,9 @@ if (!require(purrr))
 if (!require(e1071))
   install.packages("e1071")
 
+if (!require(pROC))
+  install.packages("pRoc")
+
 library(caret)
 library(gridExtra)
 library(kableExtra)
@@ -22,6 +25,7 @@ library(randomForest)
 library(purrr)
 library(e1071)
 library(caTools)
+library(pROC)
 
 
 set.seed(1996, sample.kind = "Rounding")
@@ -52,6 +56,8 @@ specificity_guess <- cm$byClass[["Specificity"]]
 prevalence_guess <- cm$byClass[["Prevalence"]]
 f1_guess <- cm$byClass[["F1"]]
 
+auc(ifelse(adultpayclean_validation$income == "Above50K",1,2), ifelse(seat_of_the_pants == "Above50K",1,2))
+
 #logistic linear model
 # create the model
 lm_fit <- adultpayclean_train %>%
@@ -80,6 +86,7 @@ specificity_lm <- cm_lm$byClass[["Specificity"]]
 prevalence_lm <- cm_lm$byClass[["Prevalence"]]
 f1_lm <- cm_lm$byClass[["F1"]]
 
+auc(ifelse(adultpayclean_validation$income == "Above50K",1,2), ifelse(unname(y_hat_logit) == "Above50K",1,2))
 
 #general linear model
 #create the glm model
@@ -112,6 +119,8 @@ specificity_glm <- cm_glm$byClass[["Specificity"]]
 prevalence_glm <- cm_glm$byClass[["Prevalence"]]
 f1_glm <- cm_glm$byClass[["F1"]]
 
+auc(ifelse(adultpayclean_validation$income == "Above50K",1,2), ifelse(unname(y_hat_logit) == "Above50K",1,2))
+
 
 #Naive bayes
 
@@ -129,6 +138,8 @@ sensitivity_nb <- cm_nb$byClass[["Sensitivity"]]
 specificity_nb <- cm_nb$byClass[["Specificity"]]
 prevalence_nb <- cm_nb$byClass[["Prevalence"]]  
 f1_nb <- cm_nb$byClass[["F1"]]
+
+auc(ifelse(adultpayclean_validation$income == "Above50K",1,2), ifelse(unname(y_hat_nb) == "Above50K",1,2))
 
 
 # translate income factor into binary outcome
@@ -174,6 +185,8 @@ sensitivity_knn <- cm_knn$byClass[["Sensitivity"]]
 specificity_knn <- cm_knn$byClass[["Specificity"]]
 prevalence_knn <- cm_knn$byClass[["Prevalence"]]
 f1_knn <- cm_knn$byClass[["F1"]]
+
+auc(ifelse(adultpayclean_validation$income == "Above50K",1,2), ifelse(unname(y_hat_knn) == "Above50K",1,2))
 
 
 #k-nearest classification using tuning function

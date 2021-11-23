@@ -263,35 +263,46 @@ The adult pay dataset from census bureau is a ML ready database. For convenience
 
 After performing this cleaning we see 29170 rows and 13 columns. We further analyze the makeup of the categorical columns
 
-```{r,echo=FALSE,fig.retina = 2, fig.cap ="Education distribution"}
+```{r,echo=FALSE,fig.retina = 2, fig.cap ="Education Frequency"}
 library(ggplot2)  # For plotting
 library(png) 
 img_path <- "images/edufreqbar.png"
 knitr::include_graphics(img_path)
 img_path <- "images/edufreqtab.png"
 knitr::include_graphics(img_path)
+```
+```{r,echo=FALSE,fig.retina = 1, fig.cap ="Education distribution"}
+library(ggplot2)  # For plotting
+library(png) 
 img_path <- "images/incomebyeducation.png"
 knitr::include_graphics(img_path)
 img_path <- "images/incomebyeduyears.png"
 knitr::include_graphics(img_path)
 
 ```
+
 The number of high-school graduates are most frequent than other groups. There are 2 income distributions for education. One by the level of education and one by the number of years spent in education. Sure enough, most of the Above-50K earners have at least high-school education. Bachelors and some college have more above-50K earners than other categories. Interestingly enough, in comparison to Bachelors and some college masters have lesser Above-50K. Additionally, the group that has at least 12 years of education have more Above-50K than others. There are more at-or-below 50K earners in the high-school grad and less than 10 years of education categories. The rest of the groups have sparse data. This could be because of missing or bad data that was removed during initial cleaning before it was loaded into kaggle.
 
-```{r,echo=FALSE,fig.retina = 2, fig.cap ="Occupation distribution"}
+```{r,echo=FALSE,fig.retina = 2, fig.cap ="Occupation frequency"}
 library(ggplot2)  # For plotting
 library(png) 
 img_path <- "images/occupationbar.png"
 knitr::include_graphics(img_path)
 img_path <- "images/occupationtab.png"
 knitr::include_graphics(img_path)
+
+```
+```{r,echo=FALSE,fig.retina = 1, fig.cap ="Occupation distribution"}
+library(ggplot2)  # For plotting
+library(png) 
 img_path <- "images/incomebyoccpstatus.png"
 knitr::include_graphics(img_path)
 
 ```
+
 There are more executive and managerial occupations followed by professionals. The same groups earn more and are in the Above-50K category.There are fairly significant number of at-or-below-50K earners in the other categories. There are 1600 or so missing data. This makes up 5% of the cleaned dataset.
 
-```{r,echo=FALSE,fig.retina = 2, fig.cap ="Sex distribution"}
+```{r,echo=FALSE,fig.retina = 2, fig.cap ="Sex feature characteristics"}
 library(ggplot2)  # For plotting
 library(png) 
 img_path <- "images/sexbarch.png"
@@ -311,20 +322,30 @@ img_path <- "images/racebarch.png"
 knitr::include_graphics(img_path)
 img_path <- "images/racetab.png"
 knitr::include_graphics(img_path)
-
+img_path <- "images/incomebyrace.png"
+knitr::include_graphics(img_path)
 ```
 
+There are more whites in the labor force in both the Above-50K and at-or-below-50K categories. Blacks and other race follow next. The proportion of Above-50K earners are lesser in other races when compared to whites.
 
 
-```{r,echo=FALSE,fig.retina = 2, fig.cap ="Marital Status distribution"}
+```{r,echo=FALSE,fig.retina = 2, fig.cap ="Marital Status frequency"}
 library(ggplot2)  # For plotting
 library(png) 
 img_path <- "images/maritalstatusbar.png"
 knitr::include_graphics(img_path)
 img_path <- "images/maritalstatustab.png"
 knitr::include_graphics(img_path)
-
 ```
+```{r,echo=FALSE,fig.retina = 1, fig.cap ="Marital Status distribution"}
+library(ggplot2)  # For plotting
+library(png) 
+img_path <- "images/incomebymaritalstatus.png"
+knitr::include_graphics(img_path)
+```
+
+The number of married with civilian spouses are more than any other groups in labor force. The number of Above-50K and at-or-below-50K earners are also more in this group when compared to others. The number of at-or-below-50K are more than the Above-50K in the singles group. This suggests most of this group is below 25 years age group. This can be correlated with the income by age group chart. The number of married with military spouses is less which may be due to lack of data.
+
 
 ```{r,echo=FALSE,fig.retina = 2, fig.cap ="Relationship distribution"}
 library(ggplot2)  # For plotting
@@ -333,8 +354,12 @@ img_path <- "images/relationshipbar.png"
 knitr::include_graphics(img_path)
 img_path <- "images/relationshiptab.png"
 knitr::include_graphics(img_path)
-
+img_path <- "images/incomebyrelation.png"
+knitr::include_graphics(img_path)
 ```
+
+The number of husbands who earn more than 50K and at-or-below-50K are also more than the number of wives. Unmarried individuals also are more in the at-or-below-50K category.
+
 
 ```{r,echo=FALSE,fig.retina = 2, fig.cap ="Class distribution"}
 library(ggplot2)  # For plotting
@@ -343,8 +368,11 @@ img_path <- "images/classbar.png"
 knitr::include_graphics(img_path)
 img_path <- "images/classtab.png"
 knitr::include_graphics(img_path)
-
+img_path <- "images/incomebyclass.png"
+knitr::include_graphics(img_path)
 ```
+
+The number of private employer workers are more than other categories. They also earn more Above-50K and at-or-below-50K than other categories.
 
 As shown above the occupation and class columns have more than 1600 Unknown data. Adding this to the predictor columns could skew the predictions and introduce errors. We will exclude this from our list of predictors. The final list of predictors/features used to predict the outcome income level are age, education, years of education (a.ka. eduyears), maritalstatus, relationship,race, sex, and hoursperweek.
 
@@ -393,7 +421,13 @@ The caret package includes the function createDataPartition that helps us genera
 
 ```
 
-We then develop an algorithm using only the training set. Once we are done developing the algorithm, we then freeze it and evaluate it using the test set. The simplest way to evaluate the algorithm for the adultpay dataset is by simply reporting the proportion of cases that were correctly predicted in the test set. This metric is referred to as overall accuracy. Some times accuracy is skewed due to prevalence or bias of one class or the other, therefore we will weigh in on sensitivity and specificity (check true/false positives and true/false negatives) when choosing the final model. We will also use F1 measure to validate the accuracy of the sensitivity and specificity and see if we have a good precision. F1 score is a combination of two important error metrics: Precision and Recall. Thus, it can be considered as the Harmonic mean of Precision and Recall error metrics for an imbalanced dataset with respect to binary classification of data. As income level has only 30% data for Above-50K class this score is useful. The highest possible value of an F-score is 1.0, indicating perfect precision and recall, and the lowest possible value is 0. Higher the precision the better.
+We then develop an algorithm using only the training set. Once we are done developing the algorithm, we then freeze it and evaluate it using the test set. 
+
+The simplest way to evaluate the algorithm for the adultpay dataset is by simply reporting the proportion of cases that were correctly predicted in the test set. This metric is referred to as overall accuracy. Some times accuracy is skewed due to prevalence or bias of one class or the other, therefore we will weigh in on sensitivity and specificity (check true/false positives and true/false negatives) when choosing the final model. 
+
+We will also use F1 measure to validate the accuracy of the sensitivity and specificity and see if we have a good precision. F1 score is a combination of two important error metrics: Precision and Recall. Thus, it can be considered as the Harmonic mean of Precision and Recall error metrics for an imbalanced dataset with respect to binary classification of data. As income level has only 30% data for Above-50K class this score is useful. The highest possible value of an F-score is 1.0, indicating perfect precision and recall, and the lowest possible value is 0. Higher the precision the better. 
+
+We will also use a widely used plot receiver operating characteristic (ROC) curve to compare the sensitivity and specificity. This also gives us AUC or Area under the curve. Higher the AUC score the better. This indicates that the model has higher true positive rate and low false positive rate.
 
 
 ### Model Creation
@@ -483,6 +517,19 @@ We first start with a simple model. We sample randomly for the desired outcome. 
 
 # [1] 0.2964359
 
+
+# > f1_guess
+
+# [1] 0.3224907
+
+# Area under the curve
+
+# > auc_guess <- auc(ifelse(adultpayclean_validation$income == "Above50K",1,2), ifelse(seat_of_the_pants == "Above50K",1,2))
+
+# > auc_guess
+
+# Area under the curve: 0.4946
+
 ```
 
 We then construct the confusion matrix, which basically tabulates each combination of prediction and actual value. We see that the above-50K and at-or-below-50K are almost evenly distributed with a slightly higher prevalence in the at-or-below-50K income level.
@@ -491,6 +538,7 @@ We can verify this by adjusting the probability of our sampling to skew towards 
 
 Prevalence can result in skewed results. We will keep an eye on the other metrics like sensitivity and specificity in addition to accuracy.In this case low prevalence matches with the expected accuracy.
 
+The F1 score for this guessing is 0.3224 and Area under the curve is 0.4946. This is in line with our expectations for mere guessing of the outcome.
 
 Our goal is to improve the accuracy > 80% while keeping sensitivity and specificity under check. Hence we further analyze the impact of other features on the income levels.
 
@@ -558,9 +606,15 @@ We will start with a simple logistic model - linear model. We use the features a
 ##        'Positive' Class : Above50K        
 ##  
 
+# > f1_lm
+
+# [1] 0.5625511
+
+# Area under the curve: 0.703
+
 ```
 
-The accuracy for this model is 0.8167 however, sensitivity is 0.4791 and specificity is 0.9268. This indicates this model has higher ratio of negative outcomes than positive outcomes. Prevalence remains the same. Lets see if we can do better
+The accuracy for this model is 0.8167 however, sensitivity is 0.4791 and specificity is 0.9268. This indicates this model has higher ratio of negative outcomes than positive outcomes. It does have better accuracy, confidence interval, and F1 score than plain old guessing. Prevalence remains the same. AUC has improved as well.  Lets see if we can do better
 
 We will now experiment with the general linear model (glm). We will be consistent with the features used across all algorithms.
 
@@ -621,16 +675,22 @@ We will now experiment with the general linear model (glm). We will be consisten
 ##                                           
 ##        'Positive' Class : Above50K        
 ## 
+
+# f1_glm
+
+# [1] 0.5013477
+
+# Area under the curve: 0.6679
        
 ```
 
-glm produces accuracy of 0.8098, however, specificity is still higher than sensitivity and prevalence about the same. We can do better!
+glm produces accuracy of 0.8098, however, specificity is still higher than sensitivity and prevalence about the same. CI and F1 scores can be better. AUC can also do better. We can do better!
 
 
 #### naive bayes  \
 \
 
-We will now experiment with generative models like naive bayes classification. It assumes the features that go into the model is independent of each other.That is changing the value of one feature, does not directly influence or change the value of any of the other features used in the algorithm.
+We will now experiment with generative models like naive bayes classification. It assumes the features that go into the model is independent of each other.That is changing the value of one feature, does not directly influence or change the value of any of the other features used in the algorithm. When we analyzed the dataset it didn't appear to have independent features. An example of dependent feature would be age and education years, age and martial status etc. However, lets see how naive bayes performs with this assumption.
 
 ```{r}
 
@@ -690,9 +750,15 @@ We will now experiment with generative models like naive bayes classification. I
 ##        'Positive' Class : FALSE           
 ## 
 
+# > f1_nb
+
+# [1] 0.8360414
+
+# Area under the curve: 0.5
+
 ```
 
-Naive bayes gives us an accuracy of 0.7718 with a lower prevalence than other algorithms but higher than plain guessing. However the confidence interval is lower and accuracy of the prediction is lower too. There are more false negatives as well. We can try other advanced algorithms and compare this ahead.
+Naive bayes gives us an accuracy of 0.7718 with a lower prevalence than other algorithms but higher than plain guessing. However the confidence interval is lower and accuracy of the prediction is lower too. There are more false negatives as well. F1 score has increased but AUC score has decreased. This indicates there are lesser true positives as well. We can try other advanced algorithms and compare this later.
 
 Lets explore k-nearest model now with same feature set. We will use cross-validation to tune the k parameter. By default, the cross validation is performed by taking 25 bootstrap samples comprised of 25% of the observations. For the kNN method, the default is to try k=5,7,9. We change this using the tuneGrid parameter. We will try the k values in the following sequence k = seq(3, 71, 2). Running this code will take several seconds. This is because when we run the algorithm, we will have to compute a distance between each observation in the test set and each observation in the training set. There are a lot of computations. Therefore, we use the trainControl function to make the code above go a bit faster by using, 10-fold cross validation. This means we have 10 samples using 10% of the observations each. We set the seed because cross validation is a random procedure and we want to make sure the result here is reproducible
 
@@ -886,7 +952,7 @@ We will now try to use classification with knn3. We will again use different val
 
 ```
 
-The accuracy of the knn tuned classification is 0.8098 with a sensitivity of 0.9032 and specificity of 0.5237. This is better than the previous models. Prevalence is just about the same as raw knn. Balanced accuracy has improved.
+The accuracy of the knn tuned classification is 0.8098 with a sensitivity of 0.9032 and specificity of 0.5237. This is better than the previous models. Prevalence is just about the same as raw knn. Balanced accuracy has improved. F1 score is also at ~ 88%.
 
 #### Recursive partitioning with rpart  \
 \
@@ -953,7 +1019,7 @@ Next we use classification trees, or decision trees. We use the recursive partit
 
 ```
 
-The accuracy of recursive partitioning is 0.8211, sensitivity is higher at 0.91 and specificity is at 0.5487 with prevalence about the same. Balanced accuracy has improved. Confidence intervals for positive and negative has improved as well.
+The accuracy of recursive partitioning is 0.8211, sensitivity is higher at 0.91 and specificity is at 0.5487 with prevalence about the same. Balanced accuracy has improved. Confidence intervals for positive and negative has improved as well. The F1 score for rpart is 0.88467. 
 
 We will next look at random forest algorithm.
 
@@ -1065,7 +1131,39 @@ The first step is bootstrap aggregation or bagging. The general idea is to gener
 
 The accuracy of random forest is at 0.8235, sensitivity is at 0.9164 and specificity is at 0.5390. Prevalence is about the same when compared to knn and rpart classification models. The confidence intervals is about the same as rpart. The F1 score is 0.88674 is the best so far. 
 
-When we add "Occupation" as one the feature (with some missing occupation data (5%)) we see that the accuracy is 0.8307 and sensitivity and specificity are 0.9141 and 0.5752 respectively with a F1 score of 0.89061. 
+When we add "Occupation" as one the feature (with some missing occupation data (5%)) we see that the accuracy is 0.8307 and sensitivity and specificity are 0.9141 and 0.5752 respectively with a F1 score of 0.89061.
+
+When we add "class" as one the feature (with some missing occupation data (5%)) we see that the accuracy is 0.8283 and sensitivity and specificity are 0.9086 and 0.5822 respectively with a F1 score of 0.88864.
+
+Adding class has a negative impact on the accuracy and precision when compared to occupation. We can futher investigate into how often a specific feature is used in the predictions using variable importance
+
+```{r}
+
+#varImp(train_rf)
+
+#                Overall
+
+# age           1431.1949
+
+# eduyears      1124.9818
+
+# sex            117.8895
+
+# race           152.8045
+
+# hoursperweek   844.8170
+
+# maritalstatus  921.5902
+
+# relationship  1162.1617
+
+# occupation    1038.7262
+
+# class          430.0374
+
+```
+
+We can see that age, years of education, and relationship are the most used and sex is the least used feature. We can also see that occupation did have a greater impact on decisioning even though we had 5% bad data. However, it does impact the precision of the prediction.
 
 Lets tune this model just like the KNN3 classification and see if we can do better.
 
@@ -1135,18 +1233,59 @@ Lets tune this model just like the KNN3 classification and see if we can do bett
 ##                                           
 ##        'Positive' Class : FALSE           
 ##  
+
+# Confusion Matrix and Statistics
+
+#          Reference
+
+# Prediction FALSE TRUE
+
+#     FALSE  2029  295
+
+#     TRUE    171  423
+                                          
+#               Accuracy : 0.8403          
+
+#                 95% CI : (0.8265, 0.8534)
+
+#    No Information Rate : 0.7539          
+
+#    P-Value [Acc > NIR] : < 2.2e-16       
+                                          
+#                  Kappa : 0.543           
+                                          
+# Mcnemar's Test P-Value : 1.213e-08       
+                                          
+#            Sensitivity : 0.9223          
+
+#            Specificity : 0.5891          
+
+#         Pos Pred Value : 0.8731          
+
+#         Neg Pred Value : 0.7121          
+
+#             Prevalence : 0.7539          
+
+#         Detection Rate : 0.6953          
+
+#   Detection Prevalence : 0.7964          
+
+#      Balanced Accuracy : 0.7557          
+                                          
+#       'Positive' Class : FALSE  
        
 ```
 
-The accuracy of random forest with tuning is at 0.8228, sensitivity is at 0.9232 and specificity is at 0.5153. Prevalence is about the same when compared to knn and rpart classification models. The confidence intervals is just about the same as rpart and random forest without tuning. 
+The accuracy of random forest with tuning is at 0.8228, sensitivity is at 0.9232 and specificity is at 0.5153. Prevalence is about the same when compared to knn and rpart classification models. The confidence intervals is just about the same as rpart and random forest without tuning. Interestingly enough, the accuracy is slightly lesser than the random forest test without tuning. Overall there was no further improvement in accuracy. The tuning resulted in overfitting and didn't provide additional value to precision or accuracy.
+
+When we added the experimental occupation and class data into the dataset for rf tuned test we see that the accuracy improves to 0.8403 and sensitivity is 0.9223 and specificity is 0.5891 with prevalence being the same as before and balanced accuracy improved to 0.7557. The F1 score for this is 0.896
 
 
 # Results
 
-This project created a machine learning model that predicts income level of adults based on 
-7 shortlisted attributes. This model was run on a test dataset that included an income level indicator, allowing us to compare the predicted and actual value.
+This project created a machine learning model that predicts income level of adults based on 7 shortlisted attributes and 2 experimental attributes. This model was run on a test dataset that included an income level indicator, allowing us to compare the predicted and actual value.
 
-The final model that was chosen after comparison was random forest model. The model returned an accuracy of 82 to 83% while predicting annual income more than $50,000 annually. A summary table of results is given below:
+The final model that was chosen after comparison was random forest model. The model returned an accuracy of 82 to 83% while predicting annual income more than $50,000 annually. If occupation and class (with 5% unknown data) are included as features then accuracy changes to 83 to 84%. A summary table of results is given below:
 
 ```{r,echo=FALSE,fig.retina = 2, fig.cap ="Final Results"}
 library(ggplot2)  # For plotting
@@ -1158,9 +1297,7 @@ knitr::include_graphics(img_path)
 
 The accuracy of the predictions is backed by sensitivity of 0.9163 and specificity of 0.539. The F1 score 0.8867 vouches for the sensitivity and specificity. 
 
-This model can be used to determine income levels for adults in any year with similar attribute 
-sets and achieve comparable accuracies. The following attributes were determined to 
-influence annual adult incomes in the US:
+This model can be used to determine income levels for adults in any year with similar attribute sets and achieve comparable accuracies. The following attributes were determined to influence annual adult incomes in the US:
 
 - age
 - eduyears
@@ -1169,16 +1306,15 @@ influence annual adult incomes in the US:
 - hoursperweek
 - maritalstatus
 - relationship
-- occupation (experimental with 5% unknown data)
+- occupation and class (experimental with 5% unknown data each)
 
 # Conclusion
 
-This machine learning model was able to predict annual incomes of persons in US based (1994) on 
-7 parameters with an accuracy of 82%. This model can be applied to data from other census 
-years as well. The model will perform better if the training set is updated with new data that 
-is confirmed for correctness, that is, the label value is the real life value, and not the predicted 
-value. The model can continuously learn from changing data in the training set to adapt to 
-new parameters, thus improving its accuracy and other metrics
+This machine learning model was able to predict annual incomes of persons in US based (1994) on 7 parameters with an accuracy of 82 to 83%. This model can be applied to data from other census years as well. The model will perform better if the training set is updated with new data that is confirmed for correctness, that is, the label value is the real life value, and not the predicted value. Additional data for certain features like marital status, occupation, and class will make the model better. The model can continuously learn from changing data in the training set to adapt to new parameters, thus improving its accuracy and other metrics
+
+Further improvements could be made by use random oversampling and/or undersampling techniques to fill the void created by imbalanced datasets.
+
+Another approach for improving accuracy would be to create an essemble based on multiple algorithms like rpart, random forest and glm.
 
 ### Appendix A - Complete code
 
