@@ -139,7 +139,7 @@ specificity_nb <- cm_nb$byClass[["Specificity"]]
 prevalence_nb <- cm_nb$byClass[["Prevalence"]]  
 f1_nb <- cm_nb$byClass[["F1"]]
 
-auc(ifelse(adultpayclean_validation$income == "Above50K",1,2), ifelse(unname(y_hat_nb) == "Above50K",1,2))
+auc(ifelse(adultpayclean_validation$income == "Above50K",1,2), ifelse(unname(y_hat_nb) == "TRUE",1,2))
 
 
 # translate income factor into binary outcome
@@ -186,7 +186,7 @@ specificity_knn <- cm_knn$byClass[["Specificity"]]
 prevalence_knn <- cm_knn$byClass[["Prevalence"]]
 f1_knn <- cm_knn$byClass[["F1"]]
 
-auc(ifelse(adultpayclean_validation$income == "Above50K",1,2), ifelse(unname(y_hat_knn) == "Above50K",1,2))
+auc(ifelse(adultpayclean_validation$income == "Above50K",1,2), ifelse(unname(y_hat_knn) == "TRUE",1,2))
 
 
 #k-nearest classification using tuning function
@@ -228,8 +228,8 @@ knn_fit <-
     k = ks[which.max(knntune$test)]
   )
 
-y_hat <- predict(knn_fit, adultpayclean_validation, type = "class")
-cm_knntune <- confusionMatrix(y_hat, as.factor(adultpayclean_validation$income == "Above50K"))
+y_hat_knntune <- predict(knn_fit, adultpayclean_validation, type = "class")
+cm_knntune <- confusionMatrix(y_hat_knntune, as.factor(adultpayclean_validation$income == "Above50K"))
 
 cm_knntune
 
@@ -238,6 +238,8 @@ sensitivity_knntune <- cm_knntune$byClass[["Sensitivity"]]
 specificity_knntune <- cm_knntune$byClass[["Specificity"]]
 prevalence_knntune <- cm_knntune$byClass[["Prevalence"]]
 f1_knntune <- cm_knntune$byClass[["F1"]]
+
+auc(ifelse(adultpayclean_validation$income == "Above50K",1,2), ifelse(unname(y_hat_knntune) == "TRUE",1,2))
 
 
 #recursive partitioning using rpart
@@ -251,14 +253,14 @@ train_rpart <-
     data = temp
   )
 #predict the outcomes with this model
-y_hat <- predict(train_rpart, adultpayclean_validation)
+y_hat_rpart <- predict(train_rpart, adultpayclean_validation)
 #confusion matrix for the rpart model
 cm_rpart <-
-  confusionMatrix(y_hat,
+  confusionMatrix(y_hat_rpart,
                   as.factor(adultpayclean_validation$income  == "Above50K"))
 #get the accuracy
 accuracy_rpart <-
-  confusionMatrix(y_hat,
+  confusionMatrix(y_hat_rpart,
                   as.factor(adultpayclean_validation$income  == "Above50K"))$overall["Accuracy"]
 
 cm_rpart
@@ -268,22 +270,28 @@ specificity_rpart <- cm_rpart$byClass[["Specificity"]]
 prevalence_rpart <- cm_rpart$byClass[["Prevalence"]]
 f1_rpart <- cm_rpart$byClass[["F1"]]
 
+auc(ifelse(adultpayclean_validation$income == "Above50K",1,2), ifelse(unname(y_hat_rpart) == "TRUE",1,2))
+
+
 #random forest
 set.seed(2008)
 #train the vanilla random forest model 
 train_rf <-
   randomForest(y ~ age + eduyears + sex + race + hoursperweek + maritalstatus + relationship,
                data = temp)
+
+y_hat_rf <- predict(train_rf, adultpayclean_validation)
+
 #create the confusionMatrix
 cm_rf <-
   confusionMatrix(
-    predict(train_rf, adultpayclean_validation),
+    y_hat_rf,
     as.factor(adultpayclean_validation$income  == "Above50K")
   )
 #get the accuracy
 accuracy_rf <-
   confusionMatrix(
-    predict(train_rf, adultpayclean_validation),
+    y_hat_rf,
     as.factor(adultpayclean_validation$income  == "Above50K")
   )$overall["Accuracy"]
 
@@ -294,6 +302,9 @@ sensitivity_rf <- cm_rf$byClass[["Sensitivity"]]
 specificity_rf <- cm_rf$byClass[["Specificity"]]
 prevalence_rf <- cm_rf$byClass[["Prevalence"]]
 f1_rf <- cm_rf$byClass[["F1"]]
+
+auc(ifelse(adultpayclean_validation$income == "Above50K",1,2), ifelse(unname(y_hat_rf) == "TRUE",1,2))
+
 
 
 #random forest with tuning
@@ -338,6 +349,9 @@ sensitivity_rf2 <- cm_rf2$byClass[["Sensitivity"]]
 specificity_rf2 <- cm_rf2$byClass[["Specificity"]]
 prevalence_rf2 <- cm_rf2$byClass[["Prevalence"]]
 f1_rf2 <- cm_rf2$byClass[["F1"]]
+
+auc(ifelse(adultpayclean_validation$income == "Above50K",1,2), ifelse(unname(y_hat_rf2) == "TRUE",1,2))
+
 
 # tabulate all the accuracy results with sensitivity and specificity
 accuracy_results <-
