@@ -3,8 +3,8 @@ title: "Census pay predictions"
 author: "Rajesh Haridas"
 date: "December 15, 2021"
 output:
-  html_document: default
   pdf_document: default
+  html_document: default
 header-includes:
 - \DeclareUnicodeCharacter{2212}{-}
 - \DeclareUnicodeCharacter{21A9}{-}
@@ -96,11 +96,14 @@ Here is a glimpse of adultpay dataset. The columns that are of interest are inco
 
 ```
 
-We will start with data exploration and cleaning unwanted data and processing. Then we will mimic the ultimate evaluation process by splitting the data into two parts - training and validation and act as if we don’t know the outcome for one of these. We will split the dataset once we cleaned and processed the dataset. We want the test set to be large enough so that we obtain a stable prediction without fitting an impractical number of models. We will then progressively apply various algorithms on the training set and test the predictions on the test set and improve on the overall accuracy.
+We will start with data exploration and cleaning unwanted data and processing. Then we will mimic the ultimate evaluation process by splitting the data into two parts - training and validation and act as if we don’t know the outcome for the validation set. We will split the dataset once we cleaned and processed the dataset. We want the test set to be large enough so that we obtain a stable prediction without fitting an impractical number of models. We will then progressively apply various algorithms on the training set and test the predictions on the test set and improve on the overall accuracy.
 
-We will choose 13 attributes, income being be the outcome and the rest 12 attributes being the predictors or features. Looking at the dimensions we will randomly choose 10% of the dataset to be the test set and remaining 90% will be the training set. 90% is sizable enough to run various algorithms like lm, glm, knn, random forest with some tuning.
+We will choose 13 attributes, income being be the outcome and the rest 12 attributes being the predictors or features. After perusing the dimensions, we will randomly choose 10% of the dataset to be the test set and remaining 90% will be the training set. 90% is sizable enough to run various algorithms like lm, glm,nb, knn, rpart, and random forest with some tuning.
 
 ```{r}
+library(tidyverse)
+library(gridExtra)
+library(kableExtra)
 
 # > dim(adultpayclean)
 
@@ -116,17 +119,22 @@ We will choose 13 attributes, income being be the outcome and the rest 12 attrib
 
 # > colSums(is.na(adultpayclean))
 
-#           age         fnlwgt      education  education.num marital.status     occupation   relationship 
-
-#             0              0              0              0              0              0              0 
-
-#          race            sex hours.per.week native.country         income          class 
-
-#             0              0              0              0              0              0 
+matrix(
+  c("0","0","0","0","0","0","0","0","0"),
+  nrow = 1,
+  ncol = 9,
+  byrow = TRUE,
+    dimnames = list(
+      c(
+        "NAs"
+      ),
+      c("age", "education", "education.num","sex","race", "marital.status", "occupation", "relationship","workclass")
+    )
+) %>% knitr::kable() %>% kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
 
 ```
 
-This is a classification problem and the outcome is binary (income above-50K or at-or-below-50K).On reviewing the summary of the dataset we have a choice of predictors. We will keep only USA specific data. Almost all of the predictors have data spread out. There are no NAs in the dataset. There is sufficient degree of variability.
+This is a classification problem and the outcome is binary (income above-50K or at-or-below-50K). On reviewing the summary of the dataset we have a choice of predictors. We will keep only USA specific data. Almost all of the predictors have data spread out. There are no NAs in the dataset. There is sufficient degree of variability.
 
 ```{r}
 #summary(adultpayclean)
@@ -271,7 +279,7 @@ knitr::include_graphics(img_path)
 img_path <- "images/edufreqtab.png"
 knitr::include_graphics(img_path)
 ```
-```{r,echo=FALSE,fig.retina = 1, fig.cap ="Education distribution"}
+```{r,echo=FALSE,out.width="70%" fig.cap ="Education distribution"}
 library(ggplot2)  # For plotting
 library(png) 
 img_path <- "images/incomebyeducation.png"
@@ -281,7 +289,7 @@ knitr::include_graphics(img_path)
 
 ```
 
-The number of high-school graduates are most frequent than other groups. There are 2 income distributions for education. One by the level of education and one by the number of years spent in education. Sure enough, most of the Above-50K earners have at least high-school education. Bachelors and some college have more above-50K earners than other categories. Interestingly enough, in comparison to Bachelors and some college masters have lesser Above-50K. Additionally, the group that has at least 12 years of education have more Above-50K than others. There are more at-or-below 50K earners in the high-school grad and less than 10 years of education categories. The rest of the groups have sparse data. This could be because of missing or bad data that was removed during initial cleaning before it was loaded into kaggle.
+The number of high-school graduates are most frequent than other groups. There are 2 income distributions for education. One by the level of education and one by the number of years spent in education. Sure enough, most of the Above-50K earners have at least high-school education. Bachelors and some college have more above-50K earners than other categories. Interestingly enough, in comparison to Bachelors and some college, group with masters have lesser Above-50K. Additionally, the group that has at least 12 years of education have more Above-50K than others. There are more at-or-below 50K earners in the high-school grad and less than 10 years of education categories. The rest of the groups have sparse data. This could be because of missing or bad data that was removed during initial cleaning before it was loaded into kaggle.
 
 ```{r,echo=FALSE,fig.retina = 2, fig.cap ="Occupation frequency"}
 library(ggplot2)  # For plotting
@@ -292,7 +300,7 @@ img_path <- "images/occupationtab.png"
 knitr::include_graphics(img_path)
 
 ```
-```{r,echo=FALSE,fig.retina = 1, fig.cap ="Occupation distribution"}
+```{r,echo=FALSE,out.width="70%" fig.cap ="Occupation distribution"}
 library(ggplot2)  # For plotting
 library(png) 
 img_path <- "images/incomebyoccpstatus.png"
@@ -326,7 +334,7 @@ img_path <- "images/incomebyrace.png"
 knitr::include_graphics(img_path)
 ```
 
-There are more whites in the labor force in both the Above-50K and at-or-below-50K categories. Blacks and other race follow next. The proportion of Above-50K earners are lesser in other races when compared to whites.
+There are more white-Americans in the labor force in both the Above-50K and at-or-below-50K categories. Black-Americans and other race follow next. The proportion of Above-50K earners are lesser in other races when compared to white-Americans.
 
 
 ```{r,echo=FALSE,fig.retina = 2, fig.cap ="Marital Status frequency"}
@@ -337,7 +345,7 @@ knitr::include_graphics(img_path)
 img_path <- "images/maritalstatustab.png"
 knitr::include_graphics(img_path)
 ```
-```{r,echo=FALSE,fig.retina = 1, fig.cap ="Marital Status distribution"}
+```{r,echo=FALSE,out.width="70%" fig.cap ="Marital Status distribution"}
 library(ggplot2)  # For plotting
 library(png) 
 img_path <- "images/incomebymaritalstatus.png"
@@ -427,7 +435,7 @@ The simplest way to evaluate the algorithm for the adultpay dataset is by simply
 
 We will also use F1 measure to validate the accuracy of the sensitivity and specificity and see if we have a good precision. F1 score is a combination of two important error metrics: Precision and Recall. Thus, it can be considered as the Harmonic mean of Precision and Recall error metrics for an imbalanced dataset with respect to binary classification of data. As income level has only 30% data for Above-50K class this score is useful. The highest possible value of an F-score is 1.0, indicating perfect precision and recall, and the lowest possible value is 0. Higher the precision the better. 
 
-We will also use a widely used plot receiver operating characteristic (ROC) curve. Receiver Operating Characteristic curves are a popular way to visualize the tradeoffs between sensitivitiy and specificity in a binary classifier. The ROC curve plots sensitivity (TPR) versus 1 - specificity or the false positive rate (FPR). This also gives us Area under the curve (a.k.a. AUC). The AUC summarizeS ROC in a single value. The probabilistic interpretation is that if you randomly choose a positive case and a negative case, the probability that the positive case outranks the negative case according to the classifier is given by the AUC Higher the AUC score the better. This indicates that the model has higher true positive rate and low false positive rate.
+We will also use a widely used plot receiver operating characteristic (ROC) curve. Receiver Operating Characteristic curves are a popular way to visualize the trade-offs between sensitivity and specificity in a binary classifier. The ROC curve plots sensitivity (TPR) versus 1 - specificity or the false positive rate (FPR). This also gives us Area under the curve (a.k.a. AUC). The AUC summarizes ROC in a single value. The probabilistic interpretation is that if you randomly choose a positive case and a negative case, the probability that the positive case outranks the negative case according to the classifier is given by the AUC Higher the AUC score the better. This indicates that the model has higher true positive rate and low false positive rate.
 
 
 ### Model Creation
@@ -1214,7 +1222,7 @@ When we add "Occupation" as one the feature (with some missing occupation data (
 
 When we add "class" as one the feature (with some missing occupation data (5%)) we see that the accuracy is 0.8283 and sensitivity and specificity are 0.9086 and 0.5822 respectively with a F1 score of 0.88864.
 
-Adding class has a negative impact on the accuracy and precision when compared to occupation. We can futher investigate into how often a specific feature is used in the predictions using variable importance
+Adding class has a negative impact on the accuracy and precision when compared to occupation. We can further investigate into how often a specific feature is used in the predictions using variable importance
 
 ```{r}
 
@@ -1361,7 +1369,7 @@ Lets tune this model just like the KNN3 classification and see if we can do bett
        
 ```
 
-The accuracy of random forest with tuning is at 0.8228, sensitivity is at 0.9232 and specificity is at 0.5153. Prevalence is about the same when compared to knn and rpart classification models. The confidence intervals is just about the same as rpart and random forest without tuning. Interestingly enough, the accuracy is slightly lesser than the random forest test without tuning. Overall there was no further improvement in accuracy. The tuning resulted in overfitting and didn't provide additional value to precision or accuracy.AUC also decreased slightly.
+The accuracy of random forest with tuning is at 0.8228, sensitivity is at 0.9232 and specificity is at 0.5153. Prevalence is about the same when compared to knn and rpart classification models. The confidence intervals is just about the same as rpart and random forest without tuning. Interestingly enough, the accuracy is slightly lesser than the random forest test without tuning. Overall there was no further improvement in accuracy. The tuning resulted in over-fitting and didn't provide additional value to precision or accuracy.AUC also decreased slightly.
 
 ```{r,echo=FALSE,fig.retina = 1, fig.cap ="random forest tuned classification summary"}
 library(ggplot2)  # For plotting
@@ -1405,9 +1413,9 @@ This model can be used to determine income levels for adults in any year with si
 
 This machine learning model was able to predict annual incomes of persons in US based (1994) on 7 parameters with an accuracy of 82 to 83%. This model can be applied to data from other census years as well. The model will perform better if the training set is updated with new data that is confirmed for correctness, that is, the label value is the real life value, and not the predicted value. Additional data for certain features like marital status, occupation, and class will make the model better. The model can continuously learn from changing data in the training set to adapt to new parameters, thus improving its accuracy and other metrics
 
-Further improvements could be made by use random oversampling and/or undersampling techniques to fill the void created by imbalanced datasets.
+Further improvements could be made by use random oversampling and/or under-sampling techniques to fill the void created by imbalanced datasets.
 
-Another approach for improving accuracy would be to create an essemble based on multiple algorithms like rpart, random forest and glm.
+Another approach for improving accuracy would be to create an ensemble based on multiple algorithms like rpart, random forest and glm.
 
 ### Appendix A - Complete code
 
