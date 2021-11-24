@@ -3,8 +3,8 @@ title: "Census pay predictions"
 author: "Rajesh Haridas"
 date: "December 15, 2021"
 output:
-  pdf_document: default
   html_document: default
+  pdf_document: default
 header-includes:
 - \DeclareUnicodeCharacter{2212}{-}
 - \DeclareUnicodeCharacter{21A9}{-}
@@ -545,7 +545,21 @@ Our goal is to improve the accuracy > 80% while keeping sensitivity and specific
 #### Logistic regression using linear models  \
 \
 
-We will start with a simple logistic model - linear model. We use the features age, eduyears, sex, race, maritalstatus, relationship and hoursperweek.
+We will start with a simple logistic model - linear model. We use the features age, eduyears, sex, race, maritalstatus, relationship and hoursperweek. 
+
+Both linear and logistic regressions provide an estimate for the conditional expectation:
+
+\[
+\mathit{E (Y \mid X = x)} 
+\]
+
+which in the case of binary data is equivalent to the conditional probability:
+
+\[
+\mathit{Pr (Y = 1 \mid X = x)} 
+\]
+
+We can use this to arrive at y_hat_logit. Since we have 7 features \(X = x\) is more like \(X_{i} = x_{i}\) where \(i\) is from 1 to 7.
 
 ```{r}
 
@@ -996,7 +1010,7 @@ knitr::include_graphics(img_path)
 #### Recursive partitioning with rpart  \
 \
 
-Next we use classification trees, or decision trees. We use the recursive partitioning library rpart for this.
+Next we use classification trees, or decision trees. We use the recursive partitioning library rpart for this. The general idea is to define an algorithm that uses data to create trees with predictions at the ends, referred to as nodes. Decision trees operate by predicting a categorical outcome variable  \(Y\) by partitioning the predictors.
 
 ```{r}
 
@@ -1081,7 +1095,7 @@ We will next look at random forest algorithm.
 
 Classification trees have certain advantages that make them very useful. They are highly interpretable, even more so than linear models. They are easy to visualize (if small enough). Finally, they can model human decision processes and don’t require use of dummy predictors for categorical variables. On the other hand, the approach via recursive partitioning can easily over-train and is therefore a bit harder to train than, for example, linear regression or kNN. Furthermore, in terms of accuracy, it is rarely the best performing method since it is not very flexible and is highly unstable to changes in training data. Random forests, explained next, improve on several of these shortcomings.
 
-The first step is bootstrap aggregation or bagging. The general idea is to generate many predictors, each using regression or classification trees, and then forming a final prediction based on the average prediction of all these trees.
+ The goal of random forest is to improve prediction performance and reduce instability by averaging multiple decision trees. The first step is bootstrap aggregation or bagging. The general idea is to generate many predictors, each using regression or classification trees, and then forming a final prediction based on the average prediction of all these trees.To assure that the individual trees are not the same, we use the bootstrap to induce randomness.
 
 ```{r}
 # train_rf <- randomForest(y ~ age + eduyears + sex + race + hoursperweek + maritalstatus + relationship, data=temp)
@@ -1192,7 +1206,7 @@ The accuracy of random forest is at 0.8235, sensitivity is at 0.9164 and specifi
 ```{r,echo=FALSE,fig.retina = 1, fig.cap ="random forest classification summary"}
 library(ggplot2)  # For plotting
 library(png) 
-img_path <- "images/rocrf.png"
+img_path <- "images/rfrocr.png"
 knitr::include_graphics(img_path)
 ```
 
