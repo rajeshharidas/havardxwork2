@@ -62,7 +62,7 @@ auc(ifelse(adultpayclean_validation$income == "Above50K",1,2), ifelse(seat_of_th
 # create the model
 lm_fit <- adultpayclean_train %>%
   mutate(y = as.numeric(income == "Above50K")) %>%
-  lm(y ~ age + eduyears + sex + race + hoursperweek + maritalstatus + relationship,
+  lm(y ~ age + eduyears + sex + race + hoursperweek + maritalstatus + relationship + education,
      data = .)
 
 # predict using test set
@@ -93,7 +93,7 @@ auc(ifelse(adultpayclean_validation$income == "Above50K",1,2), ifelse(unname(y_h
 glm_fit <- adultpayclean_train %>%
   mutate(y = as.numeric(income == "Above50K")) %>%
   glm(
-    y ~ age + eduyears + sex + race + hoursperweek + maritalstatus + relationship,
+    y ~ age + eduyears + sex + race + hoursperweek + maritalstatus + relationship + education,
     data = .,
     family = "binomial"
   )
@@ -126,7 +126,7 @@ auc(ifelse(adultpayclean_validation$income == "Above50K",1,2), ifelse(unname(y_h
 
 train_nb <- adultpayclean_train %>%
    mutate(y = as.factor(income == "Above50K")) %>% 
-   naiveBayes(y ~ age + eduyears + sex + race + hoursperweek + maritalstatus + relationship,data = .)
+   naiveBayes(y ~ age + eduyears + sex + race + hoursperweek + maritalstatus + relationship+education,data = .)
 
 y_hat_nb <- predict(train_nb, newdata = adultpayclean_validation)
 cm_tab <- table(adultpayclean_validation$income == "Above50K", y_hat_nb)
@@ -153,7 +153,7 @@ control <- trainControl(method = "cv", number = 10, p = .9)
 # train the model using knn. choose the best k value using tuning algorithm
 train_knn <-
   train(
-    y ~ age + eduyears + sex + race + hoursperweek + maritalstatus + relationship,
+    y ~ age + eduyears + sex + race + hoursperweek + maritalstatus + relationship + education,
     method = "knn",
     data = temp,
     tuneGrid = data.frame(k = seq(3, 71, 2)),
@@ -202,7 +202,7 @@ knntune <- map_df(ks, function(k) {
   #create the kkn3 model
   knn_fit <-
     knn3(
-      y ~ age + eduyears + sex + race + hoursperweek + maritalstatus + relationship,
+      y ~ age + eduyears + sex + race + hoursperweek + maritalstatus + relationship+education,
       data = temp,
       k = k
     )
@@ -223,7 +223,7 @@ accuracy_knntune <- max(knntune$test)
 #get the confusion matrix for that k
 knn_fit <-
   knn3(
-    y ~ age + eduyears + sex + race + hoursperweek + maritalstatus + relationship,
+    y ~ age + eduyears + sex + race + hoursperweek + maritalstatus + relationship+education,
     data = temp,
     k = ks[which.max(knntune$test)]
   )
@@ -247,7 +247,7 @@ set.seed(2008)
 #train the model with the recursive partitioning
 train_rpart <-
   train(
-    y ~ age + eduyears + sex + race + hoursperweek + maritalstatus + relationship,
+    y ~ age + eduyears + sex + race + hoursperweek + maritalstatus + relationship+education,
     method = "rpart",
     tuneGrid = data.frame(cp = seq(0.0, 0.1, len = 25)),
     data = temp
@@ -277,7 +277,7 @@ auc(ifelse(adultpayclean_validation$income == "Above50K",1,2), ifelse(unname(y_h
 set.seed(2008)
 #train the vanilla random forest model 
 train_rf <-
-  randomForest(y ~ age + eduyears + sex + race + hoursperweek + maritalstatus + relationship,
+  randomForest(y ~ age + eduyears + sex + race + hoursperweek + maritalstatus + relationship+education,
                data = temp)
 
 y_hat_rf <- predict(train_rf, adultpayclean_validation)
@@ -312,7 +312,7 @@ nodesize <- seq(1, 90, 10)
 acc <- sapply(nodesize, function(ns) {
   #train the model with tuning
   train(
-    y ~ age + eduyears + sex + race + hoursperweek + maritalstatus + relationship,
+    y ~ age + eduyears + sex + race + hoursperweek + maritalstatus + relationship+education,
     method = "rf",
     data = temp,
     tuneGrid = data.frame(mtry = 2),
@@ -323,7 +323,7 @@ qplot(nodesize, acc)
 #get the trained model for the max node size
 train_rf_2 <-
   randomForest(
-    y ~ age + eduyears + sex + race + hoursperweek + maritalstatus + relationship,
+    y ~ age + eduyears + sex + race + hoursperweek + maritalstatus + relationship+education,
     data = temp,
     nodesize = nodesize[which.max(acc)]
   )
