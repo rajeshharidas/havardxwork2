@@ -191,7 +191,7 @@ This is a classification problem and the outcome is binary (income above-50K or 
 
 ```
 
-We can also see the number or above-50K income is significantly less than (30%) the at-or-below-50K income. This implies that there is prevalence of at-or-below-50K group in the dataset.
+We can also see the number or above-50K income is significantly less than (25%) the at-or-below-50K income. This implies that there is prevalence of at-or-below-50K group in the dataset.
 
 ```{r,echo=FALSE,fig.retina = 2, fig.cap ="Income distribution" , warning=FALSE, regfloat=FALSE}
 library(ggplot2)  # For plotting
@@ -680,7 +680,7 @@ We will now experiment with the general linear model (glm). We will be consisten
 
 # mutate(y = as.numeric(income == "Above50K")) %>%
 
-# glm(y ~ age + eduyears + sex + race + hoursperweek + maritalstatus + relationship, data=., family = "binomial")
+# glm(y ~ age + eduyears + sex + race + hoursperweek + maritalstatus + relationship+education, data=., family = "binomial")
 
 # p_hat_logit <- predict(glm_fit, newdata = adultpayclean_validation)
 
@@ -761,7 +761,7 @@ We will now experiment with generative models like naive bayes classification. I
 ##   mutate(y = as.factor(income == "Above50K")) %>% 
 
 ##   naiveBayes(y ~ age + eduyears + sex + race + hoursperweek + maritalstatus + 
-##   relationship,data = .)
+##   relationship+education,data = .)
 
 ## y_hat_nb <- predict(train_nb, newdata = adultpayclean_validation)
 
@@ -845,7 +845,7 @@ Lets explore k-nearest model now with same feature set. We will use cross-valida
 
 # control <- trainControl(method = "cv", number = 10, p = .9)
 
-# train_knn <-  train(y ~ age + eduyears + sex + race + hoursperweek + maritalstatus + relationship, method = "knn", 
+# train_knn <-  train(y ~ age + eduyears + sex + race + hoursperweek + maritalstatus + relationship+education, method = "knn", 
 #                    data = temp,
 #                    tuneGrid = data.frame(k = seq(3, 71, 2)),trControl = control)
 
@@ -858,7 +858,7 @@ Lets explore k-nearest model now with same feature set. We will use cross-valida
 # ggplot(train_knn, highlight = TRUE)
 
 # > accuracy_knn
-# [1] 0.8081
+# [1] 0.80535
 
 ```
 
@@ -883,50 +883,51 @@ Here is the confusion matrix for the knn tuned raw model
 
 ## Prediction FALSE TRUE
 
-##      FALSE  1988  348
+##      FALSE  1992  360
 
-##      TRUE    212  370
+##      TRUE    208  358
 ##                                           
-##                Accuracy : 0.8081     
+##                Accuracy : 0.8053   
 
-##                  95% CI : (0.7933, 0.8222)
+##                  95% CI : (0.7905, 0.8196)
 
-##     No Information Rate : 0.7539          
+##     No Information Rate : 0.7539       
 
-##     P-Value [Acc > NIR] : 1.777e-12       
+##     P-Value [Acc > NIR] : 2.195e-11       
 ##                                           
-##                   Kappa : 0.4475          
+##                   Kappa : 0.4351          
 ##                                           
-##  Mcnemar's Test P-Value : 1.165e-08       
+##  Mcnemar's Test P-Value : 2.361e-10       
 ##                                           
-##             Sensitivity : 0.9036        
+##             Sensitivity : 0.9055      
 
-##             Specificity : 0.5153        
+##             Specificity : 0.4986        
 
-##          Pos Pred Value : 0.8510      
+##          Pos Pred Value : 0.8469      
 
-##          Neg Pred Value : 0.6357     
+##          Neg Pred Value : 0.6325   
 
-##              Prevalence : 0.7539
+##              Prevalence : 0.7539     
 
-##          Detection Rate : 0.6813    
+##          Detection Rate : 0.6827    
 
-##    Detection Prevalence : 0.8005      
+##    Detection Prevalence : 0.8060     
 
-##       Balanced Accuracy : 0.7095          
+##       Balanced Accuracy : 0.7020          
 ##                                           
 ##        'Positive' Class : FALSE           
+##        
 ## 
 
 # f1_knn
 
 # [1] 0.87522
 
-# Area under the curve: 0.7095
+# Area under the curve: 0.702
        
 ```
 
-knn raw model produces same accuracy of 0.8081, however, specificity is lower than sensitivity and prevalence is now 0.753. We now see the positive prediction is better. F1 score has improved. However, the AUC score is less than naive bayes. This indicates that the number of true positives are lesser than before. Balanced accuracy is better. Can we do better with accuracy and precision? 
+knn raw model produces accuracy of 0.8053, however, specificity is lower than sensitivity and prevalence is now 0.753. We now see the positive prediction is better. F1 score has improved. However, the AUC score is less than naive bayes. This indicates that the number of true positives are lesser than before. Balanced accuracy is better. Can we do better with accuracy and precision? 
 
 ```{r,echo=FALSE,out.width="50%", fig.cap ="knn classification summary" , warning=FALSE, regfloat=FALSE}
 library(ggplot2)  # For plotting
@@ -952,7 +953,7 @@ We will now try to use classification with knn3. We will again use different val
 
 #    mutate(y = as.factor(income == "Above50K"))
   
-#  knn_fit <- knn3(y ~ age + eduyears + sex + race + hoursperweek + maritalstatus + relationship, data = temp, k = k)
+#  knn_fit <- knn3(y ~ age + eduyears + sex + race + hoursperweek + maritalstatus + relationship+education, data = temp, k = k)
   
 #  y_hat <- predict(knn_fit, temp, type = "class")
 
@@ -997,50 +998,51 @@ We will now try to use classification with knn3. We will again use different val
 
 ## Prediction FALSE TRUE
 
-##      FALSE  1987  342
+##      FALSE  1994  351
 
-##      TRUE    213  376
+##      TRUE    206  367
 ##                                           
-##                Accuracy : 0.8098       
+##                Accuracy : 0.8091    
 
-##                  95% CI : (0.7951, 0.8239)
+##                  95% CI : (0.7944, 0.8232)
 
-##     No Information Rate : 0.7539          
+##     No Information Rate : 0.7539         
 
-##     P-Value [Acc > NIR] : 3.442e-13       
+##     P-Value [Acc > NIR] : 6.680e-13       
 ##                                           
-##                   Kappa : 0.4544          
+##                   Kappa : 0.448           
 ##                                           
-##  Mcnemar's Test P-Value : 5.532e-08       
+##  Mcnemar's Test P-Value : 1.051e-09       
 ##                                           
-##             Sensitivity : 0.9032     
+##             Sensitivity : 0.9064     
 
-##             Specificity : 0.5237      
+##             Specificity : 0.5111      
 
-##          Pos Pred Value : 0.8532     
+##          Pos Pred Value : 0.8503     
 
-##          Neg Pred Value : 0.6384       
+##          Neg Pred Value : 0.6405   
 
-##              Prevalence : 0.7539     
+##              Prevalence : 0.7539  
 
-##          Detection Rate : 0.6809    
+##          Detection Rate : 0.6833   
 
-##    Detection Prevalence : 0.7981    
+##    Detection Prevalence : 0.8036    
 
-##       Balanced Accuracy : 0.7134          
+##       Balanced Accuracy : 0.7088          
 ##                                           
 ##        'Positive' Class : FALSE           
+##        
 ##  
 
 # > f1_knntune
 
-# [1] 0.8774564
+# [1] 0.87745
 
-# Area under the curve: 0.7134
+# Area under the curve: 0.7088
 
 ```
 
-The accuracy of the knn tuned classification is 0.8098 with a sensitivity of 0.9032 and specificity of 0.5237. This is better than the previous models. Prevalence is just about the same as raw knn. Balanced accuracy has improved. F1 score is also at ~ 88% and AUC has improved a bit.
+The accuracy of the knn tuned classification is 0.8091 with a sensitivity of 0.9064 and specificity of 0.5111. This is better than the previous models. Prevalence is just about the same as raw knn. Balanced accuracy has improved. F1 score is also at ~ 88% and AUC has improved a bit.
 
 ```{r,echo=FALSE,out.width="50%", fig.cap ="knn tune classification summary" , warning=FALSE, regfloat=FALSE}
 library(ggplot2)  # For plotting
@@ -1056,7 +1058,7 @@ Next we use classification trees, or decision trees. We use the recursive partit
 
 ```{r}
 
-# train_rpart <- train(y ~ age + eduyears + sex + race + hoursperweek + maritalstatus + relationship,
+# train_rpart <- train(y ~ age + eduyears + sex + race + hoursperweek + maritalstatus + relationship+education,
 #                     method = "rpart",
 #                     tuneGrid = data.frame(cp = seq(0.0, 0.1, len = 25)),
 #                     data = temp)
@@ -1081,11 +1083,11 @@ Next we use classification trees, or decision trees. We use the recursive partit
 
 ##      TRUE    198  394
 ##                                           
-##                Accuracy : 0.8211    
+##                Accuracy : 0.8211 
 
 ##                  95% CI : (0.8067, 0.8349)
 
-##     No Information Rate : 0.7539        
+##     No Information Rate : 0.7539       
 
 ##     P-Value [Acc > NIR] : < 2.2e-16       
 ##                                           
@@ -1093,19 +1095,19 @@ Next we use classification trees, or decision trees. We use the recursive partit
 ##                                           
 ##  Mcnemar's Test P-Value : 4.472e-08       
 ##                                           
-##             Sensitivity : 0.9100       
+##             Sensitivity : 0.9100     
 
-##             Specificity : 0.5487        
+##             Specificity : 0.5487     
 
-##          Pos Pred Value : 0.8607         
+##          Pos Pred Value : 0.8607      
 
-##          Neg Pred Value : 0.6655       
+##          Neg Pred Value : 0.6655     
 
-##              Prevalence : 0.7539       
+##              Prevalence : 0.7539      
 
 ##          Detection Rate : 0.6861    
 
-##    Detection Prevalence : 0.7971    
+##    Detection Prevalence : 0.7971     
 
 ##       Balanced Accuracy : 0.7294          
 ##                                           
@@ -1140,7 +1142,7 @@ Classification trees have certain advantages that make them very useful. They ar
  The goal of random forest is to improve prediction performance and reduce instability by averaging multiple decision trees. The first step is bootstrap aggregation or bagging. The general idea is to generate many predictors, each using regression or classification trees, and then forming a final prediction based on the average prediction of all these trees.To assure that the individual trees are not the same, we use the bootstrap to induce randomness.
 
 ```{r}
-# train_rf <- randomForest(y ~ age + eduyears + sex + race + hoursperweek + maritalstatus + relationship, data=temp)
+# train_rf <- randomForest(y ~ age + eduyears + sex + race + hoursperweek + maritalstatus + relationship+education, data=temp)
 
 # accuracy_rf <- confusionMatrix(predict(train_rf, adultpayclean_validation),
 #                as.factor(adultpayclean_validation$income  == "Above50K"))$overall["Accuracy"]
@@ -1150,7 +1152,7 @@ Classification trees have certain advantages that make them very useful. They ar
 
 # Accuracy 
 
-# 0.8235 
+# 0.8218 
 
 ## Confusion Matrix and Statistics
 ## 
@@ -1158,37 +1160,37 @@ Classification trees have certain advantages that make them very useful. They ar
 
 ## Prediction FALSE TRUE
 
-##      FALSE  2016  331
+##      FALSE  2012  332
 
-##      TRUE    184  387
+##      TRUE    188  386
 ##                                           
-##                Accuracy : 0.8235   
+##                Accuracy : 0.8218      
 
-##                  95% CI : (0.8092, 0.8372)
+##                  95% CI : (0.8074, 0.8355)
 
-##     No Information Rate : 0.7539      
+##     No Information Rate : 0.7539         
 
 ##     P-Value [Acc > NIR] : < 2.2e-16       
 ##                                           
-##                   Kappa : 0.4891          
+##                   Kappa : 0.4849          
 ##                                           
-##  Mcnemar's Test P-Value : 1.247e-10       
+##  Mcnemar's Test P-Value : 3.588e-10       
 ##                                           
-##             Sensitivity : 0.9164       
+##             Sensitivity : 0.9145    
 
-##             Specificity : 0.5390      
+##             Specificity : 0.5376    
 
-##          Pos Pred Value : 0.8590       
+##          Pos Pred Value : 0.8584   
 
-##          Neg Pred Value : 0.6778     
+##          Neg Pred Value : 0.6725   
 
 ##              Prevalence : 0.7539       
 
-##          Detection Rate : 0.6909    
+##          Detection Rate : 0.6895      
 
-##    Detection Prevalence : 0.8043    
+##    Detection Prevalence : 0.8033      
 
-##       Balanced Accuracy : 0.7277          
+##       Balanced Accuracy : 0.7261          
 ##                                           
 ##        'Positive' Class : FALSE           
 ##  
@@ -1237,13 +1239,13 @@ Classification trees have certain advantages that make them very useful. They ar
 
 # f1_rf
 
-# [1] 0.8867385
+# [1] 0.88556
 
-# Area under the curve: 0.7277
+# Area under the curve: 0.7261
 
 ```
 
-The accuracy of random forest is at 0.8235, sensitivity is at 0.9164 and specificity is at 0.5390. Prevalence is about the same when compared to knn and rpart classification models. The confidence intervals is about the same as rpart. The F1 score is 0.88674 is the best so far. AUC also on the positive side
+The accuracy of random forest is at 0.8218, sensitivity is at 0.9145 and specificity is at 0.5376. Prevalence is about the same when compared to knn and rpart classification models. The confidence intervals is about the same as rpart. The F1 score is 0.88556 is the best so far. AUC also on the positive side
 
 ```{r,echo=FALSE,out.width="50%", fig.cap ="random forest classification summary" , warning=FALSE, regfloat=FALSE}
 library(ggplot2)  # For plotting
@@ -1312,7 +1314,7 @@ Lets tune this model just like the KNN3 classification and see if we can do bett
 
 # Accuracy 
 
-# 0.8241947
+# 0.8239
 
 ## Confusion Matrix and Statistics
 ## 
@@ -1320,39 +1322,40 @@ Lets tune this model just like the KNN3 classification and see if we can do bett
 
 ## Prediction FALSE TRUE
 
-##      FALSE  2031  348
+##      FALSE  2016  330
 
-##      TRUE    169  370
+##      TRUE    184  388
 ##                                           
-##                Accuracy : 0.8228   
+##                Accuracy : 0.8239   
 
-##                  95% CI : (0.8085, 0.8365)
+##                  95% CI : (0.8095, 0.8375)
 
-##     No Information Rate : 0.7539         
+##     No Information Rate : 0.7539       
 
 ##     P-Value [Acc > NIR] : < 2.2e-16       
 ##                                           
-##                   Kappa : 0.4787          
+##                   Kappa : 0.4903          
 ##                                           
-##  Mcnemar's Test P-Value : 4.94e-15        
+##  Mcnemar's Test P-Value : 1.598e-10       
 ##                                           
-##             Sensitivity : 0.9232      
+##             Sensitivity : 0.9164       
 
-##             Specificity : 0.5153     
+##             Specificity : 0.5404   
 
-##          Pos Pred Value : 0.8537      
+##          Pos Pred Value : 0.8593     
 
-##          Neg Pred Value : 0.6865       
+##          Neg Pred Value : 0.6783      
 
-##              Prevalence : 0.7539      
+##              Prevalence : 0.7539    
 
-##          Detection Rate : 0.6960      
+##          Detection Rate : 0.6909   
 
-##    Detection Prevalence : 0.8153       
+##    Detection Prevalence : 0.8040   
 
-##       Balanced Accuracy : 0.7193          
+##       Balanced Accuracy : 0.7284          
 ##                                           
 ##        'Positive' Class : FALSE           
+##        
 ##  
 
 # Confusion Matrix and Statistics
@@ -1397,13 +1400,13 @@ Lets tune this model just like the KNN3 classification and see if we can do bett
 
 # f1_rf2
 
-# [1] 0.8870933
+# [1] 	0.88693
 
-# Area under the curve: 0.7186
+# Area under the curve: 0.7284
        
 ```
 
-The accuracy of random forest with tuning is at 0.8228, sensitivity is at 0.9232 and specificity is at 0.5153. Prevalence is about the same when compared to knn and rpart classification models. The confidence intervals is just about the same as rpart and random forest without tuning. Interestingly enough, the accuracy is slightly lesser than the random forest test without tuning. Overall there was no further improvement in accuracy. The tuning resulted in over-fitting and didn't provide additional value to precision or accuracy.AUC also decreased slightly.
+The accuracy of random forest with tuning is at 0.8239, sensitivity is at 0.9164 and specificity is at 0.5404. Prevalence is about the same when compared to knn and rpart classification models. The confidence intervals is just about the same as rpart and random forest without tuning.AUC also decreased slightly.
 
 ```{r,echo=FALSE,out.width="50%", fig.cap ="random forest tuned classification summary" , warning=FALSE, regfloat=FALSE}
 library(ggplot2)  # For plotting
@@ -1430,12 +1433,13 @@ knitr::include_graphics(img_path)
 
 ```
 
-The accuracy of the predictions is backed by sensitivity of 0.9163 and specificity of 0.539. The F1 score 0.8867 vouches for the sensitivity and specificity. AUC is around 0.72 and is considered as acceptable considering some degree of imbalance in the dataset. 
+The accuracy of the predictions is backed by sensitivity of 0.9163 and specificity of 0.540. The F1 score 0.8869 vouches for the sensitivity and specificity. AUC is around 0.728 and is considered as acceptable considering some degree of imbalance in the dataset. 
 
 This model can be used to determine income levels for adults in any year with similar attribute sets and achieve comparable accuracies. The following attributes were determined to influence annual adult incomes in the US:
 
 - age
 - eduyears
+- education
 - sex
 - race
 - hoursperweek
@@ -1450,6 +1454,8 @@ This machine learning model was able to predict annual incomes of persons in US 
 Further improvements could be made by use random oversampling and/or under-sampling techniques to fill the void created by imbalanced datasets.
 
 Another approach for improving accuracy would be to create an ensemble based on multiple algorithms like rpart, random forest and glm.
+
+Additionally, we could also use advanced algorithms like Gradient Boost Trees, support Vector Machines, and Deep Learning to improve the predicted outcomes.
 
 ### Appendix A - Complete code
 
