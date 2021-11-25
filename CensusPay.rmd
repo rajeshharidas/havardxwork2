@@ -920,7 +920,7 @@ Here is the confusion matrix for the knn tuned raw model
 
 # f1_knn
 
-# [1] 0.8765432
+# [1] 0.87522
 
 # Area under the curve: 0.7095
        
