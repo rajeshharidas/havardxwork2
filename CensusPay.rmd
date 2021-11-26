@@ -100,7 +100,7 @@ Here is a glimpse of adultpay dataset. The columns that are of interest are inco
 
 We will start with data exploration and cleaning unwanted data and processing. Then we will mimic the ultimate evaluation process by splitting the data into two parts - training and validation and act as if we don’t know the outcome for the validation set. We will split the dataset once we cleaned and processed the dataset. We want the test set to be large enough so that we obtain a stable prediction without fitting an impractical number of models. We will then progressively apply various algorithms on the training set and test the predictions on the test set and improve on the overall accuracy.
 
-We will choose 13 attributes, income being be the outcome and the rest 12 attributes being the predictors or features. After perusing the dimensions, we will randomly choose 10% of the dataset to be the test set and remaining 90% will be the training set. 90% is sizable enough to run various algorithms like lm, glm,nb, knn, rpart, and random forest with some tuning.
+We will choose 13 attributes, income being the outcome and the rest 12 attributes being the predictors or features. After perusing the dimensions, we will randomly choose 10% of the dataset to be the test set and remaining 90% will be the training set. 90% is sizable enough to run various algorithms like lm, glm,nb, knn, rpart, and random forest with some tuning.
 
 ```{r echo=FALSE, warning=FALSE, regfloat=FALSE}
 library(tidyverse)
@@ -205,7 +205,7 @@ So we begin...
 
 # Analysis
 
-### Data Exploration, cleaning, processing and, feature engineering
+## Data Exploration, cleaning, processing and, feature engineering
 
 The adult pay dataset from census bureau is a ML ready database. For convenience, I have downloaded it from kaggle and stored in the same github repository as this code and markdown. The dataset is in zip format and is downloaded from https://github.com/rajeshharidas/havardxwork2/blob/main/adult.csv.zip. Then it is read into a data frame. The data is ML ready for the most part. However, there are some additional cleaning tasks needed before using the dataset. This processing is done in DatasetProcessingCode.R file. Code fragment is shown below. We perform the following cleaning tasks
 
@@ -280,7 +280,7 @@ img_path <- "images/edufreqbar.png"
 knitr::include_graphics(img_path)
 ```
 
-The number of high-school graduates are most frequent than other groups. There are 2 income distributions for education. One by the level of education and one by the number of years spent in education. Sure enough, most of the Above-50K earners have at least high-school education. Bachelors and some college have more above-50K earners than other categories. 
+The number of high-school graduates are most frequent than other groups. There are 2 income distributions for education. One by the level of education and one by the number of years spent in education. Sure enough, most of the above-50K earners have at least high-school education. Bachelors and some college have more above-50K earners than other categories. 
 
 ```{r,echo=FALSE,out.width="75%", fig.cap ="Education income distribution" , warning=FALSE, regfloat=FALSE}
 library(ggplot2)  # For plotting
@@ -292,7 +292,7 @@ knitr::include_graphics(img_path)
 
 ```
 
-Interestingly enough, in comparison to Bachelors and some college, group with masters have lesser Above-50K. Additionally, the group that has at least 12 years of education have more Above-50K than others. On a average the participants have 10 years of education with a standard deviation of 2.4. There are more at-or-below 50K earners in the high-school grad and less than 10 years of education categories. 
+Interestingly enough, in comparison to Bachelors and some college, group with masters have lesser above-50K. Additionally, the group that has at least 12 years of education have more above-50K than others. On an average the participants have 10 years of education with a standard deviation of 2.4. There are more at-or-below 50K earners in the high-school grad and less than 10 years of education categories. 
 
 ```{r,echo=FALSE,fig.retina = 2, fig.cap ="Years of education" , warning=FALSE, regfloat=FALSE}
 library(ggplot2)  # For plotting
@@ -320,7 +320,7 @@ knitr::include_graphics(img_path)
 
 ```
 
-The same groups earn more and are in the Above-50K category.There are fairly significant number of at-or-below-50K earners in the other categories. There are 1600 or so missing data (? or Unknown). This makes up 5-6% of the cleaned dataset.
+The same groups earn more and are in the above-50K category. There are fairly significant number of at-or-below-50K earners in the other categories. There are 1600 or so missing data (? or Unknown). This makes up 5-6% of the cleaned dataset.
 
 ```{r,echo=FALSE,fig.retina = 2, fig.cap ="Sex feature characteristics" , warning=FALSE, regfloat=FALSE}
 library(ggplot2)  # For plotting
@@ -331,7 +331,7 @@ img_path <- "images/incomebysex.png"
 knitr::include_graphics(img_path)
 ```
 
-There are 67% more males in the workforce than females. The distribution also indicates that the number of males at Above-50K are more than the number of females. Additionally, there are more males at-or-below-50K than females as well.
+There are 67% more males in the workforce than females. The distribution also indicates that the number of males at above-50K are more than the number of females. Additionally, there are more males at-or-below-50K than females as well.
 
 ```{r,echo=FALSE,fig.retina = 2, fig.cap ="Race distribution" , warning=FALSE, regfloat=FALSE}
 library(ggplot2)  # For plotting
@@ -342,7 +342,7 @@ img_path <- "images/incomebyrace.png"
 knitr::include_graphics(img_path)
 ```
 
-There are more white-Americans in the labor force in both the Above-50K and at-or-below-50K categories. Black-Americans and other race follow next. The proportion of Above-50K earners are lesser in other races when compared to white-Americans.
+There are more white-Americans in the labor force in both the above-50K and at-or-below-50K categories. Black-Americans and other race follow next. The proportion of above-50K earners are lesser in other races when compared to white-Americans.
 
 
 ```{r,echo=FALSE,fig.retina = 2, fig.cap ="Marital Status frequency" , warning=FALSE, regfloat=FALSE}
@@ -352,7 +352,7 @@ img_path <- "images/maritalstatusbar.png"
 knitr::include_graphics(img_path)
 ```
 
-The number of married with civilian spouses are more than any other groups in labor force. The number of Above-50K and at-or-below-50K earners are also more in this group when compared to others. Singles follow next.
+The number of married with civilian spouses are more than any other groups in labor force. The number of above-50K and at-or-below-50K earners are also more in this group when compared to others. Singles follow next.
 
 ```{r,echo=FALSE,out.width="75%", fig.cap ="Marital Status distribution" , warning=FALSE, regfloat=FALSE}
 library(ggplot2)  # For plotting
@@ -361,7 +361,7 @@ img_path <- "images/incomebymaritalstatus.png"
 knitr::include_graphics(img_path)
 ```
 
-The number of at-or-below-50K are more than the Above-50K in the singles group and most of them are younger population. The plot also suggests most of this group is below 25 years age group. This can be correlated with the income by age group chart. The number of married with military spouses is less which may be due to lack of data.
+The number of at-or-below-50K are more than the above-50K in the singles group and most of them are younger population. The plot also suggests most of this group is below 25 years age group. This can be correlated with the income by age group chart. The number of married with military spouses is less which may be due to lack of data.
 
 
 ```{r,echo=FALSE,fig.retina = 2, fig.cap ="Relationship distribution" , warning=FALSE, regfloat=FALSE}
@@ -384,7 +384,7 @@ img_path <- "images/incomedistbyage.png"
 knitr::include_graphics(img_path)
 ```
 
-The number of people from age 30-45 are the most frequent in the distribution and the same group have more Above-50K incomes.
+The number of people from age 30-45 are the most frequent in the distribution and the same group have more above-50K incomes.
 
 ```{r,echo=FALSE,fig.retina = 2, fig.cap ="Hours worked" , warning=FALSE, regfloat=FALSE}
 library(ggplot2)  # For plotting
@@ -404,14 +404,14 @@ img_path <- "images/incomebyclass.png"
 knitr::include_graphics(img_path)
 ```
 
-The number of private employer workers are more than other categories. They also earn more Above-50K and at-or-below-50K than other categories.
+The number of private employer workers are more than other categories. They also earn more above-50K and at-or-below-50K than other categories.
 
 As shown above the occupation and class columns have more than 1600 Unknown data. Adding this to the predictor columns could skew the predictions and introduce errors. We will exclude this from our list of predictors. We may experiment with these two features in our final model. The final list of predictors/features used to predict the outcome income level are age, education, years of education (a.ka. eduyears), maritalstatus, relationship,race, sex, and hoursperweek.
 
 
 \newpage
 
-### Process
+## Process
 
 The high-level process methodlogy used in this project is along the same lines as the CRISP-DM (Cross Industrial Standard Process for Data Mining) methology.
 
@@ -459,14 +459,14 @@ We then develop an algorithm using only the training set. Once we are done devel
 
 The simplest way to evaluate the algorithm for the adultpay dataset is by simply reporting the proportion of cases that were correctly predicted in the test set. This metric is referred to as overall accuracy. Some times accuracy is skewed due to prevalence or bias of one class or the other, therefore we will weigh in on sensitivity and specificity (check true/false positives and true/false negatives) when choosing the final model. 
 
-We will also use F1 measure to validate the accuracy of the sensitivity and specificity and see if we have a good precision. F1 score is a combination of two important error metrics: Precision and Recall. Thus, it can be considered as the Harmonic mean of Precision and Recall error metrics for an imbalanced dataset with respect to binary classification of data. As income level has only 30% data for Above-50K class this score is useful. The highest possible value of an F-score is 1.0, indicating perfect precision and recall, and the lowest possible value is 0. Higher the precision the better. 
+We will also use F1 measure to validate the accuracy of the sensitivity and specificity and see if we have a good precision. F1 score is a combination of two important error metrics: Precision and Recall. Thus, it can be considered as the Harmonic mean of Precision and Recall error metrics for an imbalanced dataset with respect to binary classification of data. As income level has only 30% data for above-50K class this score is useful. The highest possible value of an F-score is 1.0, indicating perfect precision and recall, and the lowest possible value is 0. Higher the precision the better. 
 
 We will also use a widely used plot receiver operating characteristic (ROC) curve. Receiver Operating Characteristic curves are a popular way to visualize the trade-offs between sensitivity and specificity in a binary classifier. The ROC curve plots sensitivity (TPR) versus 1 - specificity or the false positive rate (FPR). This also gives us Area under the curve (a.k.a. AUC). The AUC summarizes ROC in a single value. The probabilistic interpretation is that if you randomly choose a positive case and a negative case, the probability that the positive case outranks the negative case according to the classifier is given by the AUC. Higher the AUC score the better. This indicates that the model has higher true positive rate and low false positive rate.
 
 
-### Model Creation
+## Model Creation
 
-#### Simplest model using random sampling  \
+### Simplest model using random sampling  \
 \
 We are now going to evaluate various algorithms progressively
 
@@ -570,13 +570,13 @@ We then construct the confusion matrix, which basically tabulates each combinati
 
 We can verify this by adjusting the probability of our sampling to skew towards above-50K vs at-or-below-50K and vice-versa.
 
-Prevalence can result in skewed results. We will keep an eye on the other metrics like sensitivity and specificity in addition to accuracy.In this case low prevalence matches with the expected accuracy.
+Prevalence can result in skewed results. We will keep an eye on the other metrics like sensitivity and specificity in addition to accuracy. In this case low prevalence matches with the expected accuracy.
 
 The F1 score for this guessing is 0.3224 and Area under the curve is 0.4946. This is in line with our expectations for mere guessing of the outcome.
 
 Our goal is to improve the accuracy > 80% while keeping sensitivity and specificity under check. Hence we further analyze the impact of other features on the income levels.
 
-#### Logistic regression using linear models  \
+### Logistic regression using linear models  \
 \
 
 We will start with a simple logistic model - linear model. We use the features age, education, eduyears, sex, race, maritalstatus, relationship and hoursperweek. 
@@ -742,7 +742,7 @@ We will now experiment with the general linear model (glm). We will be consisten
        
 ```
 
-glm produces accuracy of 0.8105, however, specificity 0.38719 is still higher than sensitivity 0.94864 and prevalence about the same. CI and F1 scores can be better. AUC can also do better. We can do better!
+glm produces accuracy of 0.8105, however, specificity 0.94864 is still higher than sensitivity 0.38719 and prevalence about the same. CI and F1 scores can be better. AUC can also do better. We can do better!
 
 ```{r,echo=FALSE,out.width="100%", fig.cap ="GLM classification summary" , warning=FALSE, regfloat=FALSE}
 library(ggplot2)  # For plotting
@@ -751,10 +751,10 @@ img_path <- "images/rocglm.png"
 knitr::include_graphics(img_path)
 ```
 
-#### naive bayes  \
+### naive bayes  \
 \
 
-We will now experiment with generative models like naive bayes classification. It assumes the features that go into the model is independent of each other.That is changing the value of one feature, does not directly influence or change the value of any of the other features used in the algorithm. When we analyzed the dataset it didn't appear to have independent features. An example of dependent feature would be age and education years, age and martial status etc. However, lets see how naive bayes performs with this assumption.
+We will now experiment with generative models like naive bayes classification. It assumes the features that go into the model are independent of each other.That is changing the value of one feature, does not directly influence or change the value of any of the other features used in the algorithm. When we analyzed the dataset it didn't appear to have independent features. An example of dependent feature would be age and education years, age and martial status etc. However, lets see how naive bayes performs with this assumption.
 
 ```{r}
 
@@ -822,7 +822,7 @@ We will now experiment with generative models like naive bayes classification. I
 
 ```
 
-Naive bayes gives us an accuracy of 0.8009 with a lower prevalence than other algorithms but higher than plain guessing. However the confidence interval is lower and accuracy of the prediction is lower too. There are more false negatives as well. F1 score and AUC has increased. This indicates there are more true positives as well. However, given that this is a imbalanced dataset, we can try other advanced algorithms and compare this later.
+Naive bayes gives us an accuracy of 0.8009 with a lower prevalence than other algorithms but higher than plain guessing. However the confidence interval is lower and accuracy of the prediction is lower too. There are more false negatives as well. F1 score and AUC has increased. This indicates there are more true positives as well. However, given that this is an imbalanced dataset, we can try other advanced algorithms and compare this later.
 
 ```{r,echo=FALSE,out.width="100%", fig.cap ="naive bayes classification summary" , warning=FALSE, regfloat=FALSE}
 library(ggplot2)  # For plotting
@@ -833,7 +833,7 @@ knitr::include_graphics(img_path)
 
 Lets explore k-nearest model now with same feature set. We will use cross-validation to tune the k parameter. By default, the cross validation is performed by taking 25 bootstrap samples comprised of 25% of the observations. For the kNN method, the default is to try k=5,7,9. We change this using the tuneGrid parameter. We will try the k values in the following sequence k = seq(3, 71, 2). Running this code will take several seconds. This is because when we run the algorithm, we will have to compute a distance between each observation in the test set and each observation in the training set. There are a lot of computations. Therefore, we use the trainControl function to make the code above go a bit faster by using, 10-fold cross validation. This means we have 10 samples using 10% of the observations each. We set the seed because cross validation is a random procedure and we want to make sure the result here is reproducible
 
-#### k-nearest neighbors  \
+### k-nearest neighbors  \
 \
 
 
@@ -1053,7 +1053,7 @@ img_path <- "images/rocknntune.png"
 knitr::include_graphics(img_path)
 ```
 
-#### Recursive partitioning with rpart  \
+### Recursive partitioning with rpart  \
 \
 
 Next we use classification trees, or decision trees. We use the recursive partitioning library rpart for this. The general idea is to define an algorithm that uses data to create trees with predictions at the ends, referred to as nodes. Decision trees operate by predicting a categorical outcome variable  \(Y\) by partitioning the predictors.
@@ -1124,6 +1124,13 @@ Next we use classification trees, or decision trees. We use the recursive partit
 
 ```
 
+```{r,echo=FALSE, fig.retina = 2, fig.cap ="rpart accuracy" , warning=FALSE, regfloat=FALSE}
+library(ggplot2)  # For plotting
+library(png) 
+img_path <- "images/rpartplot.png"
+knitr::include_graphics(img_path)
+```
+
 The accuracy of recursive partitioning is 0.8211, sensitivity is higher at 0.91 and specificity is at 0.5487 with prevalence about the same. Balanced accuracy has improved. Confidence intervals for positive and negative has improved as well. The F1 score for rpart is 0.88467 and AUC is 0.7294 which is a positive sign.
 
 ```{r,echo=FALSE,out.width="100%", fig.cap ="rpart classification summary" , warning=FALSE, regfloat=FALSE}
@@ -1135,7 +1142,7 @@ knitr::include_graphics(img_path)
 
 We will next look at random forest algorithm.
 
-#### Random forests  \
+### Random forests  \
 \
 
 
@@ -1450,6 +1457,13 @@ Lets tune this model just like the KNN3 classification and see if we can do bett
 
 #education     598.69678
        
+```
+
+```{r,echo=FALSE, fig.retina = 2, fig.cap ="rf tuning" , warning=FALSE, regfloat=FALSE}
+library(ggplot2)  # For plotting
+library(png) 
+img_path <- "images/rf2tune.png"
+knitr::include_graphics(img_path)
 ```
 
 The accuracy of random forest with tuning is at 0.8239, sensitivity is at 0.9164 and specificity is at 0.5404. Prevalence is about the same when compared to knn and rpart classification models. The confidence intervals is just about the same as rpart and random forest without tuning.AUC improved slightly. In addition to the accuracy, precision increased to 0.88693.
