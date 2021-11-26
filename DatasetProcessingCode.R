@@ -189,7 +189,6 @@ adultpayclean %>% group_by(class) %>%
 
 tab1(adultpayclean$income, sort.group = "decreasing", cum.percent = TRUE)
 
-tab1(adultpayclean$age, sort.group = "decreasing", cum.percent = TRUE)
 adultpayclean %>% group_by(age) %>%
   mutate(n=n())  %>% ggplot()  +
   geom_bar(aes(age,col=income,fill=income)) + scale_y_sqrt()
