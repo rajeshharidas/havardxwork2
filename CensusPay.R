@@ -18,6 +18,9 @@ if (!require(e1071))
 if (!require(pROC))
   install.packages("pRoc")
 
+if (!require(ROCit))
+  install.packages("ROCit")
+
 library(caret)
 library(gridExtra)
 library(kableExtra)
@@ -26,6 +29,7 @@ library(purrr)
 library(e1071)
 library(caTools)
 library(pROC)
+library(ROCit)
 
 
 set.seed(1996, sample.kind = "Rounding")
@@ -86,7 +90,11 @@ specificity_lm <- cm_lm$byClass[["Specificity"]]
 prevalence_lm <- cm_lm$byClass[["Prevalence"]]
 f1_lm <- cm_lm$byClass[["F1"]]
 
-auc(ifelse(adultpayclean_validation$income == "Above50K",1,2), ifelse(unname(y_hat_logit) == "Above50K",1,2))
+pROC_bin <- ROCit::rocit(ifelse(adultpayclean_validation$income == "Above50K",1,0), ifelse(unname(y_hat_logit) == "Above50K",1,0),method="bin")
+ciROC_bin95 <- ROCit::ciROC(pROC_bin,level = 0.95)
+plot(ciROC_bin95, col = 1, values=TRUE)
+lines(ciROC_bin95$TPR~ciROC_bin95$FPR, col = 2, lwd = 2)
+ROCit::ciAUC(pROC_bin)
 
 #general linear model
 #create the glm model
@@ -119,8 +127,11 @@ specificity_glm <- cm_glm$byClass[["Specificity"]]
 prevalence_glm <- cm_glm$byClass[["Prevalence"]]
 f1_glm <- cm_glm$byClass[["F1"]]
 
-auc(ifelse(adultpayclean_validation$income == "Above50K",1,2), ifelse(unname(y_hat_logit) == "Above50K",1,2))
-
+pROC_bin <- ROCit::rocit(ifelse(adultpayclean_validation$income == "Above50K",1,0), ifelse(unname(y_hat_logit) == "Above50K",1,0),method="bin")
+ciROC_bin95 <- ROCit::ciROC(pROC_bin,level = 0.95)
+plot(ciROC_bin95, col = 1, values=TRUE)
+lines(ciROC_bin95$TPR~ciROC_bin95$FPR, col = 2, lwd = 2)
+ROCit::ciAUC(pROC_bin)
 
 #Naive bayes
 
@@ -139,8 +150,11 @@ specificity_nb <- cm_nb$byClass[["Specificity"]]
 prevalence_nb <- cm_nb$byClass[["Prevalence"]]  
 f1_nb <- cm_nb$byClass[["F1"]]
 
-auc(ifelse(adultpayclean_validation$income == "Above50K",1,2), ifelse(unname(y_hat_nb) == "TRUE",1,2))
-
+pROC_bin <- ROCit::rocit(ifelse(adultpayclean_validation$income == "Above50K",1,0), ifelse(unname(y_hat_nb) == "TRUE",1,0),method="bin")
+ciROC_bin95 <- ROCit::ciROC(pROC_bin,level = 0.95)
+plot(ciROC_bin95, col = 1, values=TRUE)
+lines(ciROC_bin95$TPR~ciROC_bin95$FPR, col = 2, lwd = 2)
+ROCit::ciAUC(pROC_bin)
 
 # translate income factor into binary outcome
 temp <- adultpayclean_train %>%
@@ -186,7 +200,12 @@ specificity_knn <- cm_knn$byClass[["Specificity"]]
 prevalence_knn <- cm_knn$byClass[["Prevalence"]]
 f1_knn <- cm_knn$byClass[["F1"]]
 
-auc(ifelse(adultpayclean_validation$income == "Above50K",1,2), ifelse(unname(y_hat_knn) == "TRUE",1,2))
+pROC_bin <- ROCit::rocit(ifelse(adultpayclean_validation$income == "Above50K",1,0), ifelse(unname(y_hat_knn) == "TRUE",1,0),method="bin")
+ciROC_bin95 <- ROCit::ciROC(pROC_bin,level = 0.95)
+plot(ciROC_bin95, col = 1, values=TRUE)
+lines(ciROC_bin95$TPR~ciROC_bin95$FPR, col = 2, lwd = 2)
+ROCit::ciAUC(pROC_bin)
+
 
 
 #k-nearest classification using tuning function
@@ -239,8 +258,11 @@ specificity_knntune <- cm_knntune$byClass[["Specificity"]]
 prevalence_knntune <- cm_knntune$byClass[["Prevalence"]]
 f1_knntune <- cm_knntune$byClass[["F1"]]
 
-auc(ifelse(adultpayclean_validation$income == "Above50K",1,2), ifelse(unname(y_hat_knntune) == "TRUE",1,2))
-
+pROC_bin <- ROCit::rocit(ifelse(adultpayclean_validation$income == "Above50K",1,0), ifelse(unname(y_hat_knntune) == "TRUE",1,0),method="bin")
+ciROC_bin95 <- ROCit::ciROC(pROC_bin,level = 0.95)
+plot(ciROC_bin95, col = 1, values=TRUE)
+lines(ciROC_bin95$TPR~ciROC_bin95$FPR, col = 2, lwd = 2)
+ROCit::ciAUC(pROC_bin)
 
 #recursive partitioning using rpart
 set.seed(2008)
@@ -270,8 +292,11 @@ specificity_rpart <- cm_rpart$byClass[["Specificity"]]
 prevalence_rpart <- cm_rpart$byClass[["Prevalence"]]
 f1_rpart <- cm_rpart$byClass[["F1"]]
 
-auc(ifelse(adultpayclean_validation$income == "Above50K",1,2), ifelse(unname(y_hat_rpart) == "TRUE",1,2))
-
+pROC_bin <- ROCit::rocit(ifelse(adultpayclean_validation$income == "Above50K",1,0), ifelse(unname(y_hat_rpart) == "TRUE",1,0),method="bin")
+ciROC_bin95 <- ROCit::ciROC(pROC_bin,level = 0.95)
+plot(ciROC_bin95, col = 1, values=TRUE)
+lines(ciROC_bin95$TPR~ciROC_bin95$FPR, col = 2, lwd = 2)
+ROCit::ciAUC(pROC_bin)
 
 #random forest
 set.seed(2008)
@@ -303,9 +328,11 @@ specificity_rf <- cm_rf$byClass[["Specificity"]]
 prevalence_rf <- cm_rf$byClass[["Prevalence"]]
 f1_rf <- cm_rf$byClass[["F1"]]
 
-auc(ifelse(adultpayclean_validation$income == "Above50K",1,2), ifelse(unname(y_hat_rf) == "TRUE",1,2))
-
-
+pROC_bin <- ROCit::rocit(ifelse(adultpayclean_validation$income == "Above50K",1,0), ifelse(unname(y_hat_rf) == "TRUE",1,0),method="bin")
+ciROC_bin95 <- ROCit::ciROC(pROC_bin,level = 0.95)
+plot(ciROC_bin95, col = 1, values=TRUE)
+lines(ciROC_bin95$TPR~ciROC_bin95$FPR, col = 2, lwd = 2)
+ROCit::ciAUC(pROC_bin)
 
 #random forest with tuning
 nodesize <- seq(1, 90, 10)
@@ -350,8 +377,12 @@ specificity_rf2 <- cm_rf2$byClass[["Specificity"]]
 prevalence_rf2 <- cm_rf2$byClass[["Prevalence"]]
 f1_rf2 <- cm_rf2$byClass[["F1"]]
 
-auc(ifelse(adultpayclean_validation$income == "Above50K",1,2), ifelse(unname(y_hat_rf2) == "TRUE",1,2))
 
+pROC_bin <- ROCit::rocit(ifelse(adultpayclean_validation$income == "Above50K",1,0), ifelse(unname(y_hat_rf2) == "TRUE",1,0),method="bin")
+ciROC_bin95 <- ROCit::ciROC(pROC_bin,level = 0.95)
+plot(ciROC_bin95, col = 1, values=TRUE)
+lines(ciROC_bin95$TPR~ciROC_bin95$FPR, col = 2, lwd = 2)
+ROCit::ciAUC(pROC_bin)
 
 # tabulate all the accuracy results with sensitivity and specificity
 accuracy_results <-
