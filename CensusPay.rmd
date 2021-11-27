@@ -860,6 +860,7 @@ Lets explore k-nearest model now with same feature set. We will use cross-valida
 # ggplot(train_knn, highlight = TRUE)
 
 # > accuracy_knn
+
 # [1] 0.80535
 
 ```
@@ -925,7 +926,7 @@ Here is the confusion matrix for the knn tuned raw model
 
 # [1] 0.87522
 
-# Area under the curve: 0.702
+# Area under the curve: 0.78721
        
 ```
 
@@ -970,6 +971,7 @@ We will now try to use classification with knn3. We will again use different val
 #  test_error <- cm_test$overall["Accuracy"]
   
 #  tibble(train = train_error, test = test_error)
+
 # })
 
 # accuracy_knntune <- max(knntune$test)
@@ -1040,7 +1042,7 @@ We will now try to use classification with knn3. We will again use different val
 
 # [1] 0.87745
 
-# Area under the curve: 0.7088
+# Area under the curve: 0.7941
 
 ```
 
@@ -1120,7 +1122,7 @@ Next we use classification trees, or decision trees. We use the recursive partit
 
 # [1] 0.8846664
 
-# Area under the curve: 0.7294
+# Area under the curve: 0.81573
 
 ```
 
@@ -1131,7 +1133,7 @@ img_path <- "images/rpartplot.png"
 knitr::include_graphics(img_path)
 ```
 
-The accuracy of recursive partitioning is 0.8211, sensitivity is higher at 0.91 and specificity is at 0.5487 with prevalence about the same. Balanced accuracy has improved. Confidence intervals for positive and negative has improved as well. The F1 score for rpart is 0.88467 and AUC is 0.7294 which is a positive sign.
+The accuracy of recursive partitioning is 0.8211, sensitivity is higher at 0.91 and specificity is at 0.5487 with prevalence about the same. Balanced accuracy has improved. Confidence intervals for positive and negative has improved as well. The F1 score for rpart is 0.88467 and AUC is 0.81573 which is a positive sign.
 
 ```{r,echo=FALSE,out.width="100%", fig.cap ="rpart classification summary" , warning=FALSE, regfloat=FALSE}
 library(ggplot2)  # For plotting
@@ -1250,7 +1252,7 @@ Classification trees have certain advantages that make them very useful. They ar
 
 # [1] 0.88556
 
-# Area under the curve: 0.7261
+# Area under the curve: 0.81804
 
 # varImp(train_rf)
 
@@ -1286,6 +1288,13 @@ knitr::include_graphics(img_path)
 When we add "Occupation" as one the feature (with some missing occupation data (5%)) we see that the accuracy is 0.8276 and sensitivity and specificity are 0.9045 and 0.5919 respectively with a F1 score of 0.88779.
 
 When we add "class" as one the feature (with some missing occupation data (5%)) we see that the accuracy is 0.8283 and sensitivity and specificity are 0.9077 and 0.5850 respectively with a F1 score of 0.88854.
+
+```{r,echo=FALSE,out.width="100%", fig.cap ="random forest classification errors" , warning=FALSE, regfloat=FALSE}
+library(ggplot2)  # For plotting
+library(png) 
+img_path <- "images/rferrors.png"
+knitr::include_graphics(img_path)
+```
 
 Adding class has a negative impact on the precision when compared to occupation. We can see the variable importance with occupation and class.
 
@@ -1435,7 +1444,7 @@ Lets tune this model just like the KNN3 classification and see if we can do bett
 
 # [1] 	0.88693
 
-# Area under the curve: 0.7284
+# Area under the curve: 0.81791
 
 # varImp(train_rf_2)
 
@@ -1477,6 +1486,13 @@ knitr::include_graphics(img_path)
 
 When we added the experimental occupation and class data into the dataset for rf tuned test we see that the accuracy improves to 0.8396 and sensitivity is 0.9205 and specificity is 0.5919 with prevalence being the same as before and balanced accuracy improved to 0.7562. The F1 score for this is 0.896
 
+```{r,echo=FALSE,out.width="100%", fig.cap ="tuned random forest classification errors" , warning=FALSE, regfloat=FALSE}
+library(ggplot2)  # For plotting
+library(png) 
+img_path <- "images/rf2errors.png"
+knitr::include_graphics(img_path)
+```
+
 When we compare our final model with naive bayes, the AUC for naive bayes seems to be far better than random forest. However, if you look closer at the classification models, there is a high degree of imbalance in the dataset and naive bayes doesn't do very well when the dataset is imbalanced. F1 score of random forest is higher than naive bayes. For this reason I chose random forest over naive bayes.
 
 # Results
@@ -1493,7 +1509,7 @@ knitr::include_graphics(img_path)
 
 ```
 
-The accuracy of the predictions is backed by sensitivity of 0.9163 and specificity of 0.540. The F1 score 0.8869 vouches for the sensitivity and specificity. AUC is around 0.728 and is considered as acceptable considering some degree of imbalance in the dataset. 
+The accuracy of the predictions is backed by sensitivity of 0.9163 and specificity of 0.540. The F1 score 0.8869 vouches for the sensitivity and specificity. AUC is around 0.818 and is considered as acceptable considering some degree of imbalance in the dataset. 
 
 This model can be used to determine income levels for adults in any year with similar attribute sets and achieve comparable accuracies. The following attributes were determined to influence annual adult incomes in the US:
 
