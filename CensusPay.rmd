@@ -660,7 +660,7 @@ We can use this to arrive at y_hat_logit. Since we have 8 features \(X = x\) is 
 
 # [1] 0.54128
 
-# Area under the curve: 0.6899
+# Area under the curve: 0.81709
 
 ```
 
@@ -738,7 +738,7 @@ We will now experiment with the general linear model (glm). We will be consisten
 
 # [1] 0.50135
 
-# Area under the curve:  0.6679
+# Area under the curve:  0.81817
        
 ```
 
@@ -818,11 +818,11 @@ We will now experiment with generative models like naive bayes classification. I
 
 # [1] 0.86064
 
-# Area under the curve: 0.7859
+# Area under the curve: 0.80143
 
 ```
 
-Naive bayes gives us an accuracy of 0.8009 with a lower prevalence than other algorithms but higher than plain guessing. However the confidence interval is lower and accuracy of the prediction is lower too. There are more false negatives as well. F1 score and AUC has increased. This indicates there are more true positives as well. However, given that this is an imbalanced dataset, we can try other advanced algorithms and compare this later.
+Naive bayes gives us an accuracy of 0.8009 with a lower prevalence than other algorithms but higher than plain guessing. However the confidence interval is lower and accuracy of the prediction is lower too. There are more false negatives as well. F1 score has increased. This indicates there are more true positives as well. However, given that this is an imbalanced dataset, we can try other advanced algorithms and compare this later.
 
 ```{r,echo=FALSE,out.width="100%", fig.cap ="naive bayes classification summary" , warning=FALSE, regfloat=FALSE}
 library(ggplot2)  # For plotting
