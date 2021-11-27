@@ -205,7 +205,7 @@ So we begin...
 
 # Analysis
 
-## Data Exploration, cleaning, processing and, feature engineering
+## Data Exploration, Processing and, Feature engineering
 
 The adult pay dataset from census bureau is a ML ready database. For convenience, I have downloaded it from kaggle and stored in the same github repository as this code and markdown. The dataset is in zip format and is downloaded from https://github.com/rajeshharidas/havardxwork2/blob/main/adult.csv.zip. Then it is read into a data frame. The data is ML ready for the most part. However, there are some additional cleaning tasks needed before using the dataset. This processing is done in DatasetProcessingCode.R file. Code fragment is shown below. We perform the following cleaning tasks
 
@@ -751,7 +751,7 @@ img_path <- "images/rocglm.png"
 knitr::include_graphics(img_path)
 ```
 
-### naive bayes  \
+### Naive Bayes  \
 \
 
 We will now experiment with generative models like naive bayes classification. It assumes the features that go into the model are independent of each other.That is changing the value of one feature, does not directly influence or change the value of any of the other features used in the algorithm. When we analyzed the dataset it didn't appear to have independent features. An example of dependent feature would be age and education years, age and martial status etc. However, lets see how naive bayes performs with this assumption.
@@ -833,7 +833,7 @@ knitr::include_graphics(img_path)
 
 Lets explore k-nearest model now with same feature set. We will use cross-validation to tune the k parameter. By default, the cross validation is performed by taking 25 bootstrap samples comprised of 25% of the observations. For the kNN method, the default is to try k=5,7,9. We change this using the tuneGrid parameter. We will try the k values in the following sequence k = seq(3, 71, 2). Running this code will take several seconds. This is because when we run the algorithm, we will have to compute a distance between each observation in the test set and each observation in the training set. There are a lot of computations. Therefore, we use the trainControl function to make the code above go a bit faster by using, 10-fold cross validation. This means we have 10 samples using 10% of the observations each. We set the seed because cross validation is a random procedure and we want to make sure the result here is reproducible
 
-### k-nearest neighbors  \
+### K-Nearest Neighbors  \
 \
 
 
