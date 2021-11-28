@@ -10,10 +10,18 @@ header-includes:
 - \DeclareUnicodeCharacter{21A9}{-}
 - \DeclareUnicodeCharacter{FE0E}{-}
 - \usepackage{placeins}
+- \usepackage{fvextra}
+- \DefineVerbatimEnvironment{Highlighting}{Verbatim}{breaklines,commandchars=\\\{\}}
 ---
 
+```{css, echo=FALSE}
+.special-code {
+  font-size: 11px;
+}
+```
+
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE,warning = FALSE, message = FALSE, tidy = TRUE, tidy.opts = list(comment = TRUE))
+knitr::opts_chunk$set(echo = TRUE,warning = FALSE,class.source="special-code", class.output="special-code", message = FALSE, tidy = TRUE, tidy.opts = list(comment = TRUE))
 # hooks to keep figures and text in order without floats
 knitr::knit_hooks$set(plot = function (x, options) {
   float_correct <- function(f, y, opts)  {
@@ -35,10 +43,8 @@ knitr::knit_hooks$set(plot = function (x, options) {
 ```
 
 
-```{css, echo=FALSE}
-.special-code {
-  font-size: 10pt;
-}
+```{r echo=FALSE,include=FALSE,warning=FALSE,message=FALSE, cache=TRUE, code=readLines('DatasetProcessingCode.R')}
+
 ```
 
 ## Preface
@@ -55,6 +61,8 @@ The following files (3 types) are included in the upload:
 
 This document does not describe various machine learning terminologies in detail. The appendix has more information on how to get to that information and more.
 
+The code in this project is memory and CPU intensive. The minimum requirements are at least 8 CPU core, 64 GB RAM, and 1 TB of disk space. Anything lower will take excessively long time.
+
 \tableofcontents
 \listoffigures
 
@@ -70,131 +78,35 @@ In this project for the Capstone course of the HarvardX Professional Certificate
 
 Here is a glimpse of adultpay dataset. The columns that are of interest are income, age, sex, education.num, education, race, marital.status, relationship, workclass, hours.per.week and occupation. There are 32,561 rows and 13 columns
 
-```{r}
-# glimpse(adultpay)
-
-# Rows: 32,561
-
-# Columns: 13
-
-# $ age            <int> 90, 82, 66, 54, 41, 34, 38, 74, 68, 41, 45, 38, 52, 32, 51, 46,~
-
-# $ workclass      <chr> "?", "Private", "?", "Private", "Private", "Private", "Private"~
-
-# $ fnlwgt         <int> 77053, 132870, 186061, 140359, 264663, 216864, 150601, 88638, 4~
-
-# $ education      <chr> "HS-grad", "HS-grad", "Some-college", "7th-8th", "Some-college"~
-
-# $ education.num  <int> 9, 9, 10, 4, 10, 9, 6, 16, 9, 10, 16, 15, 13, 14, 16, 15, 7, 14~
-
-# $ marital.status <chr> "Widowed", "Widowed", "Widowed", "Divorced", "Separated", "Divo~
-
-# $ occupation     <chr> "?", "Exec-managerial", "?", "Machine-op-inspct", "Prof-special~
-
-# $ relationship   <chr> "Not-in-family", "Not-in-family", "Unmarried", "Unmarried", "Ow~
-
-# $ race           <chr> "White", "White", "Black", "White", "White", "White", "White", ~
-
-# $ sex            <chr> "Female", "Female", "Female", "Female", "Female", "Female", "Ma~
-
-# $ hours.per.week <int> 40, 18, 40, 40, 40, 45, 40, 20, 40, 60, 35, 45, 20, 55, 40, 40,~
-
-# $ native.country <chr> "United-States", "United-States", "United-States", "United-Stat~
-
-# $ income         <chr> "<=50K", "<=50K", "<=50K", "<=50K", "<=50K", "<=50K", "<=50K", ~
-
+```{r warning=FALSE, regfloat=FALSE, class.source='special-code'}
+library(tidyverse)
+library(caret)
+glimpse(adultpay)
 ```
 
 We will start with data exploration and cleaning unwanted data and processing. Then we will mimic the ultimate evaluation process by splitting the data into two parts - training and validation and act as if we don’t know the outcome for the validation set. We will split the dataset once we cleaned and processed the dataset. We want the test set to be large enough so that we obtain a stable prediction without fitting an impractical number of models. We will then progressively apply various algorithms on the training set and test the predictions on the test set and improve on the overall accuracy.
 
 We will choose 13 attributes, income being the outcome and the rest 12 attributes being the predictors or features. After perusing the dimensions, we will randomly choose 10% of the dataset to be the test set and remaining 90% will be the training set. 90% is sizable enough to run various algorithms like lm, glm,nb, knn, rpart, and random forest with some tuning.
 
-```{r echo=FALSE, warning=FALSE, regfloat=FALSE}
+```{r warning=FALSE, regfloat=FALSE, class.source='special-code'}
 library(tidyverse)
 library(gridExtra)
 library(kableExtra)
 
-# > dim(adultpayclean)
+dim(adultpayclean)
 
-# [1] 29170    13
+dim(adultpayclean_train)
 
-# > dim(adultpayclean_train)
+dim(adultpayclean_validation)
 
-# [1] 26252    13
-
-# > dim(adultpayclean_validation)
-
-# [1] 2918   13
-
-# > colSums(is.na(adultpayclean))
-
-matrix(
-  c("0","0","0","0","0","0","0","0","0"),
-  nrow = 1,
-  ncol = 9,
-  byrow = TRUE,
-    dimnames = list(
-      c(
-        "NAs"
-      ),
-      c("age", "education", "education.num","sex","race", "marital.status", "occupation", "relationship","workclass")
-    )
-) %>% knitr::kable() %>% kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+colSums(is.na(adultpayclean))
 
 ```
 
 This is a classification problem and the outcome is binary (income above-50K or at-or-below-50K). On reviewing the summary of the dataset we have a choice of predictors. We will keep only USA specific data. Almost all of the predictors have data spread out. There are no NAs in the dataset. There is sufficient degree of variability.
 
-```{r}
-#summary(adultpayclean)
-
-#      age            fnlwgt              education       eduyears                 maritalstatus  
-
-# Min.   :17.00   Min.   :  12285   HSgrad     :9702   Min.   : 1.00   Divorced           : 4162  
-
-# 1st Qu.:28.00   1st Qu.: 115895   Somecollege:6740   1st Qu.: 9.00   MarriedAFspouse    :   23 
-
-# Median :37.00   Median : 176730   Bachelors  :4766   Median :10.00   Marriedcivspouse   :13368 
-
-# Mean   :38.66   Mean   : 187069   Masters    :1527   Mean   :10.17   Marriedspouseabsent:  253 
-
-# 3rd Qu.:48.00   3rd Qu.: 234139   Assocvoc   :1289   3rd Qu.:12.00   Nevermarried       : 9579  
-
-# Max.   :90.00   Max.   :1484705   11th       :1067   Max.   :16.00   Separated          :  883 
-
-#                                   (Other)    :4079                   Widowed            :  902  
-
-#          occupation          relationship                   race           sex         hoursperweek  
-
-# Execmanagerial:3735   Husband      :11861   Amer-Indian-Eskimo:  296   Female: 9682   Min.   : 1.00  
-
-# Profspecialty :3693   Notinfamily  : 7528   Asian-Pac-Islander:  292   Male  :19488   1st Qu.:40.00 
-
-# Craftrepair   :3685   Otherrelative:  696   Black             : 2832                  Median :40.00  
-
-# Admclerical   :3449   Ownchild     : 4691   Other             :  129                  Mean   :40.45 
-
-# Sales         :3364   Unmarried    : 3033   White             :25621                  3rd Qu.:45.00  
-
-# Otherservice  :2777   Wife         : 1361                                             Max.   :99.00  
-
-# (Other)       :8467                                                       
-
-#    native                 income                class      
-
-# Length:29170       Above50K  : 7171   Private      :20135  
-
-# Class :character   AtBelow50K:21999   Selfempnotinc: 2313  
-
-# Mode  :character                      Localgov     : 1956  
-
-#                                       Unknown      : 1659 
-
-#                                       Stategov     : 1210  
-
-#                                       Selfempinc   :  991  
-
-#                                       (Other)      :  906  
+```{r warning=FALSE, regfloat=FALSE, class.source='special-code'}
+summary(adultpayclean)
 
 ```
 
@@ -223,7 +135,7 @@ The adult pay dataset from census bureau is a ML ready database. For convenience
 5) convert character labels to factors
 
 
-```{r}
+```{r class.source='special-code'}
 
 # adultpayclean <-
 
@@ -280,7 +192,7 @@ The adult pay dataset from census bureau is a ML ready database. For convenience
 
 After performing this cleaning we see 29170 rows and 13 columns. We further analyze the makeup of the categorical columns
 
-```{r,echo=FALSE,out.width="75%", fig.cap ="Education statistics" , warning=FALSE, regfloat=FALSE}
+```{r,echo=FALSE,out.width="50%", fig.cap ="Education statistics" , warning=FALSE, regfloat=FALSE}
 library(ggplot2)  # For plotting
 library(png) 
 img_path <- "images/edufreqbar.png"
@@ -301,7 +213,7 @@ knitr::include_graphics(img_path)
 
 Interestingly enough, in comparison to Bachelors and some college, group with masters have lesser above-50K. Additionally, the group that has at least 12 years of education have more above-50K than others. On an average the participants have 10 years of education with a standard deviation of 2.4. There are more at-or-below 50K earners in the high-school grad and less than 10 years of education categories. 
 
-```{r,echo=FALSE,out.width="75%", fig.cap ="Years of education" , warning=FALSE, regfloat=FALSE}
+```{r,echo=FALSE,out.width="50%", fig.cap ="Years of education" , warning=FALSE, regfloat=FALSE}
 library(ggplot2)  # For plotting
 library(png) 
 img_path <- "images/eduyearsdist.png"
@@ -310,7 +222,7 @@ knitr::include_graphics(img_path)
 
 The rest of the groups have sparse data. This could be because of missing or bad data that was removed during initial cleaning before it was loaded into kaggle.
 
-```{r,echo=FALSE,out.width="75%", fig.cap ="Occupation frequency" , warning=FALSE, regfloat=FALSE}
+```{r,echo=FALSE,out.width="50%", fig.cap ="Occupation frequency" , warning=FALSE, regfloat=FALSE}
 library(ggplot2)  # For plotting
 library(png) 
 img_path <- "images/occupationbar.png"
@@ -329,7 +241,7 @@ knitr::include_graphics(img_path)
 
 The same groups earn more and are in the above-50K category. There are fairly significant number of at-or-below-50K earners in the other categories. There are 1600 or so missing data (? or Unknown). This makes up 5-6% of the cleaned dataset.
 
-```{r,echo=FALSE,out.width="75%", fig.cap ="Sex feature characteristics" , warning=FALSE, regfloat=FALSE}
+```{r,echo=FALSE,out.width="50%", fig.cap ="Sex feature characteristics" , warning=FALSE, regfloat=FALSE}
 library(ggplot2)  # For plotting
 library(png) 
 img_path <- "images/sexbarch.png"
@@ -340,7 +252,7 @@ knitr::include_graphics(img_path)
 
 There are 67% more males in the workforce than females. The distribution also indicates that the number of males at above-50K are more than the number of females. Additionally, there are more males at-or-below-50K than females as well.
 
-```{r,echo=FALSE,out.width="75%", fig.cap ="Race distribution" , warning=FALSE, regfloat=FALSE}
+```{r,echo=FALSE,out.width="50%", fig.cap ="Race distribution" , warning=FALSE, regfloat=FALSE}
 library(ggplot2)  # For plotting
 library(png) 
 img_path <- "images/racebarch.png"
@@ -352,7 +264,7 @@ knitr::include_graphics(img_path)
 There are more white-Americans in the labor force in both the above-50K and at-or-below-50K categories. Black-Americans and other race follow next. The proportion of above-50K earners are lesser in other races when compared to white-Americans.
 
 
-```{r,echo=FALSE,out.width="75%", fig.cap ="Marital Status frequency" , warning=FALSE, regfloat=FALSE}
+```{r,echo=FALSE,out.width="50%", fig.cap ="Marital Status frequency" , warning=FALSE, regfloat=FALSE}
 library(ggplot2)  # For plotting
 library(png) 
 img_path <- "images/maritalstatusbar.png"
@@ -371,7 +283,7 @@ knitr::include_graphics(img_path)
 The number of at-or-below-50K are more than the above-50K in the singles group and most of them are younger population. The plot also suggests most of this group is below 25 years age group. This can be correlated with the income by age group chart. The number of married with military spouses is less which may be due to lack of data.
 
 
-```{r,echo=FALSE,out.width="75%", fig.cap ="Relationship distribution" , warning=FALSE, regfloat=FALSE}
+```{r,echo=FALSE,out.width="50%", fig.cap ="Relationship distribution" , warning=FALSE, regfloat=FALSE}
 library(ggplot2)  # For plotting
 library(png) 
 img_path <- "images/relationshipbar.png"
@@ -382,7 +294,7 @@ knitr::include_graphics(img_path)
 
 The number of husbands who earn more than 50K and at-or-below-50K are also more than the number of wives. Unmarried individuals also are more in the at-or-below-50K category.
 
-```{r,echo=FALSE,out.width="75%", fig.cap ="Age distribution" , warning=FALSE, regfloat=FALSE}
+```{r,echo=FALSE,out.width="50%", fig.cap ="Age distribution" , warning=FALSE, regfloat=FALSE}
 library(ggplot2)  # For plotting
 library(png) 
 img_path <- "images/agefreqbar.png"
@@ -393,7 +305,7 @@ knitr::include_graphics(img_path)
 
 The number of people from age 30-45 are the most frequent in the distribution and the same group have more above-50K incomes.
 
-```{r,echo=FALSE,out.width="75%", fig.cap ="Hours worked" , warning=FALSE, regfloat=FALSE}
+```{r,echo=FALSE,out.width="50%", fig.cap ="Hours worked" , warning=FALSE, regfloat=FALSE}
 library(ggplot2)  # For plotting
 library(png) 
 img_path <- "images/hoursperweek.png"
@@ -402,7 +314,7 @@ knitr::include_graphics(img_path)
 
 On a average most participants worked 40 hours a week followed by 50-60 hours.
 
-```{r,echo=FALSE,out.width="75%", fig.cap ="Class distribution" , warning=FALSE, regfloat=FALSE}
+```{r,echo=FALSE,out.width="50%", fig.cap ="Class distribution" , warning=FALSE, regfloat=FALSE}
 library(ggplot2)  # For plotting
 library(png) 
 img_path <- "images/classbar.png"
@@ -426,7 +338,7 @@ The code DatasetProcessingCode.R downloads the dataset from a convenient locatio
 
 The caret package includes the function createDataPartition that helps us generates indexes for randomly splitting the data into training and test sets. The argument times is used to define how many random samples of indexes to return, the argument p is used to define what proportion of the data is represented by the index, and the argument list is used to decide if we want the indexes returned as a list or not. We can use the test_index from the createDataPartition function call to define the training and test sets.
 
-```{r}
+```{r class.source='special-code'}
 # set.seed(1, sample.kind = "Rounding")
 
 # test_index <-
@@ -479,7 +391,7 @@ We are now going to evaluate various algorithms progressively
 
 We first start with a simple model. We sample randomly for the desired outcome. We then compare it with the actual outcomes and take a mean of the results. The result is 50% which is expected for guessing a binary outcome. Its akin to tossing a coin and getting head or tail. The chances are 50/50.
 
-```{r}
+```{r class.source='special-code'}
 
 # > seat_of_the_pants <- sample(c("Above50K", "AtBelow50K"), length(test_index), replace = TRUE) 
 
@@ -602,7 +514,7 @@ which in the case of binary data is equivalent to the conditional probability:
 
 We can use this to arrive at y_hat_logit. Since we have 8 features \(X = x\) is more like \(X_{i} = x_{i}\) where \(i\) is from 1 to 8.
 
-```{r}
+```{r class.source='special-code'}
 
 # lm_fit <- adultpayclean_train %>% 
 
@@ -673,7 +585,7 @@ We can use this to arrive at y_hat_logit. Since we have 8 features \(X = x\) is 
 
 The accuracy for this model is 0.8153 however, sensitivity is 0.4429 and specificity is 0.9368. This indicates this model has higher ratio of negative outcomes than positive outcomes. It does have better accuracy, confidence interval, and F1 score than plain old guessing. Prevalence remains the same. AUC has improved as well.  Lets see if we can do better
 
-```{r,echo=FALSE,out.width="75%", fig.cap ="LM classification summary" , warning=FALSE, regfloat=FALSE}
+```{r,echo=FALSE,out.width="50%", fig.cap ="LM classification summary" , warning=FALSE, regfloat=FALSE}
 library(ggplot2)  # For plotting
 library(png) 
 img_path <- "images/roclm.png"
@@ -683,7 +595,7 @@ knitr::include_graphics(img_path)
 
 We will now experiment with the general linear model (glm). We will be consistent with the features used across all algorithms.
 
-```{r}
+```{r class.source='special-code'}
 
 # glm_fit <- adultpayclean_train %>% 
 
@@ -751,7 +663,7 @@ We will now experiment with the general linear model (glm). We will be consisten
 
 glm produces accuracy of 0.8105, however, specificity 0.94864 is still higher than sensitivity 0.38719 and prevalence about the same. CI and F1 scores can be better. AUC can also do better. We can do better!
 
-```{r,echo=FALSE,out.width="75%", fig.cap ="GLM classification summary" , warning=FALSE, regfloat=FALSE}
+```{r,echo=FALSE,out.width="50%", fig.cap ="GLM classification summary" , warning=FALSE, regfloat=FALSE}
 library(ggplot2)  # For plotting
 library(png) 
 img_path <- "images/rocglm.png"
@@ -763,7 +675,7 @@ knitr::include_graphics(img_path)
 
 We will now experiment with generative models like naive bayes classification. It assumes the features that go into the model are independent of each other.That is changing the value of one feature, does not directly influence or change the value of any of the other features used in the algorithm. When we analyzed the dataset it didn't appear to have independent features. An example of dependent feature would be age and education years, age and martial status etc. However, lets see how naive bayes performs with this assumption.
 
-```{r}
+```{r class.source='special-code'}
 
 ## train_nb <- adultpayclean_train %>%
 
@@ -831,7 +743,7 @@ We will now experiment with generative models like naive bayes classification. I
 
 Naive bayes gives us an accuracy of 0.8009 with a lower prevalence than other algorithms but higher than plain guessing. However the confidence interval is lower and accuracy of the prediction is lower too. There are more false negatives as well. F1 score has increased. This indicates there are more true positives as well. However, given that this is an imbalanced dataset, we can try other advanced algorithms and compare this later.
 
-```{r,echo=FALSE,out.width="75%", fig.cap ="naive bayes classification summary" , warning=FALSE, regfloat=FALSE}
+```{r,echo=FALSE,out.width="50%", fig.cap ="naive bayes classification summary" , warning=FALSE, regfloat=FALSE}
 library(ggplot2)  # For plotting
 library(png) 
 img_path <- "images/rocnb.png"
@@ -844,7 +756,7 @@ Lets explore k-nearest model now with same feature set. We will use cross-valida
 \
 
 
-```{r}
+```{r class.source='special-code'}
 
 #temp <- adultpayclean_train %>% 
 
@@ -939,7 +851,7 @@ Here is the confusion matrix for the knn tuned raw model
 
 knn raw model produces accuracy of 0.8053, however, specificity is lower than sensitivity and prevalence is now 0.753. We now see the positive prediction is better. F1 score has improved. However, the AUC score is less than naive bayes. This indicates that the number of true positives are lesser than before. Balanced accuracy is better. Can we do better with accuracy and precision? 
 
-```{r,echo=FALSE,out.width="75%", fig.cap ="knn classification summary" , warning=FALSE, regfloat=FALSE}
+```{r,echo=FALSE,out.width="50%", fig.cap ="knn classification summary" , warning=FALSE, regfloat=FALSE}
 library(ggplot2)  # For plotting
 library(png) 
 img_path <- "images/rocknn.png"
@@ -949,7 +861,7 @@ knitr::include_graphics(img_path)
 We will now try to use classification with knn3. We will again use different values of k but using map_df function to repeat the above for each one. Running this classification model is going to be slow as it has to iterate through all the k values and find the one that is the highest.
 
 
-```{r}
+```{r class.source='special-code'}
 
 # ks <- seq(3, 251, 2)
 
@@ -1055,7 +967,7 @@ We will now try to use classification with knn3. We will again use different val
 
 The accuracy of the knn tuned classification is 0.8091 with a sensitivity of 0.9064 and specificity of 0.5111. This is better than the previous models. Prevalence is just about the same as raw knn. Balanced accuracy has improved. F1 score is also at ~ 88% and AUC has improved a bit.
 
-```{r,echo=FALSE,out.width="75%", fig.cap ="knn tune classification summary" , warning=FALSE, regfloat=FALSE}
+```{r,echo=FALSE,out.width="50%", fig.cap ="knn tune classification summary" , warning=FALSE, regfloat=FALSE}
 library(ggplot2)  # For plotting
 library(png) 
 img_path <- "images/rocknntune.png"
@@ -1067,7 +979,7 @@ knitr::include_graphics(img_path)
 
 Next we use classification trees, or decision trees. We use the recursive partitioning library rpart for this. The general idea is to define an algorithm that uses data to create trees with predictions at the ends, referred to as nodes. Decision trees operate by predicting a categorical outcome variable  \(Y\) by partitioning the predictors.
 
-```{r}
+```{r class.source='special-code'}
 
 # train_rpart <- train(y ~ age + eduyears + sex + race + hoursperweek + maritalstatus + relationship+education,
 #                     method = "rpart",
@@ -1142,7 +1054,7 @@ knitr::include_graphics(img_path)
 
 The accuracy of recursive partitioning is 0.8211, sensitivity is higher at 0.91 and specificity is at 0.5487 with prevalence about the same. Balanced accuracy has improved. Confidence intervals for positive and negative has improved as well. The F1 score for rpart is 0.88467 and AUC is 0.81573 which is a positive sign.
 
-```{r,echo=FALSE,out.width="75%", fig.cap ="rpart classification summary" , warning=FALSE, regfloat=FALSE}
+```{r,echo=FALSE,out.width="50%", fig.cap ="rpart classification summary" , warning=FALSE, regfloat=FALSE}
 library(ggplot2)  # For plotting
 library(png) 
 img_path <- "images/rocrpart.png"
@@ -1159,7 +1071,7 @@ Classification trees have certain advantages that make them very useful. They ar
 
  The goal of random forest is to improve prediction performance and reduce instability by averaging multiple decision trees. The first step is bootstrap aggregation or bagging. The general idea is to generate many predictors, each using regression or classification trees, and then forming a final prediction based on the average prediction of all these trees.To assure that the individual trees are not the same, we use the bootstrap to induce randomness.
 
-```{r}
+```{r class.source='special-code'}
 # train_rf <- randomForest(y ~ age + eduyears + sex + race + hoursperweek + maritalstatus + relationship+education, data=temp)
 
 # accuracy_rf <- confusionMatrix(predict(train_rf, adultpayclean_validation),
@@ -1285,18 +1197,20 @@ Classification trees have certain advantages that make them very useful. They ar
 
 The accuracy of random forest is at 0.8218, sensitivity is at 0.9145 and specificity is at 0.5376. Prevalence is about the same when compared to knn and rpart classification models. The confidence intervals is about the same as rpart. The F1 score is 0.88556 is the best so far. AUC also on the positive side. Due to the randomization of features during the random forest bootstrapping, its hard to know if all the features will be used.  Fortunately, we can investigate into how often a specific feature is used in the predictions using variable importance
 
-```{r,echo=FALSE,out.width="75%", fig.cap ="random forest classification summary" , warning=FALSE, regfloat=FALSE}
+```{r,echo=FALSE,out.width="50%", fig.cap ="random forest classification summary" , warning=FALSE, regfloat=FALSE}
 library(ggplot2)  # For plotting
 library(png) 
 img_path <- "images/rfrocr.png"
 knitr::include_graphics(img_path)
 ```
 
+The out-of-bag errors and errors for Above-50K and AtBelow50K classes are shown in the classification errors figure. You can see the errors reduce as the number of trees are added and then plateau after a while. The errors are around 16% and are within acceptable limits.
+
 When we add "Occupation" as one the feature (with some missing occupation data (5%)) we see that the accuracy is 0.8276 and sensitivity and specificity are 0.9045 and 0.5919 respectively with a F1 score of 0.88779.
 
 When we add "class" as one the feature (with some missing occupation data (5%)) we see that the accuracy is 0.8283 and sensitivity and specificity are 0.9077 and 0.5850 respectively with a F1 score of 0.88854.
 
-```{r,echo=FALSE,out.width="75%", fig.cap ="random forest classification errors" , warning=FALSE, regfloat=FALSE}
+```{r,echo=FALSE,out.width="50%", fig.cap ="random forest classification errors" , warning=FALSE, regfloat=FALSE}
 library(ggplot2)  # For plotting
 library(png) 
 img_path <- "images/rferrors.png"
@@ -1305,7 +1219,7 @@ knitr::include_graphics(img_path)
 
 Adding class has a negative impact on the precision when compared to occupation. We can see the variable importance with occupation and class.
 
-```{r}
+```{r class.source='special-code'}
 
 # varImp(train_rf)
 
@@ -1337,7 +1251,7 @@ We can see that age, years of education, relationship,occupation and maritalstat
 
 Lets tune this model just like the KNN3 classification and see if we can do better.
 
-```{r}
+```{r class.source='special-code'}
 
 # nodesize <- seq(1, 51, 10)
 
@@ -1484,7 +1398,7 @@ knitr::include_graphics(img_path)
 
 The accuracy of random forest with tuning is at 0.8239, sensitivity is at 0.9164 and specificity is at 0.5404. Prevalence is about the same when compared to knn and rpart classification models. The confidence intervals is just about the same as rpart and random forest without tuning.AUC improved slightly. In addition to the accuracy, precision increased to 0.88693.
 
-```{r,echo=FALSE,out.width="75%", fig.cap ="random forest tuned classification summary" , warning=FALSE, regfloat=FALSE}
+```{r,echo=FALSE,out.width="50%", fig.cap ="random forest tuned classification summary" , warning=FALSE, regfloat=FALSE}
 library(ggplot2)  # For plotting
 library(png) 
 img_path <- "images/rf2rocr.png"
@@ -1493,12 +1407,14 @@ knitr::include_graphics(img_path)
 
 When we added the experimental occupation and class data into the dataset for rf tuned test we see that the accuracy improves to 0.8396 and sensitivity is 0.9205 and specificity is 0.5919 with prevalence being the same as before and balanced accuracy improved to 0.7562. The F1 score for this is 0.896
 
-```{r,echo=FALSE,out.width="75%", fig.cap ="tuned random forest classification errors" , warning=FALSE, regfloat=FALSE}
+```{r,echo=FALSE,out.width="50%", fig.cap ="tuned random forest classification errors" , warning=FALSE, regfloat=FALSE}
 library(ggplot2)  # For plotting
 library(png) 
 img_path <- "images/rf2errors.png"
 knitr::include_graphics(img_path)
 ```
+
+The out-of-bag errors and errors for Above-50K and AtBelow50K classes are shown in the classification errors figure. You can see the errors reduce as the number of trees are added and then plateau after a while. The errors are around 16% and are within acceptable limits.
 
 When we compare our final model with naive bayes, the AUC for naive bayes seems to be far better than random forest. However, if you look closer at the classification models, there is a high degree of imbalance in the dataset and naive bayes doesn't do very well when the dataset is imbalanced. F1 score of random forest is higher than naive bayes. For this reason I chose random forest over naive bayes.
 
@@ -1542,7 +1458,7 @@ Additionally, we could also use advanced algorithms like AdaBoost Gradient Boost
 
 ### Appendix A - Complete code
 
-```{r echo=TRUE,tidy=TRUE, warning=FALSE,message=FALSE, tidy.opts=list(comment=TRUE), class.source='special-code', code=readLines('CensusPay.R')}
+```{r echo=TRUE,tidy=TRUE, warning=FALSE,message=FALSE, tidy.opts=list(comment=TRUE), cache=TRUE, class.source='special-code', code=readLines('CensusPay.R')}
 
 ```
 

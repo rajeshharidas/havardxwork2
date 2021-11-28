@@ -334,6 +334,9 @@ plot(ciROC_bin95, col = 1, values=TRUE)
 lines(ciROC_bin95$TPR~ciROC_bin95$FPR, col = 2, lwd = 2)
 ROCit::ciAUC(pROC_bin)
 
+plot(train_rf)
+legend("center", ifelse (colnames(train_rf$err.rate) == "FALSE","AtBelow50K",ifelse (colnames(train_rf$err.rate) == "TRUE","Above50K","OOB")),col=1:4,cex=0.8,fill=1:4)
+
 #random forest with tuning
 nodesize <- seq(1, 90, 10)
 acc <- sapply(nodesize, function(ns) {
@@ -383,6 +386,9 @@ ciROC_bin95 <- ROCit::ciROC(pROC_bin,level = 0.95)
 plot(ciROC_bin95, col = 1, values=TRUE)
 lines(ciROC_bin95$TPR~ciROC_bin95$FPR, col = 2, lwd = 2)
 ROCit::ciAUC(pROC_bin)
+
+plot(train_rf_2)
+legend("center", ifelse (colnames(train_rf_2$err.rate) == "FALSE","AtBelow50K",ifelse (colnames(train_rf_2$err.rate) == "TRUE","Above50K","OOB")),col=1:4,cex=0.8,fill=1:4)
 
 # tabulate all the accuracy results with sensitivity and specificity
 accuracy_results <-
