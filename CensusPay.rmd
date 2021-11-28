@@ -196,7 +196,23 @@ The adult pay dataset from census bureau is a ML ready database. For convenience
 
 ```
 
-After performing this cleaning we see 29170 rows and 13 columns. We further analyze the makeup of the categorical columns
+After performing this cleaning we see 29170 rows and 13 columns. We further analyze the makeup of the categorical columns.
+
+```{r,echo=FALSE,out.width="30%", fig.cap ="Comparison plots for numerical variables" , warning=FALSE, regfloat=FALSE}
+library(ggplot2)  # For plotting
+library(png) 
+img_path <- "images/comparevars1.png"
+knitr::include_graphics(img_path)
+```
+Here are the comparison plots for the numerical variables like age, eduyears and hoursperweek. There are very less people who have less than 4 years of education.Most people complete at least 9-10 years of education between 25-80 years age.Significant group of people stopped at elementary school. Significant group of people put in more than 40 hours per week past their retirement age. People who have 8-10 years of education put in more hours per week than others.
+
+```{r,echo=FALSE,out.width="50%", fig.cap ="Comparison plots for categorical variables" , warning=FALSE, regfloat=FALSE}
+library(ggplot2)  # For plotting
+library(png) 
+img_path <- "images/comparevars2.png"
+knitr::include_graphics(img_path)
+```
+Here are the comparison plots for the categorical variables. On an average white-Americans and black-Americans are gainfully employed at similar ages. More black and white people are employed past their retirement age when compared to other races. Similarly, more females are employed past their retirement age in comparison to male counterparts (outliers). More white males are employed than white females, however, the number of black males and females are about the same. There are more middle-aged men and younger females in the labor force.
 
 ```{r,echo=FALSE,out.width="50%", fig.cap ="Education statistics" , warning=FALSE, regfloat=FALSE}
 library(ggplot2)  # For plotting
@@ -331,7 +347,7 @@ knitr::include_graphics(img_path)
 
 The number of private employer workers are more than other categories. They also earn more above-50K and at-or-below-50K than other categories.
 
-As shown above the occupation and class columns have more than 1600 Unknown data. Adding this to the predictor columns could skew the predictions and introduce errors. We will exclude this from our list of predictors. We may experiment with these two features in our final model. The final list of predictors/features used to predict the outcome income level are age, education, years of education (a.ka. eduyears), maritalstatus, relationship,race, sex, and hoursperweek.
+As shown above the occupation and class columns have more than 1600 Unknown data. Adding this to the predictor columns could skew the predictions and introduce errors. We will exclude this from our list of predictors. We may experiment with these two features in our final model. The final list of predictors/features used to predict the outcome income level are age, education, years of education (a.ka. eduyears), maritalstatus, relationship,race, sex, and hoursperweek. As analyzed in the above section, there is sufficient degree of variability and correlation between these features and how they impact the income levels based on socio-economic and cultural factors.
 
 
 \newpage
@@ -1433,7 +1449,16 @@ img_path <- "images/rf2errors.png"
 knitr::include_graphics(img_path)
 ```
 
-The out-of-bag errors and errors for Above-50K and AtBelow50K classes are shown in the classification errors figure. You can see the errors reduce as the number of trees are added and then plateau after a while. The errors are around 16% and are within acceptable limits.
+The out-of-bag errors and errors for Above-50K and AtBelow50K classes are shown in the classification errors figure. You can see the errors reduce as the number of trees are added and then plateau after a while. The errors are around 16% and are within acceptable limits. 
+
+We can see the variable importance with occupation and class.
+
+```{r,echo=FALSE,out.width="50%", fig.cap ="tuned random forest classification errors" , warning=FALSE, regfloat=FALSE}
+library(ggplot2)  # For plotting
+library(png) 
+img_path <- "images/rf2varimp.png"
+knitr::include_graphics(img_path)
+```
 
 When we compare our final model with naive bayes, the AUC for naive bayes seems to be far better than random forest. However, if you look closer at the classification models, there is a high degree of imbalance in the dataset and naive bayes doesn't do very well when the dataset is imbalanced. F1 score of random forest is higher than naive bayes. For this reason I chose random forest over naive bayes.
 
