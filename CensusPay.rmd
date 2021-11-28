@@ -338,7 +338,7 @@ As shown above the occupation and class columns have more than 1600 Unknown data
 
 ## Process
 
-The high-level process methodlogy used in this project is along the same lines as the CRISP-DM (Cross Industrial Standard Process for Data Mining) methology.
+The high-level process methodology used in this project is along the same lines as the CRISP-DM (Cross Industrial Standard Process for Data Mining) methodology.
 
 The code DatasetProcessingCode.R downloads the dataset from a convenient location in github (originally downloaded from kaggle) and then unzips it and converts the dataset into a R data frame. It then does extensive cleaning, processing and munging of the data to make it tidy and meaningful for analysis. It then splits the original dataset into training and validation datasets. All analysis is done on this training dataset. Once the training is done the validation is done on the test dataset.
 
@@ -1473,7 +1473,7 @@ Further improvements could be made by use random oversampling and/or under-sampl
 
 Another approach for improving accuracy would be to create an ensemble based on multiple algorithms like rpart, random forest and glm.
 
-Additionally, we could also use advanced algorithms like AdaBoost Gradient Boost Trees, support Vector Machines, and Deep Learning to improve the predicted outcomes.
+Additionally, we could also use advanced algorithms like Ada Boost Gradient Boost Trees, support Vector Machines, and Deep Learning to improve the predicted outcomes.
 
 ### Appendix A - Complete code
 
@@ -1495,5 +1495,4 @@ https://leanpub.com/datasciencebook↩︎
 
 Irizarry, Rafael A., “Introduction to Data Science: Data Analysis and Prediction Algorithms in R” https://rafalab.github.io/dsbook/
 
-ML-Friendly kaggle dataset for adult census income
-https://www.kaggle.com/uciml/adult-census-income
+ML-Friendly kaggle dataset for adult census income - https://www.kaggle.com/uciml/adult-census-income

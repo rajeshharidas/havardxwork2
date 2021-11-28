@@ -1,6 +1,6 @@
 ## @knitr CensusPayR
 
-#Note: This script will take a while to run. In particular the knn and random forest algorithms with tuning grids will take
+# Note: This script will take a while to run. In particular the knn and random forest algorithms with tuning grids will take
 # more time. please be patient if you happen to execute it. The execution report is available in the github location as well
 
 # Execute the given source code for the project
@@ -31,19 +31,20 @@ library(caTools)
 library(pROC)
 library(ROCit)
 
-
+#set the seed for reproducible results
 set.seed(1996, sample.kind = "Rounding")
 
-#the simplest possible machine algorithm: guessing the outcome
+# the simplest possible machine algorithm: guessing the outcome
 seat_of_the_pants <-
   sample(c("Above50K", "AtBelow50K"), length(test_index), replace = TRUE) %>% factor(levels = levels(adultpayclean_validation$income))
+# calculate the accuracy of this sampling
 accuracy_guess <-
   mean(seat_of_the_pants == adultpayclean_validation$income)
 
-#build a confusion matrix for this simple model
+# build a confusion matrix for this simple model
 table(predicted = seat_of_the_pants, actual = adultpayclean_validation$income)
 
-#tabulate accuracy by income levels
+# tabulate accuracy by income levels
 adultpayclean_validation %>%
   mutate(y_hat = seat_of_the_pants) %>%
   group_by(income) %>%
@@ -52,6 +53,7 @@ adultpayclean_validation %>%
 # confusion matrix using R function
 cm <-
   confusionMatrix(data = seat_of_the_pants , reference = adultpayclean_validation$income)
+# display the confusion matrix
 cm
 
 #record the sensitivity, specificity, and prevalence
