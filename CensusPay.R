@@ -60,6 +60,7 @@ specificity_guess <- cm$byClass[["Specificity"]]
 prevalence_guess <- cm$byClass[["Prevalence"]]
 f1_guess <- cm$byClass[["F1"]]
 
+#find the area under the curve/ROC
 auc(ifelse(adultpayclean_validation$income == "Above50K",1,2), ifelse(seat_of_the_pants == "Above50K",1,2))
 
 #logistic linear model
@@ -90,6 +91,7 @@ specificity_lm <- cm_lm$byClass[["Specificity"]]
 prevalence_lm <- cm_lm$byClass[["Prevalence"]]
 f1_lm <- cm_lm$byClass[["F1"]]
 
+#Find the ROC and plot it. Show the AUC as well
 pROC_bin <- ROCit::rocit(ifelse(adultpayclean_validation$income == "Above50K",1,0), ifelse(unname(y_hat_logit) == "Above50K",1,0),method="bin")
 ciROC_bin95 <- ROCit::ciROC(pROC_bin,level = 0.95)
 plot(ciROC_bin95, col = 1, values=TRUE)
@@ -127,6 +129,7 @@ specificity_glm <- cm_glm$byClass[["Specificity"]]
 prevalence_glm <- cm_glm$byClass[["Prevalence"]]
 f1_glm <- cm_glm$byClass[["F1"]]
 
+#Find the ROC and plot it. Show the AUC as well
 pROC_bin <- ROCit::rocit(ifelse(adultpayclean_validation$income == "Above50K",1,0), ifelse(unname(y_hat_logit) == "Above50K",1,0),method="bin")
 ciROC_bin95 <- ROCit::ciROC(pROC_bin,level = 0.95)
 plot(ciROC_bin95, col = 1, values=TRUE)
@@ -135,21 +138,26 @@ ROCit::ciAUC(pROC_bin)
 
 #Naive bayes
 
+#create the naive bayes model
 train_nb <- adultpayclean_train %>%
    mutate(y = as.factor(income == "Above50K")) %>% 
    naiveBayes(y ~ age + eduyears + sex + race + hoursperweek + maritalstatus + relationship+education,data = .)
 
+#predict using the validation dataset
 y_hat_nb <- predict(train_nb, newdata = adultpayclean_validation)
+#create the confusion matrix
 cm_tab <- table(adultpayclean_validation$income == "Above50K", y_hat_nb)
 cm_nb <- confusionMatrix(cm_tab)
 cm_nb
 
+#get the accuracy, sensitivity, specificity, prevalence and, F1 score
 accuracy_nb <- cm_nb$overall[["Accuracy"]]
 sensitivity_nb <- cm_nb$byClass[["Sensitivity"]]
 specificity_nb <- cm_nb$byClass[["Specificity"]]
 prevalence_nb <- cm_nb$byClass[["Prevalence"]]  
 f1_nb <- cm_nb$byClass[["F1"]]
 
+#Find the ROC and plot it. Show the AUC as well
 pROC_bin <- ROCit::rocit(ifelse(adultpayclean_validation$income == "Above50K",1,0), ifelse(unname(y_hat_nb) == "TRUE",1,0),method="bin")
 ciROC_bin95 <- ROCit::ciROC(pROC_bin,level = 0.95)
 plot(ciROC_bin95, col = 1, values=TRUE)
@@ -200,6 +208,7 @@ specificity_knn <- cm_knn$byClass[["Specificity"]]
 prevalence_knn <- cm_knn$byClass[["Prevalence"]]
 f1_knn <- cm_knn$byClass[["F1"]]
 
+#Find the ROC and plot it. Show the AUC as well
 pROC_bin <- ROCit::rocit(ifelse(adultpayclean_validation$income == "Above50K",1,0), ifelse(unname(y_hat_knn) == "TRUE",1,0),method="bin")
 ciROC_bin95 <- ROCit::ciROC(pROC_bin,level = 0.95)
 plot(ciROC_bin95, col = 1, values=TRUE)
@@ -246,7 +255,7 @@ knn_fit <-
     data = temp,
     k = ks[which.max(knntune$test)]
   )
-
+#predict the knn tune using the model for the k neighbor
 y_hat_knntune <- predict(knn_fit, adultpayclean_validation, type = "class")
 cm_knntune <- confusionMatrix(y_hat_knntune, as.factor(adultpayclean_validation$income == "Above50K"))
 
@@ -258,6 +267,7 @@ specificity_knntune <- cm_knntune$byClass[["Specificity"]]
 prevalence_knntune <- cm_knntune$byClass[["Prevalence"]]
 f1_knntune <- cm_knntune$byClass[["F1"]]
 
+#Find the ROC and plot it. Show the AUC as well
 pROC_bin <- ROCit::rocit(ifelse(adultpayclean_validation$income == "Above50K",1,0), ifelse(unname(y_hat_knntune) == "TRUE",1,0),method="bin")
 ciROC_bin95 <- ROCit::ciROC(pROC_bin,level = 0.95)
 plot(ciROC_bin95, col = 1, values=TRUE)
@@ -292,6 +302,7 @@ specificity_rpart <- cm_rpart$byClass[["Specificity"]]
 prevalence_rpart <- cm_rpart$byClass[["Prevalence"]]
 f1_rpart <- cm_rpart$byClass[["F1"]]
 
+#Find the ROC and plot it. Show the AUC as well
 pROC_bin <- ROCit::rocit(ifelse(adultpayclean_validation$income == "Above50K",1,0), ifelse(unname(y_hat_rpart) == "TRUE",1,0),method="bin")
 ciROC_bin95 <- ROCit::ciROC(pROC_bin,level = 0.95)
 plot(ciROC_bin95, col = 1, values=TRUE)
@@ -328,12 +339,14 @@ specificity_rf <- cm_rf$byClass[["Specificity"]]
 prevalence_rf <- cm_rf$byClass[["Prevalence"]]
 f1_rf <- cm_rf$byClass[["F1"]]
 
+#Find the ROC and plot it. Show the AUC as well
 pROC_bin <- ROCit::rocit(ifelse(adultpayclean_validation$income == "Above50K",1,0), ifelse(unname(y_hat_rf) == "TRUE",1,0),method="bin")
 ciROC_bin95 <- ROCit::ciROC(pROC_bin,level = 0.95)
 plot(ciROC_bin95, col = 1, values=TRUE)
 lines(ciROC_bin95$TPR~ciROC_bin95$FPR, col = 2, lwd = 2)
 ROCit::ciAUC(pROC_bin)
 
+# Plot the error rate chart for the random forest
 plot(train_rf)
 legend("center", ifelse (colnames(train_rf$err.rate) == "FALSE","AtBelow50K",ifelse (colnames(train_rf$err.rate) == "TRUE","Above50K","OOB")),col=1:4,cex=0.8,fill=1:4)
 
@@ -380,13 +393,14 @@ specificity_rf2 <- cm_rf2$byClass[["Specificity"]]
 prevalence_rf2 <- cm_rf2$byClass[["Prevalence"]]
 f1_rf2 <- cm_rf2$byClass[["F1"]]
 
-
+#Find the ROC and plot it. Show the AUC as well
 pROC_bin <- ROCit::rocit(ifelse(adultpayclean_validation$income == "Above50K",1,0), ifelse(unname(y_hat_rf2) == "TRUE",1,0),method="bin")
 ciROC_bin95 <- ROCit::ciROC(pROC_bin,level = 0.95)
 plot(ciROC_bin95, col = 1, values=TRUE)
 lines(ciROC_bin95$TPR~ciROC_bin95$FPR, col = 2, lwd = 2)
 ROCit::ciAUC(pROC_bin)
 
+# Plot the error rate chart for the random forest
 plot(train_rf_2)
 legend("center", ifelse (colnames(train_rf_2$err.rate) == "FALSE","AtBelow50K",ifelse (colnames(train_rf_2$err.rate) == "TRUE","Above50K","OOB")),col=1:4,cex=0.8,fill=1:4)
 

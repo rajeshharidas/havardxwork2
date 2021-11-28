@@ -15,12 +15,14 @@ header-includes:
 ---
 
 ```{css, echo=FALSE}
+#css style for html documents.
 .special-code {
   font-size: 11px;
 }
 ```
 
 ```{r setup, include=FALSE}
+#initialize the knitr package to echo by default, hide warnings and messages, show tidy display
 knitr::opts_chunk$set(echo = TRUE,warning = FALSE,class.source="special-code", class.output="special-code", message = FALSE, tidy = TRUE, tidy.opts = list(comment = TRUE))
 # hooks to keep figures and text in order without floats
 knitr::knit_hooks$set(plot = function (x, options) {
@@ -44,7 +46,7 @@ knitr::knit_hooks$set(plot = function (x, options) {
 
 
 ```{r echo=FALSE,include=FALSE,warning=FALSE,message=FALSE, cache=TRUE, code=readLines('DatasetProcessingCode.R')}
-
+# cache the dataset loading code 
 ```
 
 ## Preface
@@ -81,6 +83,7 @@ Here is a glimpse of adultpay dataset. The columns that are of interest are inco
 ```{r warning=FALSE, regfloat=FALSE, class.source='special-code'}
 library(tidyverse)
 library(caret)
+#inspect the out-of-box original dataset
 glimpse(adultpay)
 ```
 
@@ -92,13 +95,14 @@ We will choose 13 attributes, income being the outcome and the rest 12 attribute
 library(tidyverse)
 library(gridExtra)
 library(kableExtra)
-
+#inspect dimensions for the cleaned, training and validation datasets
 dim(adultpayclean)
 
 dim(adultpayclean_train)
 
 dim(adultpayclean_validation)
 
+#check for NAs and verify there aren't any in the cleaned dataset
 colSums(is.na(adultpayclean))
 
 ```
@@ -106,6 +110,7 @@ colSums(is.na(adultpayclean))
 This is a classification problem and the outcome is binary (income above-50K or at-or-below-50K). On reviewing the summary of the dataset we have a choice of predictors. We will keep only USA specific data. Almost all of the predictors have data spread out. There are no NAs in the dataset. There is sufficient degree of variability.
 
 ```{r warning=FALSE, regfloat=FALSE, class.source='special-code'}
+#statistics for the clean dataset
 summary(adultpayclean)
 
 ```
@@ -136,6 +141,7 @@ The adult pay dataset from census bureau is a ML ready database. For convenience
 
 
 ```{r class.source='special-code'}
+# dataset wrangling and tidying
 
 # adultpayclean <-
 
@@ -339,6 +345,9 @@ The code DatasetProcessingCode.R downloads the dataset from a convenient locatio
 The caret package includes the function createDataPartition that helps us generates indexes for randomly splitting the data into training and test sets. The argument times is used to define how many random samples of indexes to return, the argument p is used to define what proportion of the data is represented by the index, and the argument list is used to decide if we want the indexes returned as a list or not. We can use the test_index from the createDataPartition function call to define the training and test sets.
 
 ```{r class.source='special-code'}
+
+# split dataset into training and validation sets
+
 # set.seed(1, sample.kind = "Rounding")
 
 # test_index <-
@@ -392,6 +401,8 @@ We are now going to evaluate various algorithms progressively
 We first start with a simple model. We sample randomly for the desired outcome. We then compare it with the actual outcomes and take a mean of the results. The result is 50% which is expected for guessing a binary outcome. Its akin to tossing a coin and getting head or tail. The chances are 50/50.
 
 ```{r class.source='special-code'}
+
+# Plain old guessing
 
 # > seat_of_the_pants <- sample(c("Above50K", "AtBelow50K"), length(test_index), replace = TRUE) 
 
@@ -516,6 +527,8 @@ We can use this to arrive at y_hat_logit. Since we have 8 features \(X = x\) is 
 
 ```{r class.source='special-code'}
 
+# linear model
+
 # lm_fit <- adultpayclean_train %>% 
 
 #     mutate(y = as.numeric(income == "Above50K")) %>%
@@ -597,6 +610,8 @@ We will now experiment with the general linear model (glm). We will be consisten
 
 ```{r class.source='special-code'}
 
+#general linear model
+
 # glm_fit <- adultpayclean_train %>% 
 
 # mutate(y = as.numeric(income == "Above50K")) %>%
@@ -676,6 +691,8 @@ knitr::include_graphics(img_path)
 We will now experiment with generative models like naive bayes classification. It assumes the features that go into the model are independent of each other.That is changing the value of one feature, does not directly influence or change the value of any of the other features used in the algorithm. When we analyzed the dataset it didn't appear to have independent features. An example of dependent feature would be age and education years, age and martial status etc. However, lets see how naive bayes performs with this assumption.
 
 ```{r class.source='special-code'}
+
+# Naive Bayes
 
 ## train_nb <- adultpayclean_train %>%
 
@@ -757,6 +774,8 @@ Lets explore k-nearest model now with same feature set. We will use cross-valida
 
 
 ```{r class.source='special-code'}
+
+#KNN
 
 #temp <- adultpayclean_train %>% 
 
