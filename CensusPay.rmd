@@ -206,7 +206,7 @@ knitr::include_graphics(img_path)
 ```
 Here are the comparison plots for the numerical variables like age, eduyears and hoursperweek. There are very less people who have less than 4 years of education.Most people complete at least 9-10 years of education between 25-80 years age.Significant group of people stopped at elementary school. Significant group of people put in more than 40 hours per week past their retirement age. People who have 8-10 years of education put in more hours per week than others.
 
-```{r,echo=FALSE,out.width="50%", fig.cap ="Comparison plots for categorical variables" , warning=FALSE, regfloat=FALSE}
+```{r,echo=FALSE,out.width="75%", fig.cap ="Comparison plots for categorical variables" , warning=FALSE, regfloat=FALSE}
 library(ggplot2)  # For plotting
 library(png) 
 img_path <- "images/comparevars2.png"
@@ -214,7 +214,7 @@ knitr::include_graphics(img_path)
 ```
 Here are the comparison plots for the categorical variables. On an average white-Americans and black-Americans are gainfully employed at similar ages. More black and white people are employed past their retirement age when compared to other races. Similarly, more females are employed past their retirement age in comparison to male counterparts (outliers). More white males are employed than white females, however, the number of black males and females are about the same. There are more middle-aged men and younger females in the labor force.
 
-```{r,echo=FALSE,out.width="50%", fig.cap ="Education statistics" , warning=FALSE, regfloat=FALSE}
+```{r,echo=FALSE,out.width="75%", fig.cap ="Education statistics" , warning=FALSE, regfloat=FALSE}
 library(ggplot2)  # For plotting
 library(png) 
 img_path <- "images/edufreqbar.png"

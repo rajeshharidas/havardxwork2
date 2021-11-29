@@ -352,6 +352,7 @@ ROCit::ciAUC(pROC_bin)
 plot(train_rf)
 legend("center", ifelse (colnames(train_rf$err.rate) == "FALSE","AtBelow50K",ifelse (colnames(train_rf$err.rate) == "TRUE","Above50K","OOB")),col=1:4,cex=0.8,fill=1:4)
 
+set.seed(2008)
 #random forest with tuning
 nodesize <- seq(1, 90, 10)
 acc <- sapply(nodesize, function(ns) {
