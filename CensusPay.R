@@ -32,7 +32,7 @@ library(pROC)
 library(ROCit)
 
 #set the seed for reproducible results
-set.seed(1996, sample.kind = "Rounding")
+set.seed(2008, sample.kind = "Rounding")
 
 # the simplest possible machine algorithm: guessing the outcome
 seat_of_the_pants <-
@@ -65,6 +65,7 @@ f1_guess <- cm$byClass[["F1"]]
 #find the area under the curve/ROC
 auc(ifelse(adultpayclean_validation$income == "Above50K",1,2), ifelse(seat_of_the_pants == "Above50K",1,2))
 
+set.seed(2008)
 #logistic linear model
 # create the model
 lm_fit <- adultpayclean_train %>%
@@ -100,6 +101,7 @@ plot(ciROC_bin95, col = 1, values=TRUE)
 lines(ciROC_bin95$TPR~ciROC_bin95$FPR, col = 2, lwd = 2)
 ROCit::ciAUC(pROC_bin)
 
+set.seed(2008)
 #general linear model
 #create the glm model
 glm_fit <- adultpayclean_train %>%
@@ -139,7 +141,7 @@ lines(ciROC_bin95$TPR~ciROC_bin95$FPR, col = 2, lwd = 2)
 ROCit::ciAUC(pROC_bin)
 
 #Naive bayes
-
+set.seed(2008)
 #create the naive bayes model
 train_nb <- adultpayclean_train %>%
    mutate(y = as.factor(income == "Above50K")) %>% 

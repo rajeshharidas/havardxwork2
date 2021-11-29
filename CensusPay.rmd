@@ -15,7 +15,6 @@ header-includes:
 ---
 
 ```{css, echo=FALSE}
-#css style for html documents.
 .special-code {
   font-size: 11px;
 }
@@ -198,7 +197,7 @@ The adult pay dataset from census bureau is a ML ready database. For convenience
 
 After performing this cleaning we see 29170 rows and 13 columns. We further analyze the makeup of the categorical columns.
 
-```{r,echo=FALSE,out.width="30%", fig.cap ="Comparison plots for numerical variables" , warning=FALSE, regfloat=FALSE}
+```{r,echo=FALSE,out.width="75%", fig.cap ="Comparison plots for numerical variables" , warning=FALSE, regfloat=FALSE}
 library(ggplot2)  # For plotting
 library(png) 
 img_path <- "images/comparevars1.png"
@@ -214,7 +213,7 @@ knitr::include_graphics(img_path)
 ```
 Here are the comparison plots for the categorical variables. On an average white-Americans and black-Americans are gainfully employed at similar ages. More black and white people are employed past their retirement age when compared to other races. Similarly, more females are employed past their retirement age in comparison to male counterparts (outliers). More white males are employed than white females, however, the number of black males and females are about the same. There are more middle-aged men and younger females in the labor force.
 
-```{r,echo=FALSE,out.width="75%", fig.cap ="Education statistics" , warning=FALSE, regfloat=FALSE}
+```{r,echo=FALSE,out.width="50%", fig.cap ="Education statistics" , warning=FALSE, regfloat=FALSE}
 library(ggplot2)  # For plotting
 library(png) 
 img_path <- "images/edufreqbar.png"
@@ -1081,7 +1080,7 @@ Next we use classification trees, or decision trees. We use the recursive partit
 ```
 
 The results of the tuning of the decision trees can be seen in this figure
-```{r,echo=FALSE, fig.retina = 2, fig.cap ="rpart accuracy" , warning=FALSE, regfloat=FALSE}
+```{r,echo=FALSE, out.width="75%", fig.cap ="rpart accuracy" , warning=FALSE, regfloat=FALSE}
 library(ggplot2)  # For plotting
 library(png) 
 img_path <- "images/rpartplot.png"
@@ -1090,7 +1089,7 @@ knitr::include_graphics(img_path)
 
 The rpart algorithm followed the rule below to classify the dataset
 
-```{r,echo=FALSE, fig.retina = 2, fig.cap ="rpart decision tree" , warning=FALSE, regfloat=FALSE}
+```{r,echo=FALSE,out.width="50%", fig.cap ="rpart decision tree" , warning=FALSE, regfloat=FALSE}
 library(ggplot2)  # For plotting
 library(png) 
 img_path <- "images/rpartdectree.png"
