@@ -1080,12 +1080,23 @@ Next we use classification trees, or decision trees. We use the recursive partit
 
 ```
 
+The results of the tuning of the decision trees can be seen in this figure
 ```{r,echo=FALSE, fig.retina = 2, fig.cap ="rpart accuracy" , warning=FALSE, regfloat=FALSE}
 library(ggplot2)  # For plotting
 library(png) 
 img_path <- "images/rpartplot.png"
 knitr::include_graphics(img_path)
 ```
+
+The rpart algorithm followed the rule below to classify the dataset
+
+```{r,echo=FALSE, fig.retina = 2, fig.cap ="rpart decision tree" , warning=FALSE, regfloat=FALSE}
+library(ggplot2)  # For plotting
+library(png) 
+img_path <- "images/rpartdectree.png"
+knitr::include_graphics(img_path)
+```
+
 
 The accuracy of recursive partitioning is 0.8211, sensitivity is higher at 0.91 and specificity is at 0.5487 with prevalence about the same. Balanced accuracy has improved. Confidence intervals for positive and negative has improved as well. The F1 score for rpart is 0.88467 and AUC is 0.81573 which is a positive sign.
 
