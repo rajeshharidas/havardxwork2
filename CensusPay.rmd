@@ -116,7 +116,7 @@ summary(adultpayclean)
 
 We can also see the number or above-50K income is significantly less than (25%) the at-or-below-50K income. This implies that there is prevalence of at-or-below-50K group in the dataset.
 
-```{r,echo=FALSE,fig.retina = 2, fig.cap ="Income distribution" , warning=FALSE, regfloat=FALSE}
+```{r,echo=FALSE,fig.retina = 2, fig.cap ="Income distribution" , warning=FALSE, regfloat=FALSE, fig.align='center'}
 library(ggplot2)  # For plotting
 library(png) 
 img_path <- "images/incomebar.png"
@@ -197,7 +197,7 @@ The adult pay dataset from census bureau is a ML ready database. For convenience
 
 After performing this cleaning we see 29170 rows and 13 columns. We further analyze the makeup of the categorical columns.
 
-```{r,echo=FALSE,out.width="75%", fig.cap ="Comparison plots for numerical variables" , warning=FALSE, regfloat=FALSE}
+```{r,echo=FALSE,out.width="75%", fig.cap ="Comparison plots for numerical variables" , warning=FALSE, regfloat=FALSE, fig.align='center'}
 library(ggplot2)  # For plotting
 library(png) 
 img_path <- "images/comparevars1.png"
@@ -205,7 +205,7 @@ knitr::include_graphics(img_path)
 ```
 Here are the comparison plots for the numerical variables like age, eduyears and hoursperweek. There are very less people who have less than 4 years of education.Most people complete at least 9-10 years of education between 25-80 years age.Significant group of people stopped at elementary school. Significant group of people put in more than 40 hours per week past their retirement age. People who have 8-10 years of education put in more hours per week than others.
 
-```{r,echo=FALSE,out.width="75%", fig.cap ="Comparison plots for categorical variables" , warning=FALSE, regfloat=FALSE}
+```{r,echo=FALSE,out.width="75%", fig.cap ="Comparison plots for categorical variables" , warning=FALSE, regfloat=FALSE, fig.align='center'}
 library(ggplot2)  # For plotting
 library(png) 
 img_path <- "images/comparevars2.png"
@@ -213,7 +213,7 @@ knitr::include_graphics(img_path)
 ```
 Here are the comparison plots for the categorical variables. On an average white-Americans and black-Americans are gainfully employed at similar ages. More black and white people are employed past their retirement age when compared to other races. Similarly, more females are employed past their retirement age in comparison to male counterparts (outliers). More white males are employed than white females, however, the number of black males and females are about the same. There are more middle-aged men and younger females in the labor force.
 
-```{r,echo=FALSE,out.width="50%", fig.cap ="Education statistics" , warning=FALSE, regfloat=FALSE}
+```{r,echo=FALSE,out.width="50%", fig.cap ="Education statistics" , warning=FALSE, regfloat=FALSE, fig.align='center'}
 library(ggplot2)  # For plotting
 library(png) 
 img_path <- "images/edufreqbar.png"
@@ -222,7 +222,7 @@ knitr::include_graphics(img_path)
 
 The number of high-school graduates are most frequent than other groups. There are 2 income distributions for education. One by the level of education and one by the number of years spent in education. Sure enough, most of the above-50K earners have at least high-school education. Bachelors and some college have more above-50K earners than other categories. 
 
-```{r,echo=FALSE,out.width="75%", fig.cap ="Education income distribution" , warning=FALSE, regfloat=FALSE}
+```{r,echo=FALSE,out.width="75%", fig.cap ="Education income distribution" , warning=FALSE, regfloat=FALSE, fig.align='center'}
 library(ggplot2)  # For plotting
 library(png) 
 img_path <- "images/incomebyeducation.png"
@@ -243,7 +243,7 @@ knitr::include_graphics(img_path)
 
 The rest of the groups have sparse data. This could be because of missing or bad data that was removed during initial cleaning before it was loaded into kaggle.
 
-```{r,echo=FALSE,out.width="50%", fig.cap ="Occupation frequency" , warning=FALSE, regfloat=FALSE}
+```{r,echo=FALSE,out.width="50%", fig.cap ="Occupation frequency" , warning=FALSE, regfloat=FALSE, fig.align='center'}
 library(ggplot2)  # For plotting
 library(png) 
 img_path <- "images/occupationbar.png"
@@ -252,7 +252,7 @@ knitr::include_graphics(img_path)
 
 There are more executive and managerial occupations followed by professionals. 
 
-```{r,echo=FALSE,out.width="75%", fig.cap ="Occupation distribution" , warning=FALSE, regfloat=FALSE}
+```{r,echo=FALSE,out.width="75%", fig.cap ="Occupation distribution" , warning=FALSE, regfloat=FALSE, fig.align='center'}
 library(ggplot2)  # For plotting
 library(png) 
 img_path <- "images/incomebyoccpstatus.png"
@@ -262,7 +262,7 @@ knitr::include_graphics(img_path)
 
 The same groups earn more and are in the above-50K category. There are fairly significant number of at-or-below-50K earners in the other categories. There are 1600 or so missing data (? or Unknown). This makes up 5-6% of the cleaned dataset.
 
-```{r,echo=FALSE,out.width="50%", fig.cap ="Sex feature characteristics" , warning=FALSE, regfloat=FALSE}
+```{r,echo=FALSE,out.width="50%", fig.cap ="Sex feature characteristics" , warning=FALSE, regfloat=FALSE, fig.align='center'}
 library(ggplot2)  # For plotting
 library(png) 
 img_path <- "images/sexbarch.png"
@@ -273,7 +273,7 @@ knitr::include_graphics(img_path)
 
 There are 67% more males in the workforce than females. The distribution also indicates that the number of males at above-50K are more than the number of females. Additionally, there are more males at-or-below-50K than females as well.
 
-```{r,echo=FALSE,out.width="50%", fig.cap ="Race distribution" , warning=FALSE, regfloat=FALSE}
+```{r,echo=FALSE,out.width="50%", fig.cap ="Race distribution" , warning=FALSE, regfloat=FALSE, fig.align='center'}
 library(ggplot2)  # For plotting
 library(png) 
 img_path <- "images/racebarch.png"
@@ -285,7 +285,7 @@ knitr::include_graphics(img_path)
 There are more white-Americans in the labor force in both the above-50K and at-or-below-50K categories. Black-Americans and other race follow next. The proportion of above-50K earners are lesser in other races when compared to white-Americans.
 
 
-```{r,echo=FALSE,out.width="50%", fig.cap ="Marital Status frequency" , warning=FALSE, regfloat=FALSE}
+```{r,echo=FALSE,out.width="50%", fig.cap ="Marital Status frequency" , warning=FALSE, regfloat=FALSE, fig.align='center'}
 library(ggplot2)  # For plotting
 library(png) 
 img_path <- "images/maritalstatusbar.png"
@@ -294,7 +294,7 @@ knitr::include_graphics(img_path)
 
 The number of married with civilian spouses are more than any other groups in labor force. The number of above-50K and at-or-below-50K earners are also more in this group when compared to others. Singles follow next.
 
-```{r,echo=FALSE,out.width="75%", fig.cap ="Marital Status distribution" , warning=FALSE, regfloat=FALSE}
+```{r,echo=FALSE,out.width="75%", fig.cap ="Marital Status distribution" , warning=FALSE, regfloat=FALSE, fig.align='center'}
 library(ggplot2)  # For plotting
 library(png) 
 img_path <- "images/incomebymaritalstatus.png"
@@ -304,7 +304,7 @@ knitr::include_graphics(img_path)
 The number of at-or-below-50K are more than the above-50K in the singles group and most of them are younger population. The plot also suggests most of this group is below 25 years age group. This can be correlated with the income by age group chart. The number of married with military spouses is less which may be due to lack of data.
 
 
-```{r,echo=FALSE,out.width="50%", fig.cap ="Relationship distribution" , warning=FALSE, regfloat=FALSE}
+```{r,echo=FALSE,out.width="50%", fig.cap ="Relationship distribution" , warning=FALSE, regfloat=FALSE, fig.align='center'}
 library(ggplot2)  # For plotting
 library(png) 
 img_path <- "images/relationshipbar.png"
@@ -315,7 +315,7 @@ knitr::include_graphics(img_path)
 
 The number of husbands who earn more than 50K and at-or-below-50K are also more than the number of wives. Unmarried individuals also are more in the at-or-below-50K category.
 
-```{r,echo=FALSE,out.width="50%", fig.cap ="Age distribution" , warning=FALSE, regfloat=FALSE}
+```{r,echo=FALSE,out.width="50%", fig.cap ="Age distribution" , warning=FALSE, regfloat=FALSE, fig.align='center'}
 library(ggplot2)  # For plotting
 library(png) 
 img_path <- "images/agefreqbar.png"
@@ -326,7 +326,7 @@ knitr::include_graphics(img_path)
 
 The number of people from age 30-45 are the most frequent in the distribution and the same group have more above-50K incomes.
 
-```{r,echo=FALSE,out.width="50%", fig.cap ="Hours worked" , warning=FALSE, regfloat=FALSE}
+```{r,echo=FALSE,out.width="50%", fig.cap ="Hours worked" , warning=FALSE, regfloat=FALSE, fig.align='center'}
 library(ggplot2)  # For plotting
 library(png) 
 img_path <- "images/hoursperweek.png"
@@ -335,7 +335,7 @@ knitr::include_graphics(img_path)
 
 On a average most participants worked 40 hours a week followed by 50-60 hours.
 
-```{r,echo=FALSE,out.width="50%", fig.cap ="Class distribution" , warning=FALSE, regfloat=FALSE}
+```{r,echo=FALSE,out.width="50%", fig.cap ="Class distribution" , warning=FALSE, regfloat=FALSE, fig.align='center'}
 library(ggplot2)  # For plotting
 library(png) 
 img_path <- "images/classbar.png"
@@ -613,7 +613,7 @@ We can use this to arrive at y_hat_logit. Since we have 8 features \(X = x\) is 
 
 The accuracy for this model is 0.8153 however, sensitivity is 0.4429 and specificity is 0.9368. This indicates this model has higher ratio of negative outcomes than positive outcomes. It does have better accuracy, confidence interval, and F1 score than plain old guessing. Prevalence remains the same. AUC has improved as well.  Lets see if we can do better
 
-```{r,echo=FALSE,out.width="50%", fig.cap ="LM classification summary" , warning=FALSE, regfloat=FALSE}
+```{r,echo=FALSE,out.width="75%", fig.cap ="LM classification summary" , warning=FALSE, regfloat=FALSE, fig.align='center'}
 library(ggplot2)  # For plotting
 library(png) 
 img_path <- "images/roclm.png"
@@ -693,7 +693,7 @@ We will now experiment with the general linear model (glm). We will be consisten
 
 glm produces accuracy of 0.8105, however, specificity 0.94864 is still higher than sensitivity 0.38719 and prevalence about the same. CI and F1 scores can be better. AUC can also do better. We can do better!
 
-```{r,echo=FALSE,out.width="50%", fig.cap ="GLM classification summary" , warning=FALSE, regfloat=FALSE}
+```{r,echo=FALSE,out.width="75%", fig.cap ="GLM classification summary" , warning=FALSE, regfloat=FALSE, fig.align='center'}
 library(ggplot2)  # For plotting
 library(png) 
 img_path <- "images/rocglm.png"
@@ -775,7 +775,7 @@ We will now experiment with generative models like naive bayes classification. I
 
 Naive bayes gives us an accuracy of 0.8009 with a lower prevalence than other algorithms but higher than plain guessing. However the confidence interval is lower and accuracy of the prediction is lower too. There are more false negatives as well. F1 score has increased. This indicates there are more true positives as well. However, given that this is an imbalanced dataset, we can try other advanced algorithms and compare this later.
 
-```{r,echo=FALSE,out.width="50%", fig.cap ="naive bayes classification summary" , warning=FALSE, regfloat=FALSE}
+```{r,echo=FALSE,out.width="75%", fig.cap ="naive bayes classification summary" , warning=FALSE, regfloat=FALSE, fig.align='center'}
 library(ggplot2)  # For plotting
 library(png) 
 img_path <- "images/rocnb.png"
@@ -820,7 +820,7 @@ Lets explore k-nearest model now with same feature set. We will use cross-valida
 
 The k parameter that lead to maximum accuracy can be obtained by bestTune. The plot for that is shown in the figure "KNN tuning".
 
-```{r,echo=FALSE, fig.retina = 2, fig.cap ="KNN tuning" , warning=FALSE, regfloat=FALSE}
+```{r,echo=FALSE, fig.retina = 2, fig.cap ="KNN tuning" , warning=FALSE, regfloat=FALSE, fig.align='center'}
 library(ggplot2)  # For plotting
 library(png) 
 img_path <- "images/knntune.png"
@@ -885,7 +885,7 @@ Here is the confusion matrix for the knn tuned raw model
 
 knn raw model produces accuracy of 0.8053, however, specificity is lower than sensitivity and prevalence is now 0.753. We now see the positive prediction is better. F1 score has improved. However, the AUC score is less than naive bayes. This indicates that the number of true positives are lesser than before. Balanced accuracy is better. Can we do better with accuracy and precision? 
 
-```{r,echo=FALSE,out.width="50%", fig.cap ="knn classification summary" , warning=FALSE, regfloat=FALSE}
+```{r,echo=FALSE,out.width="75%", fig.cap ="knn classification summary" , warning=FALSE, regfloat=FALSE, fig.align='center'}
 library(ggplot2)  # For plotting
 library(png) 
 img_path <- "images/rocknn.png"
@@ -1001,7 +1001,7 @@ We will now try to use classification with knn3. We will again use different val
 
 The accuracy of the knn tuned classification is 0.8091 with a sensitivity of 0.9064 and specificity of 0.5111. This is better than the previous models. Prevalence is just about the same as raw knn. Balanced accuracy has improved. F1 score is also at ~ 88% and AUC has improved a bit.
 
-```{r,echo=FALSE,out.width="50%", fig.cap ="knn tune classification summary" , warning=FALSE, regfloat=FALSE}
+```{r,echo=FALSE,out.width="75%", fig.cap ="knn tune classification summary" , warning=FALSE, regfloat=FALSE, fig.align='center'}
 library(ggplot2)  # For plotting
 library(png) 
 img_path <- "images/rocknntune.png"
@@ -1080,7 +1080,7 @@ Next we use classification trees, or decision trees. We use the recursive partit
 ```
 
 The results of the tuning of the decision trees can be seen in this figure
-```{r,echo=FALSE, out.width="75%", fig.cap ="rpart accuracy" , warning=FALSE, regfloat=FALSE}
+```{r,echo=FALSE, out.width="75%", fig.cap ="rpart accuracy" , warning=FALSE, regfloat=FALSE, fig.align='center'}
 library(ggplot2)  # For plotting
 library(png) 
 img_path <- "images/rpartplot.png"
@@ -1089,7 +1089,7 @@ knitr::include_graphics(img_path)
 
 The rpart algorithm followed the rule below to classify the dataset
 
-```{r,echo=FALSE,out.width="50%", fig.cap ="rpart decision tree" , warning=FALSE, regfloat=FALSE}
+```{r,echo=FALSE,out.width="65%", fig.cap ="rpart decision tree" , warning=FALSE, regfloat=FALSE, fig.align='center'}
 library(ggplot2)  # For plotting
 library(png) 
 img_path <- "images/rpartdectree.png"
@@ -1099,7 +1099,7 @@ knitr::include_graphics(img_path)
 
 The accuracy of recursive partitioning is 0.8211, sensitivity is higher at 0.91 and specificity is at 0.5487 with prevalence about the same. Balanced accuracy has improved. Confidence intervals for positive and negative has improved as well. The F1 score for rpart is 0.88467 and AUC is 0.81573 which is a positive sign.
 
-```{r,echo=FALSE,out.width="50%", fig.cap ="rpart classification summary" , warning=FALSE, regfloat=FALSE}
+```{r,echo=FALSE,out.width="75%", fig.cap ="rpart classification summary" , warning=FALSE, regfloat=FALSE, fig.align='center'}
 library(ggplot2)  # For plotting
 library(png) 
 img_path <- "images/rocrpart.png"
@@ -1242,7 +1242,7 @@ Classification trees have certain advantages that make them very useful. They ar
 
 The accuracy of random forest is at 0.8218, sensitivity is at 0.9145 and specificity is at 0.5376. Prevalence is about the same when compared to knn and rpart classification models. The confidence intervals is about the same as rpart. The F1 score is 0.88556 is the best so far. AUC also on the positive side. Due to the randomization of features during the random forest bootstrapping, its hard to know if all the features will be used.  Fortunately, we can investigate into how often a specific feature is used in the predictions using variable importance
 
-```{r,echo=FALSE,out.width="50%", fig.cap ="random forest classification summary" , warning=FALSE, regfloat=FALSE}
+```{r,echo=FALSE,out.width="75%", fig.cap ="random forest classification summary" , warning=FALSE, regfloat=FALSE, fig.align='center'}
 library(ggplot2)  # For plotting
 library(png) 
 img_path <- "images/rfrocr.png"
@@ -1255,7 +1255,7 @@ When we add "Occupation" as one the feature (with some missing occupation data (
 
 When we add "class" as one the feature (with some missing occupation data (5%)) we see that the accuracy is 0.8283 and sensitivity and specificity are 0.9077 and 0.5850 respectively with a F1 score of 0.88854.
 
-```{r,echo=FALSE,out.width="50%", fig.cap ="random forest classification errors" , warning=FALSE, regfloat=FALSE}
+```{r,echo=FALSE,out.width="65%", fig.cap ="random forest classification errors" , warning=FALSE, regfloat=FALSE, fig.align='center'}
 library(ggplot2)  # For plotting
 library(png) 
 img_path <- "images/rferrors.png"
@@ -1434,16 +1434,16 @@ Lets tune this model just like the KNN3 classification and see if we can do bett
        
 ```
 
-```{r,echo=FALSE, fig.retina = 2, fig.cap ="rf tuning" , warning=FALSE, regfloat=FALSE}
+```{r,echo=FALSE, fig.retina = 2, fig.cap ="rf tuning" , warning=FALSE, regfloat=FALSE, fig.align='center'}
 library(ggplot2)  # For plotting
 library(png) 
 img_path <- "images/rf2tune.png"
 knitr::include_graphics(img_path)
 ```
 
-The accuracy of random forest with tuning is at 0.8239, sensitivity is at 0.9164 and specificity is at 0.5404. Prevalence is about the same when compared to knn and rpart classification models. The confidence intervals is just about the same as rpart and random forest without tuning.AUC improved slightly. In addition to the accuracy, precision increased to 0.88693.
+The accuracy of random forest with tuning is at 0.8339, sensitivity is at 0.915 and specificity is at 0.584. Prevalence is about the same when compared to knn and rpart classification models. The confidence intervals is just about the same as rpart and random forest without tuning.AUC improved slightly. In addition to the accuracy, precision increased to 0.892.
 
-```{r,echo=FALSE,out.width="50%", fig.cap ="random forest tuned classification summary" , warning=FALSE, regfloat=FALSE}
+```{r,echo=FALSE,out.width="75%", fig.cap ="random forest tuned classification summary" , warning=FALSE, regfloat=FALSE, fig.align='center'}
 library(ggplot2)  # For plotting
 library(png) 
 img_path <- "images/rf2rocr.png"
@@ -1452,7 +1452,7 @@ knitr::include_graphics(img_path)
 
 When we added the experimental occupation and class data into the dataset for rf tuned test we see that the accuracy improves to 0.8396 and sensitivity is 0.9205 and specificity is 0.5919 with prevalence being the same as before and balanced accuracy improved to 0.7562. The F1 score for this is 0.896
 
-```{r,echo=FALSE,out.width="50%", fig.cap ="tuned random forest classification errors" , warning=FALSE, regfloat=FALSE}
+```{r,echo=FALSE,out.width="65%", fig.cap ="tuned random forest classification errors" , warning=FALSE, regfloat=FALSE, fig.align='center'}
 library(ggplot2)  # For plotting
 library(png) 
 img_path <- "images/rf2errors.png"
@@ -1463,7 +1463,7 @@ The out-of-bag errors and errors for Above-50K and AtBelow50K classes are shown 
 
 We can see the variable importance with occupation and class.
 
-```{r,echo=FALSE,out.width="50%", fig.cap ="tuned random forest classification errors" , warning=FALSE, regfloat=FALSE}
+```{r,echo=FALSE,out.width="60%", fig.cap ="tuned random forest classification errors" , warning=FALSE, regfloat=FALSE, fig.align='center'}
 library(ggplot2)  # For plotting
 library(png) 
 img_path <- "images/rf2varimp.png"

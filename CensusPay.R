@@ -360,7 +360,7 @@ nodesize <- seq(1, 90, 10)
 acc <- sapply(nodesize, function(ns) {
   #train the model with tuning
   train(
-    y ~ age + eduyears + sex + race + hoursperweek + maritalstatus + relationship+education,
+    y ~ age + eduyears + sex + race + hoursperweek + maritalstatus + relationship + education + occupation + class,
     method = "rf",
     data = temp,
     tuneGrid = data.frame(mtry = 2),
@@ -368,10 +368,12 @@ acc <- sapply(nodesize, function(ns) {
   )$results$Accuracy
 })
 qplot(nodesize, acc)
+
+set.seed(2008)
 #get the trained model for the max node size
 train_rf_2 <-
   randomForest(
-    y ~ age + eduyears + sex + race + hoursperweek + maritalstatus + relationship+education,
+    y ~ age + eduyears + sex + race + hoursperweek + maritalstatus + relationship + education + occupation + class,
     data = temp,
     nodesize = nodesize[which.max(acc)]
   )
@@ -380,13 +382,13 @@ y_hat_rf2 <- predict(train_rf_2, adultpayclean_validation)
 #get the confusion matrix for random forest model
 cm_rf2 <-
   confusionMatrix(
-    predict(train_rf_2, adultpayclean_validation),
+    y_hat_rf2,
     as.factor(adultpayclean_validation$income  == "Above50K")
   )
 #get the accuracy
 accuracy_rftune <-
   confusionMatrix(
-    predict(train_rf_2, adultpayclean_validation),
+    y_hat_rf2,
     as.factor(adultpayclean_validation$income  == "Above50K")
   )$overall["Accuracy"]
 
