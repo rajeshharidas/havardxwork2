@@ -1512,9 +1512,18 @@ Additionally, we could also use advanced algorithms like Ada Boost Gradient Boos
 
 ### Appendix A - Complete code
 
-```{r echo=TRUE,tidy=TRUE, warning=FALSE,message=FALSE, tidy.opts=list(comment=TRUE), cache=TRUE, class.source='special-code', code=readLines('CensusPay.R')}
+```{r eval=FALSE,tidy=TRUE, warning=FALSE,message=FALSE, tidy.opts=list(comment=TRUE), cache=TRUE, class.source='special-code', code=readLines('CensusPay.R')}
 
 ```
+### Appendix A - Code Execution
+
+The code in this project takes long time to execute. Please find the execution summary at the link below.
+
+https://github.com/rajeshharidas/havardxwork2/blob/main/CensusPayExecutionSummary.html
+https://github.com/rajeshharidas/havardxwork2/blob/main/CensusPayExecutionSummary.pdf
+
+https://github.com/rajeshharidas/havardxwork2/blob/main/DatasetProcessingCode.html
+https://github.com/rajeshharidas/havardxwork2/blob/main/DatasetProcessingCode.pdf
 
 \newpage
 
