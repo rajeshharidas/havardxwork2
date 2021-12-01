@@ -139,59 +139,48 @@ The adult pay dataset from census bureau is a ML ready database. For convenience
 5) convert character labels to factors
 
 
-```{r class.source='special-code'}
+```{r eval=FALSE,class.source='special-code'}
 # dataset wrangling and tidying
 
-# adultpayclean <-
-
-#   adultpay %>% filter (native.country == 'United-States') %>%
-
-#   mutate (class = ifelse(workclass == '?', 'Unknown', str_replace_all(workclass, "-", ""))) %>%
-
-#   select(-workclass, -capital.gain, -capital.loss) %>%
-
-#   rename(
-#     c(
-#       eduyears = education.num,
-#       maritalstatus = marital.status,
-#       hoursperweek = hours.per.week,
-#       native = native.country
-#     )
-#   ) %>%
-
-#   mutate (maritalstatus = ifelse(
-#     maritalstatus == '?',
-#     'Unknown',
-#     str_replace_all(maritalstatus, "-", "")
-#   )) %>%
-
-#   mutate (occupation = ifelse(
-#     occupation == '?',
-#     'Unknown',
-#     str_replace_all(occupation, "-", "")
-#   )) %>%
-
-#   mutate (education = ifelse(education == '?', 'Unknown', str_replace_all(education, "-", ""))) %>%
-
-#   mutate (relationship = ifelse(
-#     relationship == '?',
-#     'Unknown',
-#     str_replace_all(relationship, "-", "")
-#   )) %>%
-
-#   mutate (native = ifelse(native == '?', 'Unknown', str_replace_all(native, "-", ""))) %>%
-
-#   mutate (income = ifelse(
-#     income == '?',
-#     'Unknown',
-#     str_replace_all(income, "<=50K", "AtBelow50K")
-#   )) %>%
-
-#   mutate (income = ifelse(
-#     income == '?',
-#     'Unknown',
-#     str_replace_all(income, ">50K", "Above50K")
-#   ))
+ adultpayclean <-
+   adultpay %>% filter (native.country == 'United-States') %>%
+   mutate (class = ifelse(workclass == '?', 'Unknown', str_replace_all(workclass, "-", ""))) %>%
+   select(-workclass, -capital.gain, -capital.loss) %>%
+   rename(
+     c(
+       eduyears = education.num,
+       maritalstatus = marital.status,
+       hoursperweek = hours.per.week,
+       native = native.country
+     )
+   ) %>%
+   mutate (maritalstatus = ifelse(
+     maritalstatus == '?',
+     'Unknown',
+     str_replace_all(maritalstatus, "-", "")
+   )) %>%
+   mutate (occupation = ifelse(
+     occupation == '?',
+     'Unknown',
+     str_replace_all(occupation, "-", "")
+   )) %>%
+   mutate (education = ifelse(education == '?', 'Unknown', str_replace_all(education, "-", ""))) %>%
+   mutate (relationship = ifelse(
+     relationship == '?',
+     'Unknown',
+     str_replace_all(relationship, "-", "")
+   )) %>%
+   mutate (native = ifelse(native == '?', 'Unknown', str_replace_all(native, "-", ""))) %>%
+   mutate (income = ifelse(
+     income == '?',
+     'Unknown',
+     str_replace_all(income, "<=50K", "AtBelow50K")
+   )) %>%
+   mutate (income = ifelse(
+     income == '?',
+     'Unknown',
+     str_replace_all(income, ">50K", "Above50K")
+   ))
 
 ```
 
@@ -234,7 +223,7 @@ knitr::include_graphics(img_path)
 
 Interestingly enough, in comparison to Bachelors and some college, group with masters have lesser above-50K. Additionally, the group that has at least 12 years of education have more above-50K than others. On an average the participants have 10 years of education with a standard deviation of 2.4. There are more at-or-below 50K earners in the high-school grad and less than 10 years of education categories. 
 
-```{r,echo=FALSE,out.width="50%", fig.cap ="Years of education" , warning=FALSE, regfloat=FALSE}
+```{r,echo=FALSE,out.width="50%", fig.cap ="Years of education" , warning=FALSE, regfloat=FALSE, fig.align='center'}
 library(ggplot2)  # For plotting
 library(png) 
 img_path <- "images/eduyearsdist.png"
@@ -359,41 +348,31 @@ The code DatasetProcessingCode.R downloads the dataset from a convenient locatio
 
 The caret package includes the function createDataPartition that helps us generates indexes for randomly splitting the data into training and test sets. The argument times is used to define how many random samples of indexes to return, the argument p is used to define what proportion of the data is represented by the index, and the argument list is used to decide if we want the indexes returned as a list or not. We can use the test_index from the createDataPartition function call to define the training and test sets.
 
-```{r class.source='special-code'}
+```{r eval=FALSE,class.source='special-code'}
 
 # split dataset into training and validation sets
 
-# set.seed(1, sample.kind = "Rounding")
+ set.seed(1, sample.kind = "Rounding")
 
-# test_index <-
+ test_index <-
+  createDataPartition(
+    y = adultpayclean$income,
+    times = 1,
+    p = 0.1,
+    list = FALSE
+  )
 
-#  createDataPartition(
-#    y = adultpayclean$income,
-#    times = 1,
-#    p = 0.1,
-#    list = FALSE
-#  )
+ adultpayclean_train <- adultpayclean[-test_index, ]
 
-# adultpayclean_train <- adultpayclean[-test_index, ]
+ adultpayclean_validation <- adultpayclean[test_index, ]
 
-# adultpayclean_validation <- adultpayclean[test_index, ]
-
-#dim(adultpayclean)
-
-#dim(adultpayclean_train)
-
-#dim(adultpayclean_validation)
-
-# > dim(adultpayclean)
-
+dim(adultpayclean)
 # [1] 29170    13
 
-# > dim(adultpayclean_train)
-
+dim(adultpayclean_train)
 # [1] 26252    13
 
-# > dim(adultpayclean_validation)
-
+dim(adultpayclean_validation)
 # [1] 2918   13
 
 ```
@@ -404,108 +383,98 @@ The simplest way to evaluate the algorithm for the adultpay dataset is by simply
 
 We will also use F1 measure to validate the accuracy of the sensitivity and specificity and see if we have a good precision. F1 score is a combination of two important error metrics: Precision and Recall. Thus, it can be considered as the Harmonic mean of Precision and Recall error metrics for an imbalanced dataset with respect to binary classification of data. As income level has only 30% data for above-50K class this score is useful. The highest possible value of an F-score is 1.0, indicating perfect precision and recall, and the lowest possible value is 0. Higher the precision the better. 
 
-We will also use a widely used plot receiver operating characteristic (ROC) curve. Receiver Operating Characteristic curves are a popular way to visualize the trade-offs between sensitivity and specificity in a binary classifier. The ROC curve plots sensitivity (TPR) versus 1 - specificity or the false positive rate (FPR). This also gives us Area under the curve (a.k.a. AUC). The AUC summarizes ROC in a single value. The probabilistic interpretation is that if you randomly choose a positive case and a negative case, the probability that the positive case outranks the negative case according to the classifier is given by the AUC. Higher the AUC score the better. This indicates that the model has higher true positive rate and low false positive rate.
+We will also use a widely used plot receiver operating characteristic (ROC) curve. Receiver Operating Characteristic curves are a popular way to visualize the trade-offs between sensitivity and specificity in a binary classifier. The ROC curve plots sensitivity (TPR) versus 1 - specificity or the false positive rate (FPR). This also gives us Area under the curve (a.k.a. AUC). The AUC summarizes ROC in a single value. The probabilistic interpretation is that if you randomly choose a positive case and a negative case, the probability that the positive case outranks the negative case according to the classifier is given by the AUC. Higher the AUC score the better. This indicates that the model has higher chances for getting correct predictions.
 
 
 ## Model Creation
 
 ### Simplest model using random sampling  \
-\
+
 We are now going to evaluate various algorithms progressively
 
 We first start with a simple model. We sample randomly for the desired outcome. We then compare it with the actual outcomes and take a mean of the results. The result is 50% which is expected for guessing a binary outcome. Its akin to tossing a coin and getting head or tail. The chances are 50/50.
 
-```{r class.source='special-code'}
+```{r eval=FALSE,class.source='special-code'}
 
 # Plain old guessing
 
-# > seat_of_the_pants <- sample(c("Above50K", "AtBelow50K"), length(test_index), replace = TRUE) 
+seat_of_the_pants <- sample(c("Above50K", "AtBelow50K"), length(test_index), replace = TRUE) %>% factor(levels = levels(adultpayclean_validation$income))
 
-#   %>% factor(levels = levels(adultpayclean_validation$income))
-
-# > mean(seat_of_the_pants == adultpayclean_validation$income)
+mean(seat_of_the_pants == adultpayclean_validation$income)
 
 # [1] 0.5010281
 
 # build a confusion matrix for this simple model
 
-# cm <- confusionMatrix(data =seat_of_the_pants , reference = adultpayclean_validation$income)
+cm <- confusionMatrix(data =seat_of_the_pants , reference = adultpayclean_validation$income)
 
-## Confusion Matrix and Statistics
-## 
-##             Reference
+# cm
 
-## Prediction   Above50K AtBelow50K
+```
 
-##   Above50K        347       1087
+\begin{verbatim}
+ Confusion Matrix and Statistics
+ 
+             Reference
 
-##   AtBelow50K      371       1113
-##                                          
-##                Accuracy : 0.5003       
+ Prediction   Above50K AtBelow50K
+   Above50K        347       1087
+   AtBelow50K      371       1113
+                                          
+                Accuracy : 0.5003       
+                  95% CI : (0.482, 0.5186)
 
-##                  95% CI : (0.482, 0.5186)
+     No Information Rate : 0.7539         
+     P-Value [Acc > NIR] : 1              
+                   Kappa : -0.0081        
+  Mcnemar's Test P-Value : <2e-16         
+             Sensitivity : 0.4833     
+             Specificity : 0.5059    
+          Pos Pred Value : 0.2420    
+          Neg Pred Value : 0.7500    
+              Prevalence : 0.2461     
+          Detection Rate : 0.1189    
+    Detection Prevalence : 0.4914       
+       Balanced Accuracy : 0.4946         
+        'Positive' Class : Above50K       
+\end{verbatim}
 
-##     No Information Rate : 0.7539         
+```{r eval=FALSE,class.source='special-code'}
 
-##     P-Value [Acc > NIR] : 1              
-##                                          
-##                   Kappa : -0.0081        
-##                                          
-##  Mcnemar's Test P-Value : <2e-16         
-##                                          
-##             Sensitivity : 0.4833     
+ p <- 0.1
 
-##             Specificity : 0.5059    
+ n <- length(test_index)
 
-##          Pos Pred Value : 0.2420    
+ y_hat <- sample(c("Above50K", "AtBelow50K"), n, replace = TRUE, prob=c(p, 1-p)) %>%
 
-##          Neg Pred Value : 0.7500         
-##              Prevalence : 0.2461     
+   factor(levels = levels(adultpayclean_validation$income))
 
-##          Detection Rate : 0.1189    
-
-##    Detection Prevalence : 0.4914       
-
-##       Balanced Accuracy : 0.4946         
-##                                          
-##        'Positive' Class : Above50K       
-##  
-
-
-# p <- 0.1
-
-# n <- length(test_index)
-
-# y_hat <- sample(c("Above50K", "AtBelow50K"), n, replace = TRUE, prob=c(p, 1-p)) %>%
-
-#   factor(levels = levels(adultpayclean_validation$income))
-
-# mean(y_hat == adultpayclean_validation$income)
+ mean(y_hat == adultpayclean_validation$income)
 
 # [1] 0.7076765
  
-# p <- 0.9
+ p <- 0.9
 
-# n <- length(test_index)
+ n <- length(test_index)
 
-# y_hat <- sample(c("Above50K", "AtBelow50K"), n, replace = TRUE, prob=c(p, 1-p)) %>% 
+ y_hat <- sample(c("Above50K", "AtBelow50K"), n, replace = TRUE, prob=c(p, 1-p)) %>% 
 
-#   factor(levels = levels(adultpayclean_validation$income))
+   factor(levels = levels(adultpayclean_validation$income))
 
-# mean(y_hat == adultpayclean_validation$income)
+ mean(y_hat == adultpayclean_validation$income)
 
 # [1] 0.2964359
 
 
-# > f1_guess
+ f1_guess
 
 # [1] 0.3224907
 
 # Area under the curve
 
-# > auc_guess <- auc(ifelse(adultpayclean_validation$income == "Above50K",1,2), ifelse(seat_of_the_pants == "Above50K",1,2))
+auc_guess <- auc(ifelse(adultpayclean_validation$income == "Above50K",1,2), ifelse(seat_of_the_pants == "Above50K",1,2))
 
-# > auc_guess
+auc_guess
 
 # Area under the curve: 0.4946
 
@@ -522,7 +491,7 @@ The F1 score for this guessing is 0.3224 and Area under the curve is 0.4946. Thi
 Our goal is to improve the accuracy > 80% while keeping sensitivity and specificity under check. Hence we further analyze the impact of other features on the income levels.
 
 ### Logistic regression using linear models  \
-\
+
 
 We will start with a simple logistic model - linear model. We use the features age, education, eduyears, sex, race, maritalstatus, relationship and hoursperweek. 
 
@@ -540,76 +509,59 @@ which in the case of binary data is equivalent to the conditional probability:
 
 We can use this to arrive at y_hat_logit. Since we have 8 features \(X = x\) is more like \(X_{i} = x_{i}\) where \(i\) is from 1 to 8.
 
-```{r class.source='special-code'}
+```{r eval=FALSE,class.source='special-code'}
 
 # linear model
 
-# lm_fit <- adultpayclean_train %>% 
+ lm_fit <- adultpayclean_train %>% 
+     mutate(y = as.numeric(income == "Above50K")) %>%
+     lm(y ~ age + eduyears + sex + race + hoursperweek + maritalstatus + relationship + education, data=.)
+ 
+ p_hat_logit <- predict(lm_fit, newdata = adultpayclean_validation)
+ 
+ y_hat_logit <- ifelse(p_hat_logit > 0.5, "Above50K", "AtBelow50K") %>% factor
+ 
+ accuracy_lm <- confusionMatrix(y_hat_logit,adultpayclean_validation$income)$overall[["Accuracy"]]
 
-#     mutate(y = as.numeric(income == "Above50K")) %>%
-
-#     lm(y ~ age + eduyears + sex + race + hoursperweek + maritalstatus + relationship + education, data=.)
-# 
-# p_hat_logit <- predict(lm_fit, newdata = adultpayclean_validation)
-# 
-# y_hat_logit <- ifelse(p_hat_logit > 0.5, "Above50K", "AtBelow50K") %>% factor
-# 
-# accuracy_lm <- confusionMatrix(y_hat_logit,adultpayclean_validation$income)$overall[["Accuracy"]]
-
-# accuracy_lm 
+ accuracy_lm 
 
 # [1] 0.8153
 
-## Confusion Matrix and Statistics
-
-## 
-##             Reference
-
-## Prediction   Above50K AtBelow50K
-
-##   Above50K        318        139
-
-##   AtBelow50K      400       2061
-
-##                                           
-##                Accuracy : 0.8153          
-
-##                  95% CI : (0.8007, 0.8292)
-
-##     No Information Rate : 0.7539       
-
-##     P-Value [Acc > NIR] : 1.243e-15       
-##                                           
-##                   Kappa : 0.4327          
-##                                           
-##  Mcnemar's Test P-Value : < 2.2e-16       
-##                                           
-##             Sensitivity : 0.4429         
-
-##             Specificity : 0.9368         
-
-##          Pos Pred Value : 0.6958        
-
-##          Neg Pred Value : 0.8375        
-
-##              Prevalence : 0.2461    
-
-##          Detection Rate : 0.1090         
-
-##    Detection Prevalence : 0.1566         
-
-##       Balanced Accuracy : 0.6899          
-##                                           
-##        'Positive' Class : Above50K        
-## 
-
-# > f1_lm
+ f1_lm
 
 # [1] 0.54128
 
 # Area under the curve: 0.81709
 
 ```
+
+\begin{verbatim}
+ Confusion Matrix and Statistics
+
+             Reference
+ Prediction   Above50K AtBelow50K
+
+    Above50K        318        139
+    AtBelow50K      400       2061
+
+                Accuracy : 0.8153          
+                  95% CI : (0.8007, 0.8292)
+     No Information Rate : 0.7539       
+     P-Value [Acc > NIR] : 1.243e-15       
+                   Kappa : 0.4327          
+  Mcnemar's Test P-Value : < 2.2e-16       
+             Sensitivity : 0.4429         
+             Specificity : 0.9368         
+          Pos Pred Value : 0.6958        
+          Neg Pred Value : 0.8375        
+              Prevalence : 0.2461    
+          Detection Rate : 0.1090         
+    Detection Prevalence : 0.1566         
+       Balanced Accuracy : 0.6899          
+        'Positive' Class : Above50K        
+
+\end{verbatim}
+
 
 The accuracy for this model is 0.8153 however, sensitivity is 0.4429 and specificity is 0.9368. This indicates this model has higher ratio of negative outcomes than positive outcomes. It does have better accuracy, confidence interval, and F1 score than plain old guessing. Prevalence remains the same. AUC has improved as well.  Lets see if we can do better
 
@@ -623,73 +575,58 @@ knitr::include_graphics(img_path)
 
 We will now experiment with the general linear model (glm). We will be consistent with the features used across all algorithms.
 
-```{r class.source='special-code'}
+```{r eval=FALSE,class.source='special-code'}
 
 #general linear model
 
-# glm_fit <- adultpayclean_train %>% 
+ glm_fit <- adultpayclean_train %>% 
 
-# mutate(y = as.numeric(income == "Above50K")) %>%
+ mutate(y = as.numeric(income == "Above50K")) %>%
 
-# glm(y ~ age + eduyears + sex + race + hoursperweek + maritalstatus + relationship+education, data=., family = "binomial")
+ glm(y ~ age + eduyears + sex + race + hoursperweek + maritalstatus + relationship+education, data=., family = "binomial")
 
-# p_hat_logit <- predict(glm_fit, newdata = adultpayclean_validation)
+ p_hat_logit <- predict(glm_fit, newdata = adultpayclean_validation)
 
-# y_hat_logit <- ifelse(p_hat_logit > 0.5, "Above50K", "AtBelow50K") %>% factor
+ y_hat_logit <- ifelse(p_hat_logit > 0.5, "Above50K", "AtBelow50K") %>% factor
 
-# accuracy_glm <- confusionMatrix(y_hat_logit, adultpayclean_validation$income)$overall[["Accuracy"]]
+ accuracy_glm <- confusionMatrix(y_hat_logit, adultpayclean_validation$income)$overall[["Accuracy"]]
 
-# > accuracy_glm
+ accuracy_glm
 # [1] 0.8105
 
-## Confusion Matrix and Statistics
-## 
-##             Reference
-
-## Prediction   Above50K AtBelow50K
-
-##   Above50K        278        113
-
-##   AtBelow50K      440       2087
-##                                           
-##                Accuracy : 0.8105      
-
-##                  95% CI : (0.7958, 0.8246)
-
-##     No Information Rate : 0.7539         
-
-##     P-Value [Acc > NIR] : 1.758e-13       
-##                                           
-##                   Kappa : 0.3967          
-##                                           
-##  Mcnemar's Test P-Value : < 2.2e-16       
-##                                           
-##             Sensitivity : 0.38719       
-
-##             Specificity : 0.94864       
-
-##          Pos Pred Value : 0.71100       
-
-##          Neg Pred Value : 0.82588     
-
-##              Prevalence : 0.24606     
-
-##          Detection Rate : 0.09527    
-
-##    Detection Prevalence : 0.13400     
-
-##       Balanced Accuracy : 0.66791         
-##                                           
-##        'Positive' Class : Above50K        
-## 
-
-# f1_glm
+ f1_glm
 
 # [1] 0.50135
 
 # Area under the curve:  0.81817
        
 ```
+\begin{verbatim}
+ Confusion Matrix and Statistics
+ 
+             Reference
+
+ Prediction   Above50K AtBelow50K
+   Above50K        278        113
+   AtBelow50K      440       2087
+                                           
+                Accuracy : 0.8105      
+                  95% CI : (0.7958, 0.8246)
+     No Information Rate : 0.7539         
+     P-Value [Acc > NIR] : 1.758e-13       
+                   Kappa : 0.3967          
+  Mcnemar's Test P-Value : < 2.2e-16       
+             Sensitivity : 0.38719       
+             Specificity : 0.94864       
+          Pos Pred Value : 0.71100       
+          Neg Pred Value : 0.82588     
+              Prevalence : 0.24606     
+          Detection Rate : 0.09527    
+    Detection Prevalence : 0.13400     
+       Balanced Accuracy : 0.66791         
+        'Positive' Class : Above50K        
+
+\end{verbatim}
 
 glm produces accuracy of 0.8105, however, specificity 0.94864 is still higher than sensitivity 0.38719 and prevalence about the same. CI and F1 scores can be better. AUC can also do better. We can do better!
 
@@ -701,77 +638,60 @@ knitr::include_graphics(img_path)
 ```
 
 ### Naive Bayes  \
-\
 
 We will now experiment with generative models like naive bayes classification. It assumes the features that go into the model are independent of each other.That is changing the value of one feature, does not directly influence or change the value of any of the other features used in the algorithm. When we analyzed the dataset it didn't appear to have independent features. An example of dependent feature would be age and education years, age and martial status etc. However, lets see how naive bayes performs with this assumption.
 
-```{r class.source='special-code'}
+```{r eval=FALSE,class.source='special-code'}
 
 # Naive Bayes
 
-## train_nb <- adultpayclean_train %>%
+ train_nb <- adultpayclean_train %>%
+   mutate(y = as.factor(income == "Above50K")) %>% 
+   naiveBayes(y ~ age + eduyears + sex + race + hoursperweek + maritalstatus + 
+   relationship+education,data = .)
 
-##   mutate(y = as.factor(income == "Above50K")) %>% 
+ y_hat_nb <- predict(train_nb, newdata = adultpayclean_validation)
 
-##   naiveBayes(y ~ age + eduyears + sex + race + hoursperweek + maritalstatus + 
-##   relationship+education,data = .)
+ cm_tab <- table(adultpayclean_validation$income == "Above50K", y_hat_nb)
 
-## y_hat_nb <- predict(train_nb, newdata = adultpayclean_validation)
-
-## cm_tab <- table(adultpayclean_validation$income == "Above50K", y_hat_nb)
-
-## cm_nb <- confusionMatrix(cm_tab)
+ cm_nb <- confusionMatrix(cm_tab)
 
 ## Accuracy : 0.8009
 
-## Confusion Matrix and Statistics
-## 
-##        y_hat_nb
-
-##         FALSE TRUE
-
-##   FALSE  1794  406
-
-##   TRUE    175  543
-##                                           
-##                Accuracy : 0.8009 
-
-##                  95% CI : (0.7859, 0.8152)
-
-##     No Information Rate : 0.6748   
-
-##     P-Value [Acc > NIR] : < 2.2e-16       
-##                                           
-##                   Kappa : 0.5158          
-##                                           
-##  Mcnemar's Test P-Value : < 2.2e-16       
-##                                           
-##             Sensitivity : 0.9111    
-
-##             Specificity : 0.5722    
-
-##          Pos Pred Value : 0.8155     
-
-##          Neg Pred Value : 0.7563     
-
-##              Prevalence : 0.6748   
-
-##          Detection Rate : 0.6148   
-
-##    Detection Prevalence : 0.7539  
-
-##       Balanced Accuracy : 0.7417          
-##                                           
-##        'Positive' Class : FALSE           
-## 
-
-# > f1_nb
+ f1_nb
 
 # [1] 0.86064
 
 # Area under the curve: 0.80143
 
 ```
+
+\begin{verbatim}
+ Confusion Matrix and Statistics
+ 
+        y_hat_nb
+
+         FALSE TRUE
+   FALSE  1794  406
+   TRUE    175  543
+                                           
+                Accuracy : 0.8009 
+                  95% CI : (0.7859, 0.8152)
+     No Information Rate : 0.6748   
+     P-Value [Acc > NIR] : < 2.2e-16       
+                   Kappa : 0.5158          
+  Mcnemar's Test P-Value : < 2.2e-16       
+             Sensitivity : 0.9111    
+             Specificity : 0.5722    
+          Pos Pred Value : 0.8155     
+          Neg Pred Value : 0.7563     
+              Prevalence : 0.6748   
+          Detection Rate : 0.6148   
+    Detection Prevalence : 0.7539  
+       Balanced Accuracy : 0.7417          
+        'Positive' Class : FALSE      
+        
+\end{verbatim} 
 
 Naive bayes gives us an accuracy of 0.8009 with a lower prevalence than other algorithms but higher than plain guessing. However the confidence interval is lower and accuracy of the prediction is lower too. There are more false negatives as well. F1 score has increased. This indicates there are more true positives as well. However, given that this is an imbalanced dataset, we can try other advanced algorithms and compare this later.
 
@@ -788,33 +708,38 @@ Lets explore k-nearest model now with same feature set. We will use cross-valida
 \
 
 
-```{r class.source='special-code'}
+```{r eval=FALSE,class.source='special-code'}
 
 #KNN
 
-#temp <- adultpayclean_train %>% 
+temp <- adultpayclean_train %>% 
+  mutate(y = as.factor(income == "Above50K"))
 
-#  mutate(y = as.factor(income == "Above50K"))
+ set.seed(2008)
 
-# set.seed(2008)
+ control <- trainControl(method = "cv", number = 10, p = .9)
 
-# control <- trainControl(method = "cv", number = 10, p = .9)
+ train_knn <-  train(y ~ age + eduyears + sex + race + hoursperweek + maritalstatus + relationship+education, method = "knn", 
+                    data = temp,
+                    tuneGrid = data.frame(k = seq(3, 71, 2)),trControl = control)
 
-# train_knn <-  train(y ~ age + eduyears + sex + race + hoursperweek + maritalstatus + relationship+education, method = "knn", 
-#                    data = temp,
-#                    tuneGrid = data.frame(k = seq(3, 71, 2)),trControl = control)
+ train_knn$bestTune
 
-# train_knn$bestTune
+ y_hat_knn <- predict(train_knn,adultpayclean_validation, type = "raw")
 
-# y_hat_knn <- predict(train_knn,adultpayclean_validation, type = "raw")
+ accuracy_knn <- confusionMatrix(y_hat_knn, as.factor(adultpayclean_validation$income == "Above50K"))$overall[["Accuracy"]]
 
-# accuracy_knn <- confusionMatrix(y_hat_knn, as.factor(adultpayclean_validation$income == "Above50K"))$overall[["Accuracy"]]
+ ggplot(train_knn, highlight = TRUE)
 
-# ggplot(train_knn, highlight = TRUE)
-
-# > accuracy_knn
+ accuracy_knn
 
 # [1] 0.80535
+
+ f1_knn
+
+# [1] 0.87522
+
+# Area under the curve: 0.78721
 
 ```
 
@@ -829,59 +754,32 @@ knitr::include_graphics(img_path)
 
 Here is the confusion matrix for the knn tuned raw model
 
-```{r}
+\begin{verbatim}
+ Confusion Matrix and Statistics
+ 
+           Reference
 
-## cm_knn
-
-## Confusion Matrix and Statistics
-## 
-##           Reference
-
-## Prediction FALSE TRUE
-
-##      FALSE  1992  360
-
-##      TRUE    208  358
-##                                           
-##                Accuracy : 0.8053   
-
-##                  95% CI : (0.7905, 0.8196)
-
-##     No Information Rate : 0.7539       
-
-##     P-Value [Acc > NIR] : 2.195e-11       
-##                                           
-##                   Kappa : 0.4351          
-##                                           
-##  Mcnemar's Test P-Value : 2.361e-10       
-##                                           
-##             Sensitivity : 0.9055      
-
-##             Specificity : 0.4986        
-
-##          Pos Pred Value : 0.8469      
-
-##          Neg Pred Value : 0.6325   
-
-##              Prevalence : 0.7539     
-
-##          Detection Rate : 0.6827    
-
-##    Detection Prevalence : 0.8060     
-
-##       Balanced Accuracy : 0.7020          
-##                                           
-##        'Positive' Class : FALSE           
-##        
-## 
-
-# f1_knn
-
-# [1] 0.87522
-
-# Area under the curve: 0.78721
-       
-```
+ Prediction FALSE TRUE
+      FALSE  1992  360
+      TRUE    208  358
+                                           
+                Accuracy : 0.8053   
+                  95% CI : (0.7905, 0.8196)
+     No Information Rate : 0.7539       
+     P-Value [Acc > NIR] : 2.195e-11       
+                   Kappa : 0.4351          
+  Mcnemar's Test P-Value : 2.361e-10       
+             Sensitivity : 0.9055      
+             Specificity : 0.4986        
+          Pos Pred Value : 0.8469      
+          Neg Pred Value : 0.6325   
+              Prevalence : 0.7539     
+          Detection Rate : 0.6827    
+    Detection Prevalence : 0.8060     
+       Balanced Accuracy : 0.7020          
+        'Positive' Class : FALSE           
+        
+\end{verbatim}
 
 knn raw model produces accuracy of 0.8053, however, specificity is lower than sensitivity and prevalence is now 0.753. We now see the positive prediction is better. F1 score has improved. However, the AUC score is less than naive bayes. This indicates that the number of true positives are lesser than before. Balanced accuracy is better. Can we do better with accuracy and precision? 
 
@@ -895,109 +793,84 @@ knitr::include_graphics(img_path)
 We will now try to use classification with knn3. We will again use different values of k but using map_df function to repeat the above for each one. Running this classification model is going to be slow as it has to iterate through all the k values and find the one that is the highest.
 
 
-```{r class.source='special-code'}
+```{r eval=FALSE,class.source='special-code'}
 
-# ks <- seq(3, 251, 2)
+ ks <- seq(3, 251, 2)
 
-# knntune <- map_df(ks, function(k){
+ knntune <- map_df(ks, function(k){
   
-#  temp <- adultpayclean_train %>% 
-
-#    mutate(y = as.factor(income == "Above50K"))
-
-#  temp_test <- adultpayclean_validation %>% 
-
-#    mutate(y = as.factor(income == "Above50K"))
+  temp <- adultpayclean_train %>% 
+    mutate(y = as.factor(income == "Above50K"))
   
-#  knn_fit <- knn3(y ~ age + eduyears + sex + race + hoursperweek + maritalstatus + relationship+education, data = temp, k = k)
+  temp_test <- adultpayclean_validation %>% 
+    mutate(y = as.factor(income == "Above50K"))
   
-#  y_hat <- predict(knn_fit, temp, type = "class")
-
-#  cm_train <- confusionMatrix(y_hat, temp$y)
-
-#  train_error <- cm_train$overall["Accuracy"]
+  knn_fit <- knn3(y ~ age + eduyears + sex + race + hoursperweek + maritalstatus + relationship+education, data = temp, k = k)
   
-#  y_hat <- predict(knn_fit, temp_test, type = "class")
+  y_hat <- predict(knn_fit, temp, type = "class")
 
-#  cm_test <- confusionMatrix(y_hat, temp_test$y)
+  cm_train <- confusionMatrix(y_hat, temp$y)
 
-#  test_error <- cm_test$overall["Accuracy"]
+  train_error <- cm_train$overall["Accuracy"]
   
-#  tibble(train = train_error, test = test_error)
+  y_hat <- predict(knn_fit, temp_test, type = "class")
 
-# })
+  cm_test <- confusionMatrix(y_hat, temp_test$y)
 
-# accuracy_knntune <- max(knntune$test)
+  test_error <- cm_test$overall["Accuracy"]
+  
+  tibble(train = train_error, test = test_error)
+
+ })
+
+ accuracy_knntune <- max(knntune$test)
 
 #get the confusion matrix for that k 
 
-# knn_fit <-
+ knn_fit <-
+  knn3(
+    y ~ age + eduyears + sex + race + hoursperweek + maritalstatus + relationship,
+    data = temp,
+    k = ks[which.max(knntune$test)]
+  )
 
-#  knn3(
+ y_hat <- predict(knn_fit, adultpayclean_validation, type = "class")
 
-#    y ~ age + eduyears + sex + race + hoursperweek + maritalstatus + relationship,
+ cm_knntune <- confusionMatrix(y_hat, as.factor(adultpayclean_validation$income == "Above50K"))
 
-#    data = temp,
-
-#    k = ks[which.max(knntune$test)]
-
-#  )
-
-# y_hat <- predict(knn_fit, adultpayclean_validation, type = "class")
-
-# cm_knntune <- confusionMatrix(y_hat, as.factor(adultpayclean_validation$income == "Above50K"))
-
-## cm_knntune
-
-## Confusion Matrix and Statistics
-## 
-##           Reference
-
-## Prediction FALSE TRUE
-
-##      FALSE  1994  351
-
-##      TRUE    206  367
-##                                           
-##                Accuracy : 0.8091    
-
-##                  95% CI : (0.7944, 0.8232)
-
-##     No Information Rate : 0.7539         
-
-##     P-Value [Acc > NIR] : 6.680e-13       
-##                                           
-##                   Kappa : 0.448           
-##                                           
-##  Mcnemar's Test P-Value : 1.051e-09       
-##                                           
-##             Sensitivity : 0.9064     
-
-##             Specificity : 0.5111      
-
-##          Pos Pred Value : 0.8503     
-
-##          Neg Pred Value : 0.6405   
-
-##              Prevalence : 0.7539  
-
-##          Detection Rate : 0.6833   
-
-##    Detection Prevalence : 0.8036    
-
-##       Balanced Accuracy : 0.7088          
-##                                           
-##        'Positive' Class : FALSE           
-##        
-##  
-
-# > f1_knntune
+ f1_knntune
 
 # [1] 0.87745
 
 # Area under the curve: 0.7941
 
 ```
+\begin{verbatim}
+ Confusion Matrix and Statistics
+ 
+           Reference
+
+ Prediction FALSE TRUE
+      FALSE  1994  351
+      TRUE    206  367
+                                           
+                Accuracy : 0.8091    
+                  95% CI : (0.7944, 0.8232)
+     No Information Rate : 0.7539         
+     P-Value [Acc > NIR] : 6.680e-13       
+                   Kappa : 0.448           
+  Mcnemar's Test P-Value : 1.051e-09       
+             Sensitivity : 0.9064     
+             Specificity : 0.5111      
+          Pos Pred Value : 0.8503     
+          Neg Pred Value : 0.6405   
+              Prevalence : 0.7539  
+          Detection Rate : 0.6833   
+    Detection Prevalence : 0.8036    
+       Balanced Accuracy : 0.7088          
+        'Positive' Class : FALSE           
+        
+\end{verbatim}
 
 The accuracy of the knn tuned classification is 0.8091 with a sensitivity of 0.9064 and specificity of 0.5111. This is better than the previous models. Prevalence is just about the same as raw knn. Balanced accuracy has improved. F1 score is also at ~ 88% and AUC has improved a bit.
 
@@ -1009,75 +882,59 @@ knitr::include_graphics(img_path)
 ```
 
 ### Recursive partitioning with rpart  \
-\
 
 Next we use classification trees, or decision trees. We use the recursive partitioning library rpart for this. The general idea is to define an algorithm that uses data to create trees with predictions at the ends, referred to as nodes. Decision trees operate by predicting a categorical outcome variable  \(Y\) by partitioning the predictors.
 
-```{r class.source='special-code'}
+```{r eval=FALSE,class.source='special-code'}
 
-# train_rpart <- train(y ~ age + eduyears + sex + race + hoursperweek + maritalstatus + relationship+education,
-#                     method = "rpart",
-#                     tuneGrid = data.frame(cp = seq(0.0, 0.1, len = 25)),
-#                     data = temp)
+ train_rpart <- train(y ~ age + eduyears + sex + race + hoursperweek + maritalstatus + relationship+education,
+                     method = "rpart",
+                     tuneGrid = data.frame(cp = seq(0.0, 0.1, len = 25)),
+                     data = temp)
 
-# y_hat <- predict(train_rpart,adultpayclean_validation)
+ y_hat <- predict(train_rpart,adultpayclean_validation)
 
-# accuracy_rpart <- confusionMatrix(y_hat, as.factor(adultpayclean_validation$income  == "Above50K"))$overall["Accuracy"]
+ accuracy_rpart <- confusionMatrix(y_hat, as.factor(adultpayclean_validation$income  == "Above50K"))$overall["Accuracy"]
 
-# accuracy_rpart 
+ accuracy_rpart 
 
 # Accuracy 
 
 # 0.8211
 
-## Confusion Matrix and Statistics
-## 
-##           Reference
-
-## Prediction FALSE TRUE
-
-##      FALSE  2002  324
-
-##      TRUE    198  394
-##                                           
-##                Accuracy : 0.8211 
-
-##                  95% CI : (0.8067, 0.8349)
-
-##     No Information Rate : 0.7539       
-
-##     P-Value [Acc > NIR] : < 2.2e-16       
-##                                           
-##                   Kappa : 0.4876          
-##                                           
-##  Mcnemar's Test P-Value : 4.472e-08       
-##                                           
-##             Sensitivity : 0.9100     
-
-##             Specificity : 0.5487     
-
-##          Pos Pred Value : 0.8607      
-
-##          Neg Pred Value : 0.6655     
-
-##              Prevalence : 0.7539      
-
-##          Detection Rate : 0.6861    
-
-##    Detection Prevalence : 0.7971     
-
-##       Balanced Accuracy : 0.7294          
-##                                           
-##        'Positive' Class : FALSE           
-## 
-
-# > f1_rpart
+ f1_rpart
 
 # [1] 0.8846664
 
 # Area under the curve: 0.81573
 
 ```
+\begin{verbatim}
+ Confusion Matrix and Statistics
+ 
+           Reference
+
+ Prediction FALSE TRUE
+      FALSE  2002  324
+      TRUE    198  394
+                                           
+                Accuracy : 0.8211 
+                  95% CI : (0.8067, 0.8349)
+     No Information Rate : 0.7539       
+     P-Value [Acc > NIR] : < 2.2e-16       
+                   Kappa : 0.4876          
+  Mcnemar's Test P-Value : 4.472e-08       
+             Sensitivity : 0.9100     
+             Specificity : 0.5487     
+          Pos Pred Value : 0.8607      
+          Neg Pred Value : 0.6655     
+              Prevalence : 0.7539      
+          Detection Rate : 0.6861    
+    Detection Prevalence : 0.7971     
+       Balanced Accuracy : 0.7294          
+        'Positive' Class : FALSE           
+ 
+\end{verbatim}
 
 The results of the tuning of the decision trees can be seen in this figure
 ```{r,echo=FALSE, out.width="75%", fig.cap ="rpart accuracy" , warning=FALSE, regfloat=FALSE, fig.align='center'}
@@ -1109,136 +966,100 @@ knitr::include_graphics(img_path)
 We will next look at random forest algorithm.
 
 ### Random forests  \
-\
 
 
 Classification trees have certain advantages that make them very useful. They are highly interpretable, even more so than linear models. They are easy to visualize (if small enough). Finally, they can model human decision processes and don’t require use of dummy predictors for categorical variables. On the other hand, the approach via recursive partitioning can easily over-train and is therefore a bit harder to train than, for example, linear regression or kNN. Furthermore, in terms of accuracy, it is rarely the best performing method since it is not very flexible and is highly unstable to changes in training data. Random forests, explained next, improve on several of these shortcomings.
 
  The goal of random forest is to improve prediction performance and reduce instability by averaging multiple decision trees. The first step is bootstrap aggregation or bagging. The general idea is to generate many predictors, each using regression or classification trees, and then forming a final prediction based on the average prediction of all these trees.To assure that the individual trees are not the same, we use the bootstrap to induce randomness.
 
-```{r class.source='special-code'}
-# train_rf <- randomForest(y ~ age + eduyears + sex + race + hoursperweek + maritalstatus + relationship+education, data=temp)
+```{r eval=FALSE,class.source='special-code'}
+ train_rf <- randomForest(y ~ age + eduyears + sex + race + hoursperweek + maritalstatus + relationship+education, data=temp)
 
-# accuracy_rf <- confusionMatrix(predict(train_rf, adultpayclean_validation),
-#                as.factor(adultpayclean_validation$income  == "Above50K"))$overall["Accuracy"]
+ accuracy_rf <- confusionMatrix(predict(train_rf, adultpayclean_validation),
+                as.factor(adultpayclean_validation$income  == "Above50K"))$overall["Accuracy"]
 
 
-# > accuracy_rf
+ accuracy_rf
 
 # Accuracy 
 
 # 0.8218 
 
-## Confusion Matrix and Statistics
-## 
-##           Reference
-
-## Prediction FALSE TRUE
-
-##      FALSE  2012  332
-
-##      TRUE    188  386
-##                                           
-##                Accuracy : 0.8218      
-
-##                  95% CI : (0.8074, 0.8355)
-
-##     No Information Rate : 0.7539         
-
-##     P-Value [Acc > NIR] : < 2.2e-16       
-##                                           
-##                   Kappa : 0.4849          
-##                                           
-##  Mcnemar's Test P-Value : 3.588e-10       
-##                                           
-##             Sensitivity : 0.9145    
-
-##             Specificity : 0.5376    
-
-##          Pos Pred Value : 0.8584   
-
-##          Neg Pred Value : 0.6725   
-
-##              Prevalence : 0.7539       
-
-##          Detection Rate : 0.6895      
-
-##    Detection Prevalence : 0.8033      
-
-##       Balanced Accuracy : 0.7261          
-##                                           
-##        'Positive' Class : FALSE           
-##  
-
-# With "Occupation" as one of the feature
-
-# Confusion Matrix and Statistics
-
-#          Reference
-
-#Prediction FALSE TRUE
-
-#     FALSE  1990  293
-
-#     TRUE    210  425
-                                          
-#               Accuracy : 0.8276          
-
-#                 95% CI : (0.8134, 0.8412)
-
-#    No Information Rate : 0.7539          
-
-#    P-Value [Acc > NIR] : < 2.2e-16       
-                                          
-#                  Kappa : 0.5166          
-                                          
-# Mcnemar's Test P-Value : 0.000256        
-                                          
-#            Sensitivity : 0.9045          
-
-#            Specificity : 0.5919          
-
-#         Pos Pred Value : 0.8717          
-
-#         Neg Pred Value : 0.6693          
-
-#             Prevalence : 0.7539          
-
-#         Detection Rate : 0.6820          
-
-#   Detection Prevalence : 0.7824          
-
-#      Balanced Accuracy : 0.7482          
-                                          
-#       'Positive' Class : FALSE
-
-# f1_rf
+ f1_rf
 
 # [1] 0.88556
 
 # Area under the curve: 0.81804
 
-# varImp(train_rf)
-
-#Overall
-
-#age           696.37032
-
-#eduyears      606.59083
-
-#sex           114.11631
-
-#race           77.66081
-
-#hoursperweek  484.89859
-
-#maritalstatus 923.10055
-
-#relationship  991.96874
-
-#education     652.20573
+ varImp(train_rf)
 
 ```
+\begin{verbatim}
+ Variable Importance
+
+ Overall
+ 
+ age           696.37032
+ eduyears      606.59083
+ sex           114.11631
+ race           77.66081
+ hoursperweek  484.89859
+ maritalstatus 923.10055
+ relationship  991.96874
+ education     652.20573
+ 
+ 
+  Confusion Matrix and Statistics
+  
+            Reference
+ 
+  Prediction FALSE TRUE
+       FALSE  2012  332
+       TRUE    188  38
+       
+                 Accuracy : 0.8218      
+                   95% CI : (0.8074, 0.8355)
+      No Information Rate : 0.7539         
+      P-Value [Acc > NIR] : < 2.2e-16       
+                    Kappa : 0.4849          
+   Mcnemar's Test P-Value : 3.588e-10       
+              Sensitivity : 0.9145    
+              Specificity : 0.5376    
+           Pos Pred Value : 0.8584   
+           Neg Pred Value : 0.6725   
+               Prevalence : 0.7539       
+           Detection Rate : 0.6895      
+     Detection Prevalence : 0.8033      
+        Balanced Accuracy : 0.7261          
+         'Positive' Class : FALSE           
+   
+ 
+  With "Occupation" as one of the feature
+ 
+  Confusion Matrix and Statistics
+ 
+           Reference
+ 
+ Prediction FALSE TRUE
+      FALSE  1990  293
+      TRUE    210  425
+                                          
+                Accuracy : 0.8276          
+                  95% CI : (0.8134, 0.8412)
+     No Information Rate : 0.7539          
+     P-Value [Acc > NIR] : < 2.2e-16       
+                   Kappa : 0.5166          
+  Mcnemar's Test P-Value : 0.000256        
+             Sensitivity : 0.9045          
+             Specificity : 0.5919          
+          Pos Pred Value : 0.8717          
+          Neg Pred Value : 0.6693          
+              Prevalence : 0.7539          
+          Detection Rate : 0.6820          
+    Detection Prevalence : 0.7824          
+       Balanced Accuracy : 0.7482          
+        'Positive' Class : FALSE
+\end{verbatim}
 
 The accuracy of random forest is at 0.8218, sensitivity is at 0.9145 and specificity is at 0.5376. Prevalence is about the same when compared to knn and rpart classification models. The confidence intervals is about the same as rpart. The F1 score is 0.88556 is the best so far. AUC also on the positive side. Due to the randomization of features during the random forest bootstrapping, its hard to know if all the features will be used.  Fortunately, we can investigate into how often a specific feature is used in the predictions using variable importance
 
@@ -1264,175 +1085,125 @@ knitr::include_graphics(img_path)
 
 Adding class has a negative impact on the precision when compared to occupation. We can see the variable importance with occupation and class.
 
-```{r class.source='special-code'}
+\begin{verbatim}
+ varImp(train_rf)
 
-# varImp(train_rf)
+ Overall
 
-#Overall
-
-#age           1296.5653
-
-#eduyears       655.8616
-
-#sex            123.8927
-
-#race           143.0220
-
-#hoursperweek   770.9115
-
-#maritalstatus  863.0918
-
-#relationship  1192.2686
-
-#education      633.8376
-
-#occupation     905.2539
-
-#class          409.0696
-
-```
+ age           1296.5653
+ eduyears       655.8616
+ sex            123.8927
+ race           143.0220
+ hoursperweek   770.9115
+ maritalstatus  863.0918
+ relationship  1192.2686
+ education      633.8376
+ occupation     905.2539
+ class          409.0696
+\end{verbatim}
 
 We can see that age, years of education, relationship,occupation and maritalstatus are the most used and sex and race are the least used features. We can also see that occupation did have a greater impact on decisioning even though we had 5% unknown data. 
 
 Lets tune this model just like the KNN3 classification and see if we can do better.
 
-```{r class.source='special-code'}
+```{r eval=FALSE,class.source='special-code'}
 
-# nodesize <- seq(1, 51, 10)
+ nodesize <- seq(1, 51, 10)
 
-# acc <- sapply(nodesize, function(ns){
-#  train(y ~ age + eduyears + sex + race + hoursperweek + maritalstatus + relationship, method = "rf", data = temp,
-#        tuneGrid = data.frame(mtry = 2),
-#        nodesize = ns)$results$Accuracy
-# })
+ acc <- sapply(nodesize, function(ns){
+  train(y ~ age + eduyears + sex + race + hoursperweek + maritalstatus + relationship, method = "rf", data = temp,
+        tuneGrid = data.frame(mtry = 2),
+        nodesize = ns)$results$Accuracy
+ })
 
-# qplot(nodesize, acc)
+ qplot(nodesize, acc)
 
-# train_rf_2 <- randomForest(y ~ age + eduyears + sex + race + hoursperweek + maritalstatus + relationship, data=temp,nodesize = nodesize[which.max(acc)])
+ train_rf_2 <- randomForest(y ~ age + eduyears + sex + race + hoursperweek + maritalstatus + relationship, data=temp,nodesize = nodesize[which.max(acc)])
 
-# y_hat_rf2 <- predict(train_rf_2, adultpayclean_validation)
+ y_hat_rf2 <- predict(train_rf_2, adultpayclean_validation)
 
-# accuracy_rftune <- confusionMatrix(predict(train_rf_2, adultpayclean_validation),
-#                as.factor(adultpayclean_validation$income  == "Above50K"))$overall["Accuracy"]
+ accuracy_rftune <- confusionMatrix(predict(train_rf_2, adultpayclean_validation),
+                as.factor(adultpayclean_validation$income  == "Above50K"))$overall["Accuracy"]
 
 
-# > accuracy_rftune
+ accuracy_rftune
 
 # Accuracy 
 
 # 0.8239
 
-## Confusion Matrix and Statistics
-## 
-##           Reference
-
-## Prediction FALSE TRUE
-
-##      FALSE  2016  330
-
-##      TRUE    184  388
-##                                           
-##                Accuracy : 0.8239   
-
-##                  95% CI : (0.8095, 0.8375)
-
-##     No Information Rate : 0.7539       
-
-##     P-Value [Acc > NIR] : < 2.2e-16       
-##                                           
-##                   Kappa : 0.4903          
-##                                           
-##  Mcnemar's Test P-Value : 1.598e-10       
-##                                           
-##             Sensitivity : 0.9164       
-
-##             Specificity : 0.5404   
-
-##          Pos Pred Value : 0.8593     
-
-##          Neg Pred Value : 0.6783      
-
-##              Prevalence : 0.7539    
-
-##          Detection Rate : 0.6909   
-
-##    Detection Prevalence : 0.8040   
-
-##       Balanced Accuracy : 0.7284          
-##                                           
-##        'Positive' Class : FALSE           
-##        
-##  
-
-# With "Occupation" and "class" features
-
-# Confusion Matrix and Statistics
-
-#           Reference
-
-# Prediction FALSE TRUE
-
-#      FALSE  2025  293
-
-#      TRUE    175  425
-                                          
-#                Accuracy : 0.8396   
-
-#                  95% CI : (0.8258, 0.8528)
-
-#     No Information Rate : 0.7539      
-
-#     P-Value [Acc > NIR] : < 2.2e-16       
-                                          
-#                   Kappa : 0.5424          
-                                          
-#  Mcnemar's Test P-Value : 6.362e-08       
-                                          
-#             Sensitivity : 0.9205      
-
-#             Specificity : 0.5919    
-
-#          Pos Pred Value : 0.8736    
-
-#          Neg Pred Value : 0.7083  
-
-#              Prevalence : 0.7539  
-
-#          Detection Rate : 0.6940 
-
-#    Detection Prevalence : 0.7944    
-
-#       Balanced Accuracy : 0.7562          
-                                          
-#        'Positive' Class : FALSE  
-
-# f1_rf2
+ f1_rf2
 
 # [1] 	0.88693
 
 # Area under the curve: 0.81791
-
-# varImp(train_rf_2)
-
-#                Overall
-                
-#age           491.55809
-
-#eduyears      595.07607
-
-#sex           101.73626
-
-#race           49.67436
-
-#hoursperweek  340.57118
-
-#maritalstatus 839.06711
-
-#relationship  981.20678
-
-#education     598.69678
        
 ```
+\begin{verbatim}
+ Confusion Matrix and Statistics
+  
+            Reference
+  Prediction FALSE TRUE
+       FALSE  2016  330
+       TRUE    184  388
+                                            
+                 Accuracy : 0.8239   
+                   95% CI : (0.8095, 0.8375)
+      No Information Rate : 0.7539       
+      P-Value [Acc > NIR] : < 2.2e-16       
+                    Kappa : 0.4903          
+   Mcnemar's Test P-Value : 1.598e-10       
+              Sensitivity : 0.9164       
+              Specificity : 0.5404   
+           Pos Pred Value : 0.8593     
+           Neg Pred Value : 0.6783      
+               Prevalence : 0.7539    
+           Detection Rate : 0.6909   
+     Detection Prevalence : 0.8040   
+        Balanced Accuracy : 0.7284          
+         'Positive' Class : FALSE           
+         
+  With "Occupation" and "class" features
+ 
+  Confusion Matrix and Statistics
+ 
+            Reference
+ 
+  Prediction FALSE TRUE
+       FALSE  2025  293
+       TRUE    175  425
+                                           
+                 Accuracy : 0.8396   
+                   95% CI : (0.8258, 0.8528)
+      No Information Rate : 0.7539      
+      P-Value [Acc > NIR] : < 2.2e-16       
+                    Kappa : 0.5424          
+   Mcnemar's Test P-Value : 6.362e-08       
+              Sensitivity : 0.9205      
+              Specificity : 0.5919    
+           Pos Pred Value : 0.8736    
+           Neg Pred Value : 0.7083  
+               Prevalence : 0.7539  
+           Detection Rate : 0.6940 
+     Detection Prevalence : 0.7944    
+        Balanced Accuracy : 0.7562          
+         'Positive' Class : FALSE  
+ 
+  Variable Importance
+ 
+  varImp(train_rf_2)
+ 
+                 Overall
+                 
+ age           491.55809
+ eduyears      595.07607
+ sex           101.73626
+ race           49.67436
+ hoursperweek  340.57118
+ maritalstatus 839.06711
+ relationship  981.20678
+ education     598.69678
+\end{verbatim}
 
 ```{r,echo=FALSE, fig.retina = 2, fig.cap ="rf tuning" , warning=FALSE, regfloat=FALSE, fig.align='center'}
 library(ggplot2)  # For plotting
@@ -1519,11 +1290,11 @@ Additionally, we could also use advanced algorithms like Ada Boost Gradient Boos
 
 The code in this project takes long time to execute. Please find the execution summary at the link below.
 
-https://github.com/rajeshharidas/havardxwork2/blob/main/CensusPayExecutionSummary.html
-https://github.com/rajeshharidas/havardxwork2/blob/main/CensusPayExecutionSummary.pdf
+\url{https://github.com/rajeshharidas/havardxwork2/blob/main/CensusPayExecutionSummary.pdf}
+\url{https://github.com/rajeshharidas/havardxwork2/blob/main/DatasetProcessingCode.pdf}
 
-https://github.com/rajeshharidas/havardxwork2/blob/main/DatasetProcessingCode.html
-https://github.com/rajeshharidas/havardxwork2/blob/main/DatasetProcessingCode.pdf
+\url{https://github.com/rajeshharidas/havardxwork2/blob/main/CensusPayExecutionSummary.html}
+\url{https://github.com/rajeshharidas/havardxwork2/blob/main/DatasetProcessingCode.html}
 
 \newpage
 
@@ -1539,4 +1310,4 @@ https://leanpub.com/datasciencebook↩︎
 
 Irizarry, Rafael A., “Introduction to Data Science: Data Analysis and Prediction Algorithms in R” https://rafalab.github.io/dsbook/
 
-ML-Friendly kaggle dataset for adult census income - https://www.kaggle.com/uciml/adult-census-income
+ML-Friendly kaggle dataset for adult census income - \url{https://www.kaggle.com/uciml/adult-census-income}

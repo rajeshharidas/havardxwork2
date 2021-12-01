@@ -360,7 +360,7 @@ nodesize <- seq(1, 90, 10)
 acc <- sapply(nodesize, function(ns) {
   #train the model with tuning
   train(
-    y ~ age + eduyears + sex + race + hoursperweek + maritalstatus + relationship + education + occupation + class,
+    y ~ age + eduyears + sex + race + hoursperweek + maritalstatus + relationship + education,
     method = "rf",
     data = temp,
     tuneGrid = data.frame(mtry = 2),
@@ -373,7 +373,7 @@ set.seed(2008)
 #get the trained model for the max node size
 train_rf_2 <-
   randomForest(
-    y ~ age + eduyears + sex + race + hoursperweek + maritalstatus + relationship + education + occupation + class,
+    y ~ age + eduyears + sex + race + hoursperweek + maritalstatus + relationship + education,
     data = temp,
     nodesize = nodesize[which.max(acc)]
   )
