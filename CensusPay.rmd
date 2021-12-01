@@ -416,7 +416,6 @@ cm <- confusionMatrix(data =seat_of_the_pants , reference = adultpayclean_valida
  Confusion Matrix and Statistics
  
              Reference
-
  Prediction   Above50K AtBelow50K
    Above50K        347       1087
    AtBelow50K      371       1113
@@ -539,8 +538,7 @@ We can use this to arrive at y_hat_logit. Since we have 8 features \(X = x\) is 
  Confusion Matrix and Statistics
 
              Reference
- Prediction   Above50K AtBelow50K
-
+    Prediction   Above50K AtBelow50K
     Above50K        318        139
     AtBelow50K      400       2061
 
@@ -605,7 +603,6 @@ We will now experiment with the general linear model (glm). We will be consisten
  Confusion Matrix and Statistics
  
              Reference
-
  Prediction   Above50K AtBelow50K
    Above50K        278        113
    AtBelow50K      440       2087
@@ -670,7 +667,6 @@ We will now experiment with generative models like naive bayes classification. I
  Confusion Matrix and Statistics
  
         y_hat_nb
-
          FALSE TRUE
    FALSE  1794  406
    TRUE    175  543
@@ -758,7 +754,6 @@ Here is the confusion matrix for the knn tuned raw model
  Confusion Matrix and Statistics
  
            Reference
-
  Prediction FALSE TRUE
       FALSE  1992  360
       TRUE    208  358
@@ -849,7 +844,6 @@ We will now try to use classification with knn3. We will again use different val
  Confusion Matrix and Statistics
  
            Reference
-
  Prediction FALSE TRUE
       FALSE  1994  351
       TRUE    206  367
@@ -913,7 +907,6 @@ Next we use classification trees, or decision trees. We use the recursive partit
  Confusion Matrix and Statistics
  
            Reference
-
  Prediction FALSE TRUE
       FALSE  2002  324
       TRUE    198  394
@@ -1012,7 +1005,6 @@ Classification trees have certain advantages that make them very useful. They ar
   Confusion Matrix and Statistics
   
             Reference
- 
   Prediction FALSE TRUE
        FALSE  2012  332
        TRUE    188  38
@@ -1039,7 +1031,6 @@ Classification trees have certain advantages that make them very useful. They ar
   Confusion Matrix and Statistics
  
            Reference
- 
  Prediction FALSE TRUE
       FALSE  1990  293
       TRUE    210  425
@@ -1168,7 +1159,6 @@ Lets tune this model just like the KNN3 classification and see if we can do bett
   Confusion Matrix and Statistics
  
             Reference
- 
   Prediction FALSE TRUE
        FALSE  2025  293
        TRUE    175  425
@@ -1286,19 +1276,20 @@ Additionally, we could also use advanced algorithms like Ada Boost Gradient Boos
 ```{r eval=FALSE,tidy=TRUE, warning=FALSE,message=FALSE, tidy.opts=list(comment=TRUE), cache=TRUE, class.source='special-code', code=readLines('CensusPay.R')}
 
 ```
-### Appendix A - Code Execution
+### Appendix B - Code Execution
 
 The code in this project takes long time to execute. Please find the execution summary at the link below.
 
 \url{https://github.com/rajeshharidas/havardxwork2/blob/main/CensusPayExecutionSummary.pdf}
+
 \url{https://github.com/rajeshharidas/havardxwork2/blob/main/DatasetProcessingCode.pdf}
 
 \url{https://github.com/rajeshharidas/havardxwork2/blob/main/CensusPayExecutionSummary.html}
+
 \url{https://github.com/rajeshharidas/havardxwork2/blob/main/DatasetProcessingCode.html}
 
-\newpage
 
-### Appendix B - Links
+### Appendix C - Links
 
 https://www.edx.org/professional-certificate/harvardx-data-science↩︎
 
