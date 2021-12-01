@@ -342,7 +342,14 @@ As shown above the occupation and class columns have more than 1600 Unknown data
 
 ## Process
 
-The high-level process methodology used in this project is along the same lines as the CRISP-DM (Cross Industrial Standard Process for Data Mining) methodology.
+The high-level process methodology used in this project is along the same lines as the CRISP-DM (Cross Industrial Standard Process for Data Mining) methodology. We got a business understanding of the problem we are trying to solve. We analyzed the raw data. Next we prepare the dataset from the raw data. 
+
+```{r,echo=FALSE,out.width="65%", fig.cap ="Process Methodology" , warning=FALSE, regfloat=FALSE, fig.align='center'}
+library(ggplot2)  # For plotting
+library(png) 
+img_path <- "images/crispdm.png"
+knitr::include_graphics(img_path)
+```
 
 The code DatasetProcessingCode.R downloads the dataset from a convenient location in github (originally downloaded from kaggle) and then unzips it and converts the dataset into a R data frame. It then does extensive cleaning, processing and munging of the data to make it tidy and meaningful for analysis. It then splits the original dataset into training and validation datasets. All analysis is done on this training dataset. Once the training is done the validation is done on the test dataset.
 
@@ -757,7 +764,7 @@ temp <- adultpayclean_train %>%
 
 The k parameter that lead to maximum accuracy can be obtained by bestTune. The plot for that is shown in the figure "KNN tuning".
 
-```{r,echo=FALSE, fig.retina = 2, fig.cap ="KNN tuning" , warning=FALSE, regfloat=FALSE, fig.align='center'}
+```{r,echo=FALSE, fig.retina = 2, fig.cap ="knn tuning" , warning=FALSE, regfloat=FALSE, fig.align='center'}
 library(ggplot2)  # For plotting
 library(png) 
 img_path <- "images/knntune.png"
@@ -972,14 +979,11 @@ img_path <- "images/rocrpart.png"
 knitr::include_graphics(img_path)
 ```
 
-We will next look at random forest algorithm.
+Classification trees have certain advantages that make them very useful. They are highly interpretable, even more so than linear models. They are easy to visualize (if small enough). Finally, they can model human decision processes and don’t require use of dummy predictors for categorical variables. On the other hand, the approach via recursive partitioning can easily over-train and is therefore a bit harder to train than, for example, linear regression or kNN. Furthermore, in terms of accuracy, it is rarely the best performing method since it is not very flexible and is highly unstable to changes in training data. Random forests, explained next, improve on several of these shortcomings. We will next look at random forest algorithm.
 
 ### Random forests  \
 
-
-Classification trees have certain advantages that make them very useful. They are highly interpretable, even more so than linear models. They are easy to visualize (if small enough). Finally, they can model human decision processes and don’t require use of dummy predictors for categorical variables. On the other hand, the approach via recursive partitioning can easily over-train and is therefore a bit harder to train than, for example, linear regression or kNN. Furthermore, in terms of accuracy, it is rarely the best performing method since it is not very flexible and is highly unstable to changes in training data. Random forests, explained next, improve on several of these shortcomings.
-
- The goal of random forest is to improve prediction performance and reduce instability by averaging multiple decision trees. The first step is bootstrap aggregation or bagging. The general idea is to generate many predictors, each using regression or classification trees, and then forming a final prediction based on the average prediction of all these trees.To assure that the individual trees are not the same, we use the bootstrap to induce randomness.
+The goal of random forest is to improve prediction performance and reduce instability by averaging multiple decision trees. The first step is bootstrap aggregation or bagging. The general idea is to generate many predictors, each using regression or classification trees, and then forming a final prediction based on the average prediction of all these trees.To assure that the individual trees are not the same, we use the bootstrap to induce randomness.
 
 ```{r eval=FALSE,class.source='special-code'}
  train_rf <- randomForest(y ~ age + eduyears + sex + race + hoursperweek + maritalstatus + relationship+education, data=temp)
@@ -1090,7 +1094,7 @@ img_path <- "images/rferrors.png"
 knitr::include_graphics(img_path)
 ```
 
-Adding class has a negative impact on the precision when compared to occupation. We can see the variable importance with occupation and class.
+We can see the variable importance with occupation and class.
 
 \begin{verbatim}
  varImp(train_rf)
@@ -1240,7 +1244,7 @@ The out-of-bag errors and errors for Above-50K and AtBelow50K classes are shown 
 
 We can see the variable importance with occupation and class.
 
-```{r,echo=FALSE,out.width="60%", fig.cap ="tuned random forest classification errors" , warning=FALSE, regfloat=FALSE, fig.align='center'}
+```{r,echo=FALSE,out.width="60%", fig.cap ="tuned random forest variable importance" , warning=FALSE, regfloat=FALSE, fig.align='center'}
 library(ggplot2)  # For plotting
 library(png) 
 img_path <- "images/rf2varimp.png"
@@ -1251,9 +1255,9 @@ When we compare our final model with naive bayes, the AUC for naive bayes seems 
 
 # Results
 
-This project created a machine learning model that predicts income level of adults based on 7 shortlisted attributes and 2 experimental attributes. This model was run on a test dataset that included an income level indicator, allowing us to compare the predicted and actual value.
+This project created a machine learning model that predicts income level of adults based on 8 shortlisted attributes and 2 experimental attributes. This model was run on a test dataset that included an income level indicator, allowing us to compare the predicted and actual value.
 
-The final model that was chosen after comparison was random forest model. The model returned an accuracy of 82 to 83% while predicting annual income more than $50,000 annually. If occupation and class (with 5% unknown data) are included as features then accuracy changes to 83 to 84%. A summary table of results is given below:
+We chose random forest as the final model after comparison. The model returned an accuracy of 82 to 83% while predicting annual income more than $50,000 annually. If occupation and class (with 5% unknown data) are included as features then accuracy changes to 83 to 84%. A summary table of results is given below:
 
 ```{r,echo=FALSE,fig.retina = 2, fig.cap ="Final Results" , warning=FALSE, regfloat=FALSE}
 library(ggplot2)  # For plotting
@@ -1279,9 +1283,9 @@ This model can be used to determine income levels for adults in any year with si
 
 # Conclusion
 
-This machine learning model was able to predict annual incomes of persons in US based (1994) on 7 parameters with an accuracy of 82 to 83%. This model can be applied to data from other census years as well. The model will perform better if the training set is updated with new data that is confirmed for correctness, that is, the label value is the real life value, and not the predicted value. Additional data for certain features like marital status, occupation, and class will make the model better. The model can continuously learn from changing data in the training set to adapt to new parameters, thus improving its accuracy and other metrics
+This machine learning model was able to predict annual incomes of persons in US based (1994) on 8 parameters with an accuracy of 82 to 83%. This model can be applied to data from other census years as well. The model will perform better if the training set is updated with new data that is confirmed for correctness, that is, the label value is the real life value, and not the predicted value. Additional data for certain features like marital status, occupation, and class will make the model better. The model can continuously learn from changing data in the training set to adapt to new parameters, thus improving its accuracy and other metrics
 
-Further improvements could be made by use random oversampling and/or under-sampling techniques to fill the void created by imbalanced datasets.
+Further improvements could be made by using random oversampling and/or under-sampling techniques to fill the void created by imbalanced datasets.
 
 Another approach for improving accuracy would be to create an ensemble based on multiple algorithms like rpart, random forest and glm.
 
