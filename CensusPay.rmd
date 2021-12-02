@@ -313,7 +313,7 @@ img_path <- "images/incomedistbyage.png"
 knitr::include_graphics(img_path)
 ```
 
-The number of people from age 30-45 are the most frequent in the distribution and the same group have more above-50K incomes. There are 12 outliers in the age group above 80 who earn Above-50K. 
+The number of people from age 30-45 are the most frequent in the distribution and the same group have more above-50K incomes. There are 12 outliers in the age group above 80 who earn Above-50K. There are similar outliers in age-sex and age-race comparisons. However, the numbers are not significant enough to skew the distributions.
 
 ```{r,echo=FALSE,out.width="50%", fig.cap ="Hours worked" , warning=FALSE, regfloat=FALSE, fig.align='center'}
 library(ggplot2)  # For plotting
