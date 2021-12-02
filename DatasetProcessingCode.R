@@ -65,15 +65,22 @@ adultpay <-
     )
   )
 
+#function to get the mode for categorical column. This is used to impute missing values
+getmode <- function(v){
+  v=v[nchar(as.character(v))>0]
+  uniqv <- unique(v)
+  uniqv[which.max(tabulate(match(v, uniqv)))]
+}
+
 #Keep only USA data
 #Remove '?' from the work class and rename it to class, and finally remove workclass
 #Rename all columns with a '.' in it
 #Remove capital gain and loss column
 #remove non-alphanumeric character from column data
 #rename the label for below and above 50K income
-adultpayclean <-
-  adultpay %>% filter (native.country == 'United-States') %>%
-  mutate (class = ifelse(workclass == '?', 'Unknown', str_replace_all(workclass, "-", ""))) %>%
+#impute ? values to the modes in categorical columns
+adultpayclean <- adultpay %>% filter (native.country == 'United-States') %>%
+  mutate (class = ifelse(workclass == '?', getmode(adultpay$workclass), str_replace_all(workclass, "-", ""))) %>%
   dplyr::select(-workclass, -capital.gain, -capital.loss) %>%
   rename(
     c(
@@ -85,24 +92,24 @@ adultpayclean <-
   ) %>%
   mutate (maritalstatus = ifelse(
     maritalstatus == '?',
-    'Unknown',
+    getmode(adultpay$maritalstatus),
     str_replace_all(maritalstatus, "-", "")
   )) %>%
   mutate (occupation = ifelse(
     occupation == '?',
-    'Unknown',
+    getmode(adultpay$occupation),
     str_replace_all(occupation, "-", "")
   )) %>%
-  mutate (education = ifelse(education == '?', 'Unknown', str_replace_all(education, "-", ""))) %>%
+  mutate (education = ifelse(education == '?', getmode(adultpay$education), str_replace_all(education, "-", ""))) %>%
   mutate (relationship = ifelse(
     relationship == '?',
-    'Unknown',
+    getmode(adultpay$relationship),
     str_replace_all(relationship, "-", "")
   )) %>%
   mutate (native = ifelse(native == '?', 'Unknown', str_replace_all(native, "-", ""))) %>%
   mutate (income = ifelse(
     income == '?',
-    'Unknown',
+    getmode(adultpay$income),
     str_replace_all(income, "<=50K", "AtBelow50K")
   )) %>%
   mutate (income = ifelse(

@@ -335,7 +335,7 @@ knitr::include_graphics(img_path)
 
 The number of private employer workers are more than other categories. They also earn more above-50K and at-or-below-50K than other categories.
 
-As shown above the occupation and class columns have more than 1600 Unknown data. Adding this to the predictor columns could skew the predictions and introduce errors. We will exclude this from our list of predictors. We may experiment with these two features in our final model. The final list of predictors/features used to predict the outcome income level are age, education, years of education (a.ka. eduyears), maritalstatus, relationship,race, sex, and hoursperweek. As analyzed in the above section, there is sufficient degree of variability and correlation between these features and how they impact the income levels based on socio-economic and cultural factors.
+As shown above the occupation and class categorical columns have more than 1600 Unknown data. As these are categorical data, its hard to impute them. Adding these to the predictor columns could skew the predictions and introduce errors. We will exclude this from our list of predictors. We may experiment with these two features in our final model. The final list of predictors/features used to predict the outcome income level are age, education, years of education (a.ka. eduyears), maritalstatus, relationship,race, sex, and hoursperweek. As analyzed in the above section, there is sufficient degree of variability and correlation between these features and how they impact the income levels based on socio-economic and cultural factors.
 
 
 \newpage
