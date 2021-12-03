@@ -63,7 +63,7 @@ prevalence_guess <- cm$byClass[["Prevalence"]]
 f1_guess <- cm$byClass[["F1"]]
 
 #find the area under the curve/ROC
-auc(ifelse(adultpayclean_validation$income == "Above50K",1,2), ifelse(seat_of_the_pants == "Above50K",1,2))
+auc(ifelse(adultpayclean_validation$income == "Above50K",1,0), ifelse(seat_of_the_pants == "Above50K",1,0))
 
 set.seed(2008)
 #logistic linear model

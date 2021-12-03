@@ -133,54 +133,52 @@ So we begin...
 The adult pay dataset from census bureau is a ML ready database. For convenience, I have downloaded it from kaggle and stored in the same github repository as this code and markdown. The dataset is in zip format and is downloaded from https://github.com/rajeshharidas/havardxwork2/blob/main/adult.csv.zip. Then it is read into a data frame. The data is ML ready for the most part. However, there are some additional cleaning tasks needed before using the dataset. This processing is done in DatasetProcessingCode.R file. Code fragment is shown below. We perform the following cleaning tasks
 
 1) Filter to keep only USA data
-2) Remove all ? marks data from all the columns
+2) Remove all ? marks data from all the columns. Impute ? values to the modes in categorical columns like class, and occupation
 3) Remove intermediate columns and columns that are not used in the project
-4) Rename columns to exclude non-alphanumeric characters
+4) Rename column names and column values to exclude non-alphanumeric characters
 5) convert character labels to factors
-
 
 ```{r eval=FALSE,class.source='special-code'}
 # dataset wrangling and tidying
 
- adultpayclean <-
-   adultpay %>% filter (native.country == 'United-States') %>%
-   mutate (class = ifelse(workclass == '?', 'Unknown', str_replace_all(workclass, "-", ""))) %>%
-   select(-workclass, -capital.gain, -capital.loss) %>%
-   rename(
-     c(
-       eduyears = education.num,
-       maritalstatus = marital.status,
-       hoursperweek = hours.per.week,
-       native = native.country
-     )
-   ) %>%
-   mutate (maritalstatus = ifelse(
-     maritalstatus == '?',
-     'Unknown',
-     str_replace_all(maritalstatus, "-", "")
-   )) %>%
-   mutate (occupation = ifelse(
-     occupation == '?',
-     'Unknown',
-     str_replace_all(occupation, "-", "")
-   )) %>%
-   mutate (education = ifelse(education == '?', 'Unknown', str_replace_all(education, "-", ""))) %>%
-   mutate (relationship = ifelse(
-     relationship == '?',
-     'Unknown',
-     str_replace_all(relationship, "-", "")
-   )) %>%
-   mutate (native = ifelse(native == '?', 'Unknown', str_replace_all(native, "-", ""))) %>%
-   mutate (income = ifelse(
-     income == '?',
-     'Unknown',
-     str_replace_all(income, "<=50K", "AtBelow50K")
-   )) %>%
-   mutate (income = ifelse(
-     income == '?',
-     'Unknown',
-     str_replace_all(income, ">50K", "Above50K")
-   ))
+adultpayclean <- adultpay %>% filter (native.country == 'United-States') %>%
+  mutate (class = ifelse(workclass == '?', getmode(adultpay$workclass), str_replace_all(workclass, "-", ""))) %>%
+  dplyr::select(-workclass, -capital.gain, -capital.loss) %>%
+  rename(
+    c(
+      eduyears = education.num,
+      maritalstatus = marital.status,
+      hoursperweek = hours.per.week,
+      native = native.country
+    )
+  ) %>%
+  mutate (maritalstatus = ifelse(
+    maritalstatus == '?',
+    getmode(adultpay$maritalstatus),
+    str_replace_all(maritalstatus, "-", "")
+  )) %>%
+  mutate (occupation = ifelse(
+    occupation == '?',
+    getmode(adultpay$occupation),
+    str_replace_all(occupation, "-", "")
+  )) %>%
+  mutate (education = ifelse(education == '?', getmode(adultpay$education), str_replace_all(education, "-", ""))) %>%
+  mutate (relationship = ifelse(
+    relationship == '?',
+    getmode(adultpay$relationship),
+    str_replace_all(relationship, "-", "")
+  )) %>%
+  mutate (native = ifelse(native == '?', 'Unknown', str_replace_all(native, "-", ""))) %>%
+  mutate (income = ifelse(
+    income == '?',
+    getmode(adultpay$income),
+    str_replace_all(income, "<=50K", "AtBelow50K")
+  )) %>%
+  mutate (income = ifelse(
+    income == '?',
+    'Unknown',
+    str_replace_all(income, ">50K", "Above50K")
+  ))
 
 ```
 
@@ -335,7 +333,7 @@ knitr::include_graphics(img_path)
 
 The number of private employer workers are more than other categories. They also earn more above-50K and at-or-below-50K than other categories.
 
-As shown above the occupation and class categorical columns have more than 1600 Unknown data. As these are categorical data, its hard to impute them. Adding these to the predictor columns could skew the predictions and introduce errors. We will exclude this from our list of predictors. We may experiment with these two features in our final model. The final list of predictors/features used to predict the outcome income level are age, education, years of education (a.ka. eduyears), maritalstatus, relationship,race, sex, and hoursperweek. As analyzed in the above section, there is sufficient degree of variability and correlation between these features and how they impact the income levels based on socio-economic and cultural factors.
+As shown above the occupation and class categorical columns have more than 1600 Unknown data. As these are categorical data, we will impute them using mode. However, as this is 6% of the data, adding these to the predictor columns could skew the predictions and introduce errors. We will exclude this from our list of predictors. We will experiment with these two features in our final model. We also removed capital gains and loss columns because we do not have good realistic data for both of these columns. The final list of predictors/features used to predict the outcome income level are age, education, years of education (a.ka. eduyears), maritalstatus, relationship,race, sex, and hoursperweek. As analyzed in the above section, there is sufficient degree of variability and correlation between these features and how they impact the income levels based on socio-economic and cultural factors.
 
 
 \newpage
@@ -1155,24 +1153,24 @@ Lets tune this model just like the KNN3 classification and see if we can do bett
   
             Reference
   Prediction FALSE TRUE
-       FALSE  2016  330
-       TRUE    184  388
-                                            
-                 Accuracy : 0.8239   
-                   95% CI : (0.8095, 0.8375)
-      No Information Rate : 0.7539       
+       FALSE  2016  335
+       TRUE    184  383
+       
+                 Accuracy : 0.8221      
+                   95% CI : (0.8078, 0.8359)
+      No Information Rate : 0.7539         
       P-Value [Acc > NIR] : < 2.2e-16       
-                    Kappa : 0.4903          
-   Mcnemar's Test P-Value : 1.598e-10       
-              Sensitivity : 0.9164       
-              Specificity : 0.5404   
-           Pos Pred Value : 0.8593     
-           Neg Pred Value : 0.6783      
-               Prevalence : 0.7539    
-           Detection Rate : 0.6909   
-     Detection Prevalence : 0.8040   
-        Balanced Accuracy : 0.7284          
-         'Positive' Class : FALSE           
+                    Kappa : 0.4841          
+   Mcnemar's Test P-Value : 4.571e-11       
+              Sensitivity : 0.9164    
+              Specificity : 0.5334    
+           Pos Pred Value : 0.8575   
+           Neg Pred Value : 0.6755   
+               Prevalence : 0.7539       
+           Detection Rate : 0.6909      
+     Detection Prevalence : 0.8057      
+        Balanced Accuracy : 0.7249          
+         'Positive' Class : FALSE      
          
   With "Occupation" and "class" features
  
@@ -1183,20 +1181,20 @@ Lets tune this model just like the KNN3 classification and see if we can do bett
        FALSE  2025  293
        TRUE    175  425
                                            
-                 Accuracy : 0.8396   
-                   95% CI : (0.8258, 0.8528)
+                 Accuracy : 0.83996   
+                   95% CI : (0.8261, 0.8531)
       No Information Rate : 0.7539      
       P-Value [Acc > NIR] : < 2.2e-16       
-                    Kappa : 0.5424          
-   Mcnemar's Test P-Value : 6.362e-08       
-              Sensitivity : 0.9205      
-              Specificity : 0.5919    
-           Pos Pred Value : 0.8736    
-           Neg Pred Value : 0.7083  
+                    Kappa : 0.5441          
+   Mcnemar's Test P-Value : 1.325e-07       
+              Sensitivity : 0.9200      
+              Specificity : 0.5947    
+           Pos Pred Value : 0.8743    
+           Neg Pred Value : 0.7081  
                Prevalence : 0.7539  
-           Detection Rate : 0.6940 
-     Detection Prevalence : 0.7944    
-        Balanced Accuracy : 0.7562          
+           Detection Rate : 0.6936 
+     Detection Prevalence : 0.7934    
+        Balanced Accuracy : 0.7574          
          'Positive' Class : FALSE  
  
   Variable Importance
