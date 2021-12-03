@@ -1139,13 +1139,13 @@ Lets tune this model just like the KNN3 classification and see if we can do bett
 
 # Accuracy 
 
-# 0.8239
+# 0.8221
 
  f1_rf2
 
-# [1] 	0.88693
+# [1] 	0.88596
 
-# Area under the curve: 0.81791
+# Area under the curve: 0.81917
        
 ```
 \begin{verbatim}
@@ -1220,7 +1220,7 @@ img_path <- "images/rf2tune.png"
 knitr::include_graphics(img_path)
 ```
 
-The accuracy of random forest with tuning is at 0.8339, sensitivity is at 0.915 and specificity is at 0.584. Prevalence is about the same when compared to knn and rpart classification models. The confidence intervals is just about the same as rpart and random forest without tuning.AUC improved slightly. In addition to the accuracy, precision increased to 0.892.
+The accuracy of random forest with tuning is at 0.8221, sensitivity is at 0.916 and specificity is at 0.533. Prevalence is about the same when compared to knn and rpart classification models. The confidence intervals is just about the same as rpart and random forest without tuning.AUC improved slightly. In addition to the accuracy, precision increased to 0.8859.
 
 ```{r,echo=FALSE,out.width="75%", fig.cap ="random forest tuned classification summary" , warning=FALSE, regfloat=FALSE, fig.align='center'}
 library(ggplot2)  # For plotting
@@ -1229,7 +1229,7 @@ img_path <- "images/rf2rocr.png"
 knitr::include_graphics(img_path)
 ```
 
-When we added the experimental occupation and class data into the dataset for rf tuned test we see that the accuracy improves to 0.8396 and sensitivity is 0.9205 and specificity is 0.5919 with prevalence being the same as before and balanced accuracy improved to 0.7562. The F1 score for this is 0.896
+When we added the experimental occupation and class data into the dataset for rf tuned test we see that the accuracy improves to 0.83996 and sensitivity is 0.9205 and specificity is 0.5947 with prevalence being the same as before and balanced accuracy improved to 0.7574. The F1 score for this is 0.896
 
 ```{r,echo=FALSE,out.width="65%", fig.cap ="tuned random forest classification errors" , warning=FALSE, regfloat=FALSE, fig.align='center'}
 library(ggplot2)  # For plotting
