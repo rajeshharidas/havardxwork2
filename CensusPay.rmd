@@ -1,5 +1,5 @@
 ---
-title: "Census pay predictions"
+title: "Census Pay Predictions"
 author: "Rajesh Haridas"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
@@ -592,7 +592,7 @@ $$
 
 Where \({y}\) is the outcome and \(\epsilon\) is the error. Sum of \(\beta_{1}x_{1}\) through \(\beta_{8}x_{8}\) is a linear combination of \(x_{1}\) through \(x_{8}\)
 
-Logistics model assures that the estimate \(\mathit{Pr (Y = 1 \mid X = x)}\) is between 0 and 1. Glm converts probability into log odds - \(\log\left[ \frac { P( \operatorname{y} = \operatorname{1} ) }{ 1 - P( \operatorname{y} = \operatorname{1} ) } \right]\).
+Logistics model assures that the estimate \(\mathit{Pr (Y = 1 \mid X = x)}\) is between 0 and 1. Glm converts probability into log odds - \(\log\left[ \frac { P( \operatorname{y} = \operatorname{1} ) }{ 1 - P( \operatorname{y} = \operatorname{1} ) } \right]\). We will then translate the probability into a decision rule to predict Above50K if probability is > 0.5. We then compare the predictions to the outcomes using confusionMatrix.
 
 
 ```{r eval=FALSE,class.source='special-code'}
@@ -981,7 +981,7 @@ Classification trees have certain advantages that make them very useful. They ar
 
 ### Random forests  \
 
-The goal of random forest is to improve prediction performance and reduce instability by averaging multiple decision trees. The first step is bootstrap aggregation or bagging. The general idea is to generate many predictors, each using regression or classification trees, and then forming a final prediction based on the average prediction of all these trees.To assure that the individual trees are not the same, we use the bootstrap to induce randomness.
+The goal of random forest is to improve prediction performance and reduce instability by averaging multiple decision trees. The first step is bootstrap aggregation or bagging. The general idea is to generate many predictors, each using regression or classification trees, and then forming a final prediction based on the average prediction of all these trees.To assure that the individual trees are not the same, we use the bootstrap to induce randomness. Bagging or bootstrapping is very useful in our scenario as we have an imbalanced dataset.
 
 ```{r eval=FALSE,class.source='special-code'}
  train_rf <- randomForest(y ~ age + eduyears + sex + race + hoursperweek + maritalstatus + relationship+education, data=temp)
@@ -1249,7 +1249,9 @@ img_path <- "images/rf2varimp.png"
 knitr::include_graphics(img_path)
 ```
 
-When we compare our final model with naive bayes, the AUC for naive bayes seems to be far better than random forest. However, if you look closer at the classification models, there is a high degree of imbalance in the dataset and naive bayes doesn't do very well when the dataset is imbalanced. F1 score of random forest is higher than naive bayes. For this reason I chose random forest over naive bayes.
+When we compare our final model with glm, naive bayes, knn and rpart the random forest model took quite a bit of time to generate. Hence the cost of generation is high. However, on the flip side the accuracy, CI, precision is higher than other models. Prevalence plateaus once the accuracy and precision are high. The logistic and generative models like GLM, and Naive Bayes could return a faster response but sacrifices accuracy and precision and has a decent prevalence. Naive Bayes achieves a better accuracy than glm and has compatible sensitivity and specificity and lower prevalence when compared to random forest and knn. KNN is a mid-range model with speed faster than random forest but with lower accuracy and precision. It is slower than Naive Bayes and Glm.
+
+If my objective were to get the outcomes faster with slightly lesser accuracy then I would have gone with Naive Bayes. However, if you look closer at the classification models, there is a high degree of imbalance in the dataset and naive bayes doesn't do very well when the dataset is imbalanced. F1 score of random forest is higher than naive bayes. For this reason I chose random forest over naive bayes. Further more as this is a Census pay prediction application, the frequency of runs would be lesser compared to applications like detecting if a person will get a heart attack in the next 24 hours. In such a scenario getting a faster prediction at a lower accuracy can be used to err on the safe side.
 
 # Results
 

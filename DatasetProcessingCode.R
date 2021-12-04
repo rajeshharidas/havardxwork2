@@ -69,7 +69,7 @@ adultpay <-
 getmode <- function(v){
   v=v[nchar(as.character(v))>0]
   uniqv <- unique(v)
-  uniqv[which.max(tabulate(match(v, uniqv)))]
+  str_replace_all(uniqv[which.max(tabulate(match(v, uniqv)))],"-","")
 }
 
 #Keep only USA data
@@ -116,7 +116,10 @@ adultpayclean <- adultpay %>% filter (native.country == 'United-States') %>%
     income == '?',
     'Unknown',
     str_replace_all(income, ">50K", "Above50K")
-  ))
+  )) %>%
+  mutate (
+    race = str_replace_all(race, "-", "")
+  ) 
 
 # R 4.0 or later:
 #convert all the character labels to factors
