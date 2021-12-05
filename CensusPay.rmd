@@ -330,7 +330,8 @@ knitr::include_graphics(img_path)
 ```
 However, as this is 6% of the data, adding these to the predictor columns could skew the predictions and introduce errors. We will exclude this from our list of predictors. We will experiment with these two features in our final model. We also removed capital gains and loss columns because we do not have good realistic data for both of these columns. The final list of predictors/features used to predict the outcome income level are age, education, years of education (a.ka. eduyears), maritalstatus, relationship,race, sex, and hoursperweek. As analyzed in the above section, there is sufficient degree of variability and correlation between these features and how they impact the income levels based on socio-economic and cultural factors.
 
-As this is an imbalanced dataset, we will also experiment with some sampling up with 10 fold cross validation in some of the models.
+After the analysis we continue to choose to predict Above50K as our goal, even though we know the data is skewed, as in real life this is often the case.
+As this is an imbalanced dataset, we will also experiment with some sampling up with 10 fold cross validation in some of the models.There are risks associated with over and under-sampling. We could over fit/estimate or loose some critical information. For this reason, I have not applied it to all the algorithms.
 
 ## Process
 
@@ -1274,7 +1275,7 @@ This model can be used to determine income levels for adults in any year with si
 
 This machine learning model was able to predict annual incomes of persons in US based (1994) on 8 parameters with an accuracy of 82 to 83%. This model can be applied to data from other census years as well. The model will perform better if the training set is updated with new data that is confirmed for correctness, that is, the label value is the real life value, and not the predicted value. Additional data for certain features like marital status, occupation, and class will make the model better. The model can continuously learn from changing data in the training set to adapt to new parameters, thus improving its accuracy and other metrics
 
-Further improvements could be made by using additional random oversampling and/or under-sampling techniques like SMOTE or ROSE to upscale the imbalanced datasets.
+Further improvements could be made by using additional hybrid random oversampling and/or under-sampling techniques like SMOTE or ROSE to upscale the imbalanced datasets.
 
 Another approach for improving accuracy would be to create an ensemble based on multiple algorithms like rpart, random forest and glm.
 
