@@ -56,7 +56,7 @@ cm <-
 # display the confusion matrix
 cm
 
-#record the sensitivity, specificity, and prevalence
+#record the sensitivity, specificity,F1 and prevalence
 sensitivity_guess <- cm$byClass[["Sensitivity"]]
 specificity_guess <- cm$byClass[["Specificity"]]
 prevalence_guess <- cm$byClass[["Prevalence"]]
@@ -65,7 +65,7 @@ f1_guess <- cm$byClass[["F1"]]
 #find the area under the curve/ROC
 auc(ifelse(adultpayclean_validation$income == "Above50K",1,0), ifelse(seat_of_the_pants == "Above50K",1,0))
 
-set.seed(2008)
+set.seed(2008, sample.kind = "Rounding")
 #logistic linear model
 # create the model
 lm_fit <- adultpayclean_train %>%
@@ -88,7 +88,7 @@ accuracy_lm <-
 
 cm_lm
 
-#record the sensitivity, specificity, and prevalence
+#record the sensitivity, specificity,F1 and prevalence
 sensitivity_lm <- cm_lm$byClass[["Sensitivity"]]
 specificity_lm <- cm_lm$byClass[["Specificity"]]
 prevalence_lm <- cm_lm$byClass[["Prevalence"]]
@@ -101,7 +101,7 @@ plot(ciROC_bin95, col = 1, values=TRUE)
 lines(ciROC_bin95$TPR~ciROC_bin95$FPR, col = 2, lwd = 2)
 ROCit::ciAUC(pROC_bin)
 
-set.seed(2008)
+set.seed(2008, sample.kind = "Rounding")
 #general linear model
 #create the glm model
 glm_fit <- adultpayclean_train %>%
@@ -127,7 +127,7 @@ accuracy_glm <-
 
 cm_glm
 
-#record the sensitivity, specificity, and prevalence
+#record the sensitivity, specificity,F1 and prevalence
 sensitivity_glm <- cm_glm$byClass[["Sensitivity"]]
 specificity_glm <- cm_glm$byClass[["Specificity"]]
 prevalence_glm <- cm_glm$byClass[["Prevalence"]]
@@ -141,7 +141,7 @@ lines(ciROC_bin95$TPR~ciROC_bin95$FPR, col = 2, lwd = 2)
 ROCit::ciAUC(pROC_bin)
 
 #Naive bayes
-set.seed(2008)
+set.seed(2008, sample.kind = "Rounding")
 #create the naive bayes model
 train_nb <- adultpayclean_train %>%
    mutate(y = as.factor(income == "Above50K")) %>% 
@@ -173,7 +173,7 @@ temp <- adultpayclean_train %>%
   mutate(y = as.factor(income == "Above50K"))
 
 #k-nearest neighbors with a train control and tuning
-set.seed(2008)
+set.seed(2008, sample.kind = "Rounding")
 # train control to use 10% of the observations each to speed up computations
 control <- trainControl(method = "cv", number = 10, p = .9)
 # train the model using knn. choose the best k value using tuning algorithm
@@ -206,7 +206,7 @@ accuracy_knn <-
 
 cm_knn
 
-#record the sensitivity, specificity, and prevalence
+#record the sensitivity, specificity,F1 and prevalence
 sensitivity_knn <- cm_knn$byClass[["Sensitivity"]]
 specificity_knn <- cm_knn$byClass[["Specificity"]]
 prevalence_knn <- cm_knn$byClass[["Prevalence"]]
@@ -222,7 +222,7 @@ ROCit::ciAUC(pROC_bin)
 
 
 #k-nearest classification using tuning function
-set.seed(2008)
+set.seed(2008, sample.kind = "Rounding")
 
 #train the model using knn3 classification
 ks <- seq(3, 251, 2)
@@ -265,7 +265,7 @@ cm_knntune <- confusionMatrix(y_hat_knntune, as.factor(adultpayclean_validation$
 
 cm_knntune
 
-#record the sensitivity, specificity, and prevalence
+#record the sensitivity, specificity,F1 and prevalence
 sensitivity_knntune <- cm_knntune$byClass[["Sensitivity"]]
 specificity_knntune <- cm_knntune$byClass[["Specificity"]]
 prevalence_knntune <- cm_knntune$byClass[["Prevalence"]]
@@ -279,7 +279,7 @@ lines(ciROC_bin95$TPR~ciROC_bin95$FPR, col = 2, lwd = 2)
 ROCit::ciAUC(pROC_bin)
 
 #recursive partitioning using rpart
-set.seed(2008)
+set.seed(2008, sample.kind = "Rounding")
 #train the model with the recursive partitioning
 train_rpart <-
   train(
@@ -300,7 +300,7 @@ accuracy_rpart <-
                   as.factor(adultpayclean_validation$income  == "Above50K"))$overall["Accuracy"]
 
 cm_rpart
-#record the sensitivity, specificity, and prevalence
+#record the sensitivity, specificity,F1 and prevalence
 sensitivity_rpart <- cm_rpart$byClass[["Sensitivity"]]
 specificity_rpart <- cm_rpart$byClass[["Specificity"]]
 prevalence_rpart <- cm_rpart$byClass[["Prevalence"]]
@@ -314,7 +314,7 @@ lines(ciROC_bin95$TPR~ciROC_bin95$FPR, col = 2, lwd = 2)
 ROCit::ciAUC(pROC_bin)
 
 #random forest
-set.seed(2008)
+set.seed(2008, sample.kind = "Rounding")
 #train the vanilla random forest model 
 train_rf <-
   randomForest(y ~ age + eduyears + sex + race + hoursperweek + maritalstatus + relationship+education,
@@ -337,7 +337,7 @@ accuracy_rf <-
 
 cm_rf
 
-#record the sensitivity, specificity, and prevalence
+#record the sensitivity, specificity,F1 and prevalence
 sensitivity_rf <- cm_rf$byClass[["Sensitivity"]]
 specificity_rf <- cm_rf$byClass[["Specificity"]]
 prevalence_rf <- cm_rf$byClass[["Prevalence"]]
@@ -354,28 +354,37 @@ ROCit::ciAUC(pROC_bin)
 plot(train_rf)
 legend("center", ifelse (colnames(train_rf$err.rate) == "FALSE","AtBelow50K",ifelse (colnames(train_rf$err.rate) == "TRUE","Above50K","OOB")),col=1:4,cex=0.8,fill=1:4)
 
-set.seed(2008)
+set.seed(2008, sample.kind = "Rounding")
 #random forest with tuning
 nodesize <- seq(1, 90, 10)
 acc <- sapply(nodesize, function(ns) {
   #train the model with tuning
   train(
-    y ~ age + eduyears + sex + race + hoursperweek + maritalstatus + relationship + education,
+    y ~ age + eduyears + sex + race + hoursperweek + maritalstatus + relationship + education + occupation + class,
     method = "rf",
     data = temp,
     tuneGrid = data.frame(mtry = 2),
     nodesize = ns
   )$results$Accuracy
 })
+#plot the node size chart
 qplot(nodesize, acc)
 
 set.seed(2008)
-#get the trained model for the max node size
+#add 10-fold cross validation with some up sampling
+ctrl <- trainControl(method = "repeatedcv", 
+                     number = 10, 
+                     repeats = 50, 
+                     verboseIter = FALSE,
+                     sampling = "up")
+#get the trained model for the max node size, and train control
 train_rf_2 <-
   randomForest(
-    y ~ age + eduyears + sex + race + hoursperweek + maritalstatus + relationship + education,
+    y ~ age + eduyears + sex + race + hoursperweek + maritalstatus + relationship + education + occupation + class,
     data = temp,
-    nodesize = nodesize[which.max(acc)]
+    nodesize = nodesize[which.max(acc)],
+    preProcess = c("scale", "center"),
+    trControl = ctrl
   )
 #predict the outcomes
 y_hat_rf2 <- predict(train_rf_2, adultpayclean_validation)
@@ -394,7 +403,7 @@ accuracy_rftune <-
 
 cm_rf2
 
-#record the sensitivity, specificity, and prevalence
+#record the sensitivity, specificity,F1 and prevalence
 sensitivity_rf2 <- cm_rf2$byClass[["Sensitivity"]]
 specificity_rf2 <- cm_rf2$byClass[["Specificity"]]
 prevalence_rf2 <- cm_rf2$byClass[["Prevalence"]]

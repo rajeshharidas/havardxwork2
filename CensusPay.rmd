@@ -330,6 +330,8 @@ knitr::include_graphics(img_path)
 ```
 However, as this is 6% of the data, adding these to the predictor columns could skew the predictions and introduce errors. We will exclude this from our list of predictors. We will experiment with these two features in our final model. We also removed capital gains and loss columns because we do not have good realistic data for both of these columns. The final list of predictors/features used to predict the outcome income level are age, education, years of education (a.ka. eduyears), maritalstatus, relationship,race, sex, and hoursperweek. As analyzed in the above section, there is sufficient degree of variability and correlation between these features and how they impact the income levels based on socio-economic and cultural factors.
 
+As this is an imbalanced dataset, we will also experiment with some sampling up with 10 fold cross validation in some of the models.
+
 ## Process
 
 The high-level process methodology used in this project is along the same lines as the CRISP-DM (Cross Industrial Standard Process for Data Mining) methodology. We got a business understanding of the problem we are trying to solve. We analyzed the raw data. Next we prepare the dataset from the raw data. 
@@ -381,6 +383,8 @@ The simplest way to evaluate the algorithm for the adultpay dataset is by simply
 We will also use F1 measure to validate the accuracy of the sensitivity and specificity and see if we have a good precision. F1 score is a combination of two important error metrics: Precision and Recall. Thus, it can be considered as the Harmonic mean of Precision and Recall error metrics for an imbalanced dataset with respect to binary classification of data. As income level has only 30% data for above-50K class this score is useful. The highest possible value of an F-score is 1.0, indicating perfect precision and recall, and the lowest possible value is 0. Higher the precision the better. 
 
 We will also use a widely used plot receiver operating characteristic (ROC) curve. Receiver Operating Characteristic curves are a popular way to visualize the trade-offs between sensitivity and specificity in a binary classifier. The ROC curve plots sensitivity (TPR) versus 1 - specificity or the false positive rate (FPR). This also gives us Area under the curve (a.k.a. AUC). The AUC summarizes ROC in a single value. The probabilistic interpretation is that if you randomly choose a positive case and a negative case, the probability that the positive case outranks the negative case according to the classifier is given by the AUC. Higher the AUC score the better. This indicates that the model has higher chances for getting correct predictions.
+
+Finally, just as we used RMSE in previous projects for predictions containing continuous variables, we will use confusion matrix to track the errors for this classification prediction. 
 
 ## Model Creation
 
@@ -1096,11 +1100,17 @@ We can see the variable importance with occupation and class.
 
 We can see that age, years of education, relationship,occupation and maritalstatus are the most used and sex and race are the least used features. We can also see that occupation did have a greater impact on decisioning even though we had 5% unknown data. 
 
-Lets tune this model just like the KNN3 classification and see if we can do better.
+Lets tune this model just like the KNN3 classification and see if we can do better. We will also use 10 x 10 repeated cross-validation to upscale sampling and compensate for an imbalanced dataset.
 
 ```{r eval=FALSE,class.source='special-code'}
 
- nodesize <- seq(1, 51, 10)
+ctrl <- trainControl(method = "repeatedcv", 
+                     number = 10, 
+                     repeats = 10, 
+                     verboseIter = FALSE,
+                     sampling = "up")
+
+nodesize <- seq(1, 51, 10)
 
  acc <- sapply(nodesize, function(ns){
   train(y ~ age + eduyears + sex + race + hoursperweek + maritalstatus + relationship, method = "rf", data = temp,
@@ -1110,7 +1120,7 @@ Lets tune this model just like the KNN3 classification and see if we can do bett
 
  qplot(nodesize, acc)
 
- train_rf_2 <- randomForest(y ~ age + eduyears + sex + race + hoursperweek + maritalstatus + relationship, data=temp,nodesize = nodesize[which.max(acc)])
+ train_rf_2 <- randomForest(y ~ age + eduyears + sex + race + hoursperweek + maritalstatus + relationship, data=temp,nodesize = nodesize[which.max(acc)],preProcess = c("scale", "center"), trControl = ctrl)
 
  y_hat_rf2 <- predict(train_rf_2, adultpayclean_validation)
 
@@ -1264,7 +1274,7 @@ This model can be used to determine income levels for adults in any year with si
 
 This machine learning model was able to predict annual incomes of persons in US based (1994) on 8 parameters with an accuracy of 82 to 83%. This model can be applied to data from other census years as well. The model will perform better if the training set is updated with new data that is confirmed for correctness, that is, the label value is the real life value, and not the predicted value. Additional data for certain features like marital status, occupation, and class will make the model better. The model can continuously learn from changing data in the training set to adapt to new parameters, thus improving its accuracy and other metrics
 
-Further improvements could be made by using random oversampling and/or under-sampling techniques to fill the void created by imbalanced datasets.
+Further improvements could be made by using additional random oversampling and/or under-sampling techniques like SMOTE or ROSE to upscale the imbalanced datasets.
 
 Another approach for improving accuracy would be to create an ensemble based on multiple algorithms like rpart, random forest and glm.
 
